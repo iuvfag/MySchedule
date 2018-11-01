@@ -30,16 +30,16 @@
         {
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.detailTextbox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.subjectTextbox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.dateTimePicker3 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.endingTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.startTimePicker = new System.Windows.Forms.DateTimePicker();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.scheduleDatePicker = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -51,6 +51,7 @@
             this.button2.TabIndex = 23;
             this.button2.Text = "更新";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -60,14 +61,15 @@
             this.button1.TabIndex = 24;
             this.button1.Text = "戻る";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // textBox2
+            // detailTextbox
             // 
-            this.textBox2.Location = new System.Drawing.Point(32, 261);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(441, 266);
-            this.textBox2.TabIndex = 22;
+            this.detailTextbox.Location = new System.Drawing.Point(32, 261);
+            this.detailTextbox.Multiline = true;
+            this.detailTextbox.Name = "detailTextbox";
+            this.detailTextbox.Size = new System.Drawing.Size(441, 266);
+            this.detailTextbox.TabIndex = 22;
             // 
             // label6
             // 
@@ -79,13 +81,13 @@
             this.label6.TabIndex = 21;
             this.label6.Text = "詳細";
             // 
-            // textBox1
+            // subjectTextbox
             // 
-            this.textBox1.Location = new System.Drawing.Point(71, 182);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(362, 19);
-            this.textBox1.TabIndex = 20;
+            this.subjectTextbox.Location = new System.Drawing.Point(71, 182);
+            this.subjectTextbox.Multiline = true;
+            this.subjectTextbox.Name = "subjectTextbox";
+            this.subjectTextbox.Size = new System.Drawing.Size(362, 19);
+            this.subjectTextbox.TabIndex = 20;
             // 
             // label5
             // 
@@ -107,25 +109,25 @@
             this.label4.TabIndex = 18;
             this.label4.Text = "～";
             // 
-            // dateTimePicker3
+            // endingTimePicker
             // 
-            this.dateTimePicker3.CustomFormat = "HH:mm";
-            this.dateTimePicker3.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker3.Location = new System.Drawing.Point(314, 110);
-            this.dateTimePicker3.Name = "dateTimePicker3";
-            this.dateTimePicker3.ShowUpDown = true;
-            this.dateTimePicker3.Size = new System.Drawing.Size(118, 19);
-            this.dateTimePicker3.TabIndex = 17;
+            this.endingTimePicker.CustomFormat = "HH:mm";
+            this.endingTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.endingTimePicker.Location = new System.Drawing.Point(314, 110);
+            this.endingTimePicker.Name = "endingTimePicker";
+            this.endingTimePicker.ShowUpDown = true;
+            this.endingTimePicker.Size = new System.Drawing.Size(118, 19);
+            this.endingTimePicker.TabIndex = 17;
             // 
-            // dateTimePicker2
+            // startTimePicker
             // 
-            this.dateTimePicker2.CustomFormat = "HH:mm";
-            this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker2.Location = new System.Drawing.Point(73, 110);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.ShowUpDown = true;
-            this.dateTimePicker2.Size = new System.Drawing.Size(118, 19);
-            this.dateTimePicker2.TabIndex = 16;
+            this.startTimePicker.CustomFormat = "HH:mm";
+            this.startTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.startTimePicker.Location = new System.Drawing.Point(73, 110);
+            this.startTimePicker.Name = "startTimePicker";
+            this.startTimePicker.ShowUpDown = true;
+            this.startTimePicker.Size = new System.Drawing.Size(118, 19);
+            this.startTimePicker.TabIndex = 16;
             // 
             // label3
             // 
@@ -147,15 +149,15 @@
             this.label2.TabIndex = 14;
             this.label2.Text = "開始時刻";
             // 
-            // dateTimePicker1
+            // scheduleDatePicker
             // 
-            this.dateTimePicker1.CustomFormat = "yyyy/MM/dd";
-            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker1.Location = new System.Drawing.Point(152, 36);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.ShowUpDown = true;
-            this.dateTimePicker1.Size = new System.Drawing.Size(200, 19);
-            this.dateTimePicker1.TabIndex = 13;
+            this.scheduleDatePicker.CustomFormat = "yyyy/MM/dd";
+            this.scheduleDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.scheduleDatePicker.Location = new System.Drawing.Point(152, 36);
+            this.scheduleDatePicker.Name = "scheduleDatePicker";
+            this.scheduleDatePicker.ShowUpDown = true;
+            this.scheduleDatePicker.Size = new System.Drawing.Size(200, 19);
+            this.scheduleDatePicker.TabIndex = 13;
             // 
             // label1
             // 
@@ -174,16 +176,16 @@
             this.ClientSize = new System.Drawing.Size(504, 581);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.detailTextbox);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.subjectTextbox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.dateTimePicker3);
-            this.Controls.Add(this.dateTimePicker2);
+            this.Controls.Add(this.endingTimePicker);
+            this.Controls.Add(this.startTimePicker);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.dateTimePicker1);
+            this.Controls.Add(this.scheduleDatePicker);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "ScheduleUpdate";
@@ -198,16 +200,16 @@
 
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox detailTextbox;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox subjectTextbox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DateTimePicker dateTimePicker3;
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
+        private System.Windows.Forms.DateTimePicker endingTimePicker;
+        private System.Windows.Forms.DateTimePicker startTimePicker;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DateTimePicker scheduleDatePicker;
         private System.Windows.Forms.Label label1;
     }
 }

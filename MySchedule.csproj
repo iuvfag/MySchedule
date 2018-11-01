@@ -63,6 +63,7 @@
     <Compile Include="CreateUser.Designer.cs">
       <DependentUpon>CreateUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="ErrorMessage.cs" />
     <Compile Include="InputChecker.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>

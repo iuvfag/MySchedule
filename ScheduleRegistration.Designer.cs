@@ -190,6 +190,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "ScheduleRegistration";
             this.Text = "スケジュール登録";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScheduleRegistration_FormClosed);
+            this.Load += new System.EventHandler(this.ScheduleRegistration_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

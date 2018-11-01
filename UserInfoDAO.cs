@@ -28,8 +28,14 @@ namespace MySchedule
         //のちに使用するためインスタンス化しておく
         static NpgsqlCommand cmd = new NpgsqlCommand();
 
-        //①ログイン用メソッド(結果としてログインIDを格納したString型の変数を返す)
-        internal static String login(String userId, String password) {
+        /// <summary>
+        /// ①ログイン用メソッド(結果としてログインIDを格納したString型の変数を返す)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        internal static String login(String userId, String password)
+        {
 
             //結果を初期化
             String result = "";
@@ -60,14 +66,21 @@ namespace MySchedule
                 MessageBox.Show(ex.ToString());     //例外が発生した場合メッセージ表示
                 throw;
             }
-            finally {
+            finally
+            {
                 con.Close();        //最終的に接続は閉じておく
             }
             return result;      //resultを返す
         }
 
-        //②ユーザー登録用メソッド(結果として0か1を格納したint型の変数を返す)
-        internal static  int createUser(String userId, String password) {
+        /// <summary>
+        /// ②ユーザー登録用メソッド(結果として0か1を格納したint型の変数を返す)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        internal static int createUser(String userId, String password)
+        {
 
             //結果を初期化
             int result = 0;
@@ -93,14 +106,20 @@ namespace MySchedule
                 MessageBox.Show(ex.ToString());     //例外処理
                 throw;
             }
-            finally {
+            finally
+            {
                 con.Close();    //最終的に接続は閉じておく
             }
             return result;      //resultを返す
         }
 
-        //ログインIDが既に存在するか確認するメソッド
-        internal static bool isExsitsUser(String userId) {
+        /// <summary>
+        /// ③ログインIDが既に存在するか確認するメソッド
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        internal static bool isExsitsUser(String userId)
+        {
 
             //結果を初期化
             bool result = false;
@@ -130,7 +149,8 @@ namespace MySchedule
                 MessageBox.Show(ex.ToString());     //例外処理
                 throw;
             }
-            finally {
+            finally
+            {
                 con.Close();        //最終的に接続は閉じておく
             }
             return result;          //結果を戻す

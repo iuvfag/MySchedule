@@ -15,10 +15,16 @@ namespace MySchedule
 
         //親フォームから情報を受け取るために使用(ログインID)
         public String userId { get; set; }
+        public DateTime defaultDate { get; set; }
 
         public ScheduleRegistration()
         {
             InitializeComponent();
+        }
+
+        private void ScheduleRegistration_Load(object sender, EventArgs e)
+        {
+            scheduleDatePicker.Value = defaultDate;
         }
 
         //「戻る」ボタンが押された場合の動作
@@ -48,31 +54,33 @@ namespace MySchedule
             //入力内容が正しければ
             if (subjectCheck == "" && detailCheck == "")
             {
+                //DAOクラスのインスタンス化
+                ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
+
+                //「日付」、「開始時刻」、「終了時刻」をそれぞれ正しい形に変換して取得
+                String date = scheduleDatePicker.Value.ToString("yyyy/MM/dd");
+                String st = startTimePicker.Value.ToString("HH:mm");
+                String et = endingTimePicker.Value.ToString("HH:mm");
+
+                //「日付」と「開始時刻」、「終了時刻」をそれぞれ連結
+                st = $"{date} {st}";
+                et = $"{date} {et}";
+
+                //「開始時刻」、「終了時刻」をDateTime型に変換
+                DateTime startTime = DateTime.Parse(st);
+                DateTime endingTime = DateTime.Parse(et);
 
                 //開始時刻と終了時刻を比較しておく
-                if (!(startTimePicker.Value > endingTimePicker.Value))
+                if (startTime <= endingTime)
                 {
-                    //DAOクラスのインスタンス化
-                    ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
-
-                    //「日付」、「開始時刻」、「終了時刻」をそれぞれ正しい形に変換して取得
-                    String date = scheduleDatePicker.Value.ToString("yyyy/MM/dd");
-                    String st = startTimePicker.Value.ToString("HH:mm");
-                    String et = endingTimePicker.Value.ToString("HH:mm");
-
-                    //「日付」と「開始時刻」、「終了時刻」をそれぞれ連結
-                    st = $"{date} {st}";
-                    et = $"{date} {et}";
 
                     //スケジュールチェックのメソッドをここに追記
-                    int check = 0;
+                    int check = siDAO.isExistsSchedule(userId, st, et);
 
                     //重複しているスケジュールがあるか確認
                     if (check == 0)
                     {
-                        //「開始時刻」、「終了時刻」をDateTime型に変換
-                        DateTime startTime = DateTime.Parse(st);
-                        DateTime endingTime = DateTime.Parse(et);
+
 
                         //登録用メソッドを呼び出し、結果をresultに格納
                         int result = siDAO.registSchedule(userId, startTime, endingTime, subject, detail);
@@ -103,7 +111,8 @@ namespace MySchedule
 
             }
             //入力内容が正しくない場合の分岐
-            else {
+            else
+            {
                 if (subjectCheck != "")
                 {
                     //「件名」の入力内容が正しくない場合
@@ -116,7 +125,13 @@ namespace MySchedule
                 }
             }
 
-            
         }
+
+        private void ScheduleRegistration_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
+        }
+
+
     }
 }

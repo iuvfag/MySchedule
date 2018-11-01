@@ -21,7 +21,8 @@ namespace MySchedule
         /// <param name="minLength"></param>
         /// <param name="maxLength"></param>
         /// <returns></returns>
-        internal static String doCheck(String value, String valueType, int minLength, int maxLength) {
+        internal static String doCheck(String value, String valueType, int minLength, int maxLength)
+        {
 
             //戻すメッセージを初期化
             String result = "";
@@ -48,7 +49,8 @@ namespace MySchedule
         }
 
         //入力された2つのパスワードが等しいか判別するメソッド
-        internal static String passwordCompare(String password, String reComfirmationPassword) {
+        internal static String passwordCompare(String password, String reComfirmationPassword)
+        {
 
             //結果を初期化
             String result = "";
@@ -70,7 +72,8 @@ namespace MySchedule
         /// <param name="valueType"></param>
         /// <param name="maxLength"></param>
         /// <returns></returns>
-        internal static String doCheck2(String value, String valueType, int maxLength) {
+        internal static String doCheck2(String value, String valueType, int maxLength)
+        {
 
             //結果を初期化
             String result = "";
@@ -96,7 +99,8 @@ namespace MySchedule
         /// <param name="valueType"></param>
         /// <param name="maxLength"></param>
         /// <returns></returns>
-        internal static String doCheck3(String value, String valueType, int maxLength) {
+        internal static String doCheck3(String value, String valueType, int maxLength)
+        {
             String result = "";
 
             if (value.IsOverLength(maxLength))
@@ -104,7 +108,7 @@ namespace MySchedule
                 result = $"{valueType}は、{maxLength}文字以下で入力してください";
             }
             return result;
-            
+
         }
 
     }
@@ -122,10 +126,10 @@ namespace MySchedule
     /// </summary>
     internal static class StringExtension
     {
-        internal static bool IsOverLength(this String s ,int maxLength)
+        internal static bool IsOverLength(this String s, int maxLength)
         {
             return s.Length > maxLength;
         }
     }
-    
+
 }

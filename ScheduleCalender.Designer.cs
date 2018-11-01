@@ -71,21 +71,23 @@
             this.toDo.RowTemplate.Height = 21;
             this.toDo.Size = new System.Drawing.Size(240, 359);
             this.toDo.TabIndex = 2;
+            this.toDo.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.toDo_CellDoubleClick);
             // 
             // scheduleGrid
             // 
             this.scheduleGrid.AllowUserToAddRows = false;
             this.scheduleGrid.AllowUserToDeleteRows = false;
             this.scheduleGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.scheduleGrid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.scheduleGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.scheduleGrid.Location = new System.Drawing.Point(271, 105);
             this.scheduleGrid.Name = "scheduleGrid";
             this.scheduleGrid.ReadOnly = true;
             this.scheduleGrid.RowHeadersVisible = false;
-            this.scheduleGrid.RowTemplate.Height = 21;
+            this.scheduleGrid.RowTemplate.Height = 20;
             this.scheduleGrid.Size = new System.Drawing.Size(501, 593);
             this.scheduleGrid.TabIndex = 3;
+            this.scheduleGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.scheduleGrid_CellDoubleClick);
+            this.scheduleGrid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.scheduleGrid_CellMouseClick);
             // 
             // label2
             // 
