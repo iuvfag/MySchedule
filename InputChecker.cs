@@ -126,6 +126,7 @@ namespace MySchedule
     /// </summary>
     internal static class StringExtension
     {
+        //その文字列の長さが引数として渡した文字数より小さいかどうかを判定するメソッド
         internal static bool IsOverLength(this String s, int maxLength)
         {
             return s.Length > maxLength;

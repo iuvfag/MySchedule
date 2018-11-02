@@ -83,6 +83,7 @@ namespace MySchedule
                 //最終的に接続は閉じておく
                 con.Close();
             }
+
             //結果を戻す
             return result;
         }
@@ -226,6 +227,7 @@ namespace MySchedule
                 //最終的に接続は閉じておく
                 con.Close();
             }
+
             //結果を返す
             return result;
         }
@@ -386,6 +388,8 @@ namespace MySchedule
              * ④その終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * 
              * を検索
+             * 
+             * 今回は検索条件が多いため括弧()の位置には気を付ける
              */
 
             //接続開始
@@ -482,5 +486,50 @@ namespace MySchedule
             //結果を戻す
             return result;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scheduleId"></param>
+        /// <returns></returns>
+        internal int getScheduleInfomation(String userId, DateTime startTime, 
+            DateTime endingTime, String subject, String detail)
+        {
+            int result = 0;
+            cmd.Connection = con;
+
+            cmd.CommandText = "SELECT schedule_id FROM schedule_info " +
+                "WHERE user_id = @userId AND start_time = @startTime AND ending_time = @endingTime " +
+                "AND subject = @subject AND detail = @detail";
+
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
+            cmd.Parameters.Add(new NpgsqlParameter("@startTime", startTime));
+            cmd.Parameters.Add(new NpgsqlParameter("@endingTime", endingTime));
+            cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
+            cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
+
+            con.Open();
+
+            try
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result = reader.GetInt32(0);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
+            return result;
+        }
+
     }
 }

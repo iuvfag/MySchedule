@@ -32,13 +32,13 @@ namespace MySchedule
             ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
             //スケジュールの詳細をDBから取得し、DTOクラスに格納
-            siDTO = siDAO.getScheduleDetail(scheduleId);
+            //siDTO = siDAO.getScheduleDetail(scheduleId);
 
-            //このクラスのフィールドにDTOクラスの情報を格納する
-            subject = siDTO.subject;
-            startTime = siDTO.startTime;
-            endingTime = siDTO.endingTime;
-            detail = siDTO.detail;
+            ////このクラスのフィールドにDTOクラスの情報を格納する
+            //subject = siDTO.subject;
+            //startTime = siDTO.startTime;
+            //endingTime = siDTO.endingTime;
+            //detail = siDTO.detail;
 
             //取得した情報を、対応するTextBoxに格納していく
             subjectTextBox.Text = subject;
@@ -65,6 +65,10 @@ namespace MySchedule
             //押下するボタンによって処理を分岐させる
             if (dr == DialogResult.Yes)
             {
+                
+                RegistHistoryDAO rhDAO = new RegistHistoryDAO();
+                rhDAO.registHistory(userId, scheduleId, "スケジュール削除", startTime, endingTime, subject, detail);
+
                 //Yesの場合はDAOの削除メソッドを呼び出し、resultに結果(削除件数)を代入
                 ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
                 int result = siDAO.deleteSchedule(scheduleId);

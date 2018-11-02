@@ -89,6 +89,11 @@ namespace MySchedule
                         {
                             //メッセージを表示し、画面を閉じる
                             MessageBox.Show("スケジュールを登録しました！", "登録完了！");
+                            int scheduleId = siDAO.getScheduleInfomation(userId, startTime, endingTime, subject, detail);
+                            RegistHistoryDAO rhDAO = new RegistHistoryDAO();
+                            rhDAO.registHistory(userId, scheduleId,  "スケジュール登録", startTime, endingTime, 
+                                subject, detail);
+
                             this.Close();
                         }
                         else

@@ -106,6 +106,10 @@ namespace MySchedule
                             {
                                 //メッセージ表示
                                 MessageBox.Show("スケジュール情報を修正しました", "更新完了");
+
+                                RegistHistoryDAO rhDAO = new RegistHistoryDAO();
+                                rhDAO.registHistory(userId, scheduleId,  "スケジュール修正", startTime, endingTime, subject, detail);
+
                                 this.Close();
                             }
                             //更新できなかった場合

@@ -52,7 +52,7 @@ namespace MySchedule
             //週間スケジュールのひな型呼び出し
             setCalenderGrid();
 
-            setWeeklySchedule();
+            //setWeeklySchedule();
 
             //monthCalenderの選択件数を1件のみにしておく
             monthCalendar1.MaxSelectionCount = 1;
@@ -151,41 +151,41 @@ namespace MySchedule
 
         }
 
-        //週間スケジュールに予定を表示するためのメソッド
-        private void setWeeklySchedule()
-        {
-            //DTOクラスのインスタンス化
-            ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
-            //まず、1週間分for文を回す(1～7なのはグリッドの番地に合わせているため)
-            for (int i = 1; i <= 7; i++)
-            {
-                //その週の日付を格納したリストから日付を取り出す(インデックス0から)
-                String columnValue = weekList[i - 1].ToString("yyyy-MM-dd");
+        ////週間スケジュールに予定を表示するためのメソッド
+        //private void setWeeklySchedule()
+        //{
+        //    //DTOクラスのインスタンス化
+        //    ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
+        //    //まず、1週間分for文を回す(1～7なのはグリッドの番地に合わせているため)
+        //    for (int i = 1; i <= 7; i++)
+        //    {
+        //        //その週の日付を格納したリストから日付を取り出す(インデックス0から)
+        //        String columnValue = weekList[i - 1].ToString("yyyy-MM-dd");
 
-                //24時間分回すfor文
-                for (int n = 1; n <= 24; n++)
-                {
-                    //開始時刻と終了時刻を設定(変数nと実際セルに格納されている時間が違うことに注意！)
-                    String startTime = $"{n-1}:00";     //開始時刻
-                    String endingTime = $"{n-1}:59";    //終了時刻(24時以上になるのを防ぐ)
+        //        //24時間分回すfor文
+        //        for (int n = 1; n <= 24; n++)
+        //        {
+        //            //開始時刻と終了時刻を設定(変数nと実際セルに格納されている時間が違うことに注意！)
+        //            String startTime = $"{n - 1}:00";     //開始時刻
+        //            String endingTime = $"{n - 1}:59";    //終了時刻(24時以上になるのを防ぐ)
 
-                    //日付と時刻を結合させる
-                    startTime = $"{columnValue} {startTime}";
-                    endingTime = $"{columnValue} {endingTime}";
+        //            //日付と時刻を結合させる
+        //            startTime = $"{columnValue} {startTime}";
+        //            endingTime = $"{columnValue} {endingTime}";
 
-                    //DTOクラスに該当する時間の予定とスケジュールIDを格納
-                    siDTO = siDAO.getWeeklySchedule(userId, startTime, endingTime);
+        //            //DTOクラスに該当する時間の予定とスケジュールIDを格納
+        //            siDTO = siDAO.getWeeklySchedule(userId, startTime, endingTime);
 
-                    //セルに取得してきた予定を格納
-                    scheduleGrid.Rows[n].Cells[i].Value = siDTO.subject;
+        //            //セルに取得してきた予定を格納
+        //            scheduleGrid.Rows[n].Cells[i].Value = siDTO.subject;
 
-                    //7個右のセルにスケジュールIDを格納
-                    scheduleGrid.Rows[n].Cells[i + 7].Value = siDTO.scheduleId;
+        //            //7個右のセルにスケジュールIDを格納
+        //            scheduleGrid.Rows[n].Cells[i + 7].Value = siDTO.scheduleId;
 
-                }
+        //        }
 
-            }
-        }
+        //    }
+        //}
 
         //渡された日付が含まれる週の日曜日の日付を割り出すメソッド
         private DateTime getSundayDate(DateTime day)
@@ -201,7 +201,7 @@ namespace MySchedule
             var startDate = getSundayDate(selectedDate);        //選択された日付から、週の日曜を割り出す
 
             setCalenderDate(startDate);     //日付を週間スケジュールに格納していくメソッドの呼び出し
-            setWeeklySchedule();            //週間予定を表示する
+            //setWeeklySchedule();            //週間予定を表示する
 
             //選択された日付をもとにTODOに予定を読み込ませる
             toDo.DataSource = siDAO.getTodo(userId, selectedDate.ToShortDateString());
@@ -227,7 +227,7 @@ namespace MySchedule
             //日付をもとにTODO作成
             toDo.DataSource = siDAO.getTodo(userId, day.ToShortDateString());
             //週間スケジュールを読み込みなおす
-            setWeeklySchedule();
+            //setWeeklySchedule();
         }
 
         //このフォームが閉じられた場合の動作
@@ -284,6 +284,14 @@ namespace MySchedule
                 sd.ShowDialog(this);
                 sd.Dispose();
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            UpdateHistoryData uhd = new UpdateHistoryData();
+            uhd.userId = userId;
+            uhd.ShowDialog(this);
+            uhd.Dispose();
         }
     }
 }
