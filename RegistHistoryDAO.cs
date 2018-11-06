@@ -28,14 +28,15 @@ namespace MySchedule
         /// <summary>
         /// 更新履歴登録用のメソッド
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="scheduleId"></param>
-        /// <param name="updateType"></param>
-        /// <param name="updateStartTime"></param>
-        /// <param name="updateEndingTime"></param>
-        /// <param name="subject"></param>
-        /// <param name="detail"></param>
-        internal void registHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
+        /// <param name="userId">ログインID</param>
+        /// <param name="scheduleId">スケジュールID</param>
+        /// <param name="updateType">更新した内容</param>
+        /// <param name="updateStartTime">更新したスケジュールの開始時刻</param>
+        /// <param name="updateEndingTime">更新したスケジュールの終了時刻</param>
+        /// <param name="subject">件名</param>
+        /// <param name="detail">詳細</param>
+        /// <returns>更新件数を格納したint型の変数</returns>
+        internal int registHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
             DateTime updateEndingTime, String subject, String detail)
         {
             //結果を初期化
@@ -79,13 +80,26 @@ namespace MySchedule
                 con.Close();
             }
 
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@userId");
+            cmd.Parameters.Remove("@scheduleId");
+            cmd.Parameters.Remove("@updateType");
+            cmd.Parameters.Remove("@updateStartTime");
+            cmd.Parameters.Remove("@updateEndingTime");
+            cmd.Parameters.Remove("@subject");
+            cmd.Parameters.Remove("@detail");
+            cmd.Parameters.Remove("@key");
+
+            //結果を戻す
+            return result;
+
         }
 
         /// <summary>
         /// 更新履歴をログインIDごとに取得し、データテーブルに格納するメソッド
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <returns>DBの値を格納したデータテーブル</returns>
         internal DataTable getRegistHistoryData(String userId)
         {
             DataSet ds = new DataSet();
@@ -130,16 +144,18 @@ namespace MySchedule
         /// <summary>
         /// 前回のハッシュキー(最も新しい履歴IDのハッシュキー)を取得するためのメソッド
         /// </summary>
-        /// <returns></returns>
-        internal String getPreviousHashKey()
+        /// <returns>前回のハッシュキーを格納したString型の変数</returns>
+        internal String getPreviousHashKey(String userId)
         {
             //結果を初期化
             String result = "";
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "SELECT key FROM update_history WHERE history_id = (SELECT MAX(history_id) " +
-                "FROM update_history)";
+            cmd.CommandText = "SELECT key FROM update_history WHERE user_id = @userId AND history_id = " +
+                "(SELECT MAX(history_id) FROM update_history)";
+
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
 
             //接続開始
             con.Open();
@@ -175,19 +191,19 @@ namespace MySchedule
         /// <summary>
         /// ハッシュキー生成のためのメソッド
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="scheduleId"></param>
-        /// <param name="updateType"></param>
-        /// <param name="updateStartTime"></param>
-        /// <param name="updateEndingTime"></param>
-        /// <param name="subject"></param>
-        /// <param name="detail"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <param name="scheduleId">スケジュールID</param>
+        /// <param name="updateType">更新した内容</param>
+        /// <param name="updateStartTime">更新したスケジュールの開始時刻</param>
+        /// <param name="updateEndingTime">更新したスケジュールの終了時刻</param>
+        /// <param name="subject">件名</param>
+        /// <param name="detail">詳細</param>
+        /// <returns>作成したハッシュキーを格納したString型の変数</returns>
         internal String getHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
             DateTime updateEndingTime, String subject, String detail)
         {
             //前回のハッシュキーを取得
-            String previousHashKey = getPreviousHashKey();
+            String previousHashKey = getPreviousHashKey(userId);
 
             //引数として渡された値をベースにハッシュ関数を生成
             //まず連結

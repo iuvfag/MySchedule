@@ -188,6 +188,7 @@
             this.Controls.Add(this.scheduleDatePicker);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "ScheduleUpdate";
             this.Text = "スケジュール修正";
             this.Load += new System.EventHandler(this.ScheduleUpdate_Load);

@@ -243,13 +243,22 @@ namespace MySchedule
             Point p = toDo.PointToClient(Cursor.Position);
 
             DataGridView.HitTestInfo hti = toDo.HitTest(p.X, p.Y);
-            scheduleId = (int)toDo.Rows[hti.RowIndex].Cells[0].Value;
 
-            ScheduleDetail sd = new ScheduleDetail();
-            sd.userId = userId;           //ログインIDを渡す
-            sd.scheduleId = scheduleId;   //スケジュールIDを渡しておく
-            sd.ShowDialog(this);
-            sd.Dispose();
+            if (hti.RowIndex > 0 && hti.ColumnIndex > 0)
+            {
+                scheduleId = (int)toDo.Rows[hti.RowIndex].Cells[0].Value;
+
+                ScheduleDetail sd = new ScheduleDetail();
+                sd.userId = userId;           //ログインIDを渡す
+                sd.scheduleId = scheduleId;   //スケジュールIDを渡しておく
+                sd.ShowDialog(this);
+                sd.Dispose();
+            }
+            else
+            {
+
+            }
+
         }
 
         //週間スケジュールが1度クリックされた場合の動作(TODOや左上のカレンダーの日付も連動させる)
@@ -274,16 +283,25 @@ namespace MySchedule
             Point p = scheduleGrid.PointToClient(Cursor.Position);
 
             DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
-            var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
 
-            if (selectedCell != null && (int)selectedCell != 0)
+            if (hti.RowIndex > 0 && hti.ColumnIndex > 0)
             {
-                ScheduleDetail sd = new ScheduleDetail();
-                sd.userId = userId;           //ログインIDを渡す
-                sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
-                sd.ShowDialog(this);
-                sd.Dispose();
+                var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
+
+                if (selectedCell != null && (int)selectedCell != 0)
+                {
+                    ScheduleDetail sd = new ScheduleDetail();
+                    sd.userId = userId;           //ログインIDを渡す
+                    sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
+                    sd.ShowDialog(this);
+                    sd.Dispose();
+                }
             }
+            else
+            {
+
+            }
+            
         }
 
         private void button2_Click(object sender, EventArgs e)

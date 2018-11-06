@@ -188,6 +188,7 @@
             this.Controls.Add(this.scheduleDatePicker);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "ScheduleRegistration";
             this.Text = "スケジュール登録";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScheduleRegistration_FormClosed);

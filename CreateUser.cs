@@ -17,6 +17,11 @@ namespace MySchedule
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 画面読み込み時の処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CreateUser_Load(object sender, EventArgs e)
         {
             //親フォームは隠す
@@ -25,9 +30,14 @@ namespace MySchedule
             textBox3.PasswordChar = '*';
         }
 
-        //戻るボタンが押された場合の動作
+        /// <summary>
+        /// 戻るボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
+            //何らかの不具合が発生に強制終了するためのtry-catch文
             try
             {
                 //このフォームを閉じる
@@ -35,14 +45,20 @@ namespace MySchedule
             }
             catch (Exception ex)
             {
+                //例外処理としてErrorMessageクラスを呼び出す
                 ErrorMessage.errorMessage();
             }
 
         }
 
-        //登録ボタンが押された場合の動作
+        /// <summary>
+        /// 登録ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
+            //何らかの不具合が発生した場合に強制終了ためのtry-catch文
             try
             {
                 //入力内容の受け取り
@@ -53,7 +69,7 @@ namespace MySchedule
                 //InputCheckerのインスタンス化
 
                 //それぞれの値のチェック
-                String userIdCheck = InputChecker.doCheck(userId, "ログインID", 1, 5);
+                String userIdCheck = InputChecker.doCheck(userId, "ログインID", 1, 15);
                 String passwordCheck = InputChecker.doCheck(password, "パスワード", 5, 15);
                 String reConfirmationPasswordCheck = InputChecker.doCheck(reConfirmationPassword, "再確認用パスワード", 5, 15);
                 String passwordCompare = InputChecker.passwordCompare(password, reConfirmationPassword);
@@ -120,23 +136,32 @@ namespace MySchedule
                     }
                 }
             }
+            //何らかの不具合が発生した場合
             catch (Exception ex)
             {
+                //例外処理としてErrorMessageクラスの呼び出し
                 ErrorMessage.errorMessage();
             }
 
         }
 
-        //このフォームが閉じられた場合の動作
+        /// <summary>
+        /// このフォームが閉じられた場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CreateUser_FormClosed(object sender, FormClosedEventArgs e)
         {
+            //何らかの不具合が発生した場合強制終了するためのtry-catch文
             try
             {
                 //親フォームを表示
                 this.Owner.Show();
             }
+            //何らかの不具合が発生した場合
             catch (Exception)
             {
+                //例外処理としてErrorMessageクラスの呼び出し
                 ErrorMessage.errorMessage();
             }
 

@@ -16,11 +16,11 @@ namespace MySchedule
         /// <summary>
         /// 空欄、入力内容のチェックなどを行うメソッド。「CreateUser」用
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="valueType"></param>
-        /// <param name="minLength"></param>
-        /// <param name="maxLength"></param>
-        /// <returns></returns>
+        /// <param name="value">渡す値そのもの</param>
+        /// <param name="valueType">値の種類(メッセージに表示される)</param>
+        /// <param name="minLength">最小文字数</param>
+        /// <param name="maxLength">最大文字数</param>
+        /// <returns>メッセージを格納したString型の変数</returns>
         internal static String doCheck(String value, String valueType, int minLength, int maxLength)
         {
 
@@ -48,7 +48,12 @@ namespace MySchedule
             return result;
         }
 
-        //入力された2つのパスワードが等しいか判別するメソッド
+        /// <summary>
+        /// 入力された2つのパスワードが等しいか判別するメソッド
+        /// </summary>
+        /// <param name="password">パスワード</param>
+        /// <param name="reComfirmationPassword">再確認用パスワード</param>
+        /// <returns>メッセージを格納したString型の変数</returns>
         internal static String passwordCompare(String password, String reComfirmationPassword)
         {
 
@@ -68,10 +73,10 @@ namespace MySchedule
         /// <summary>
         /// 空欄かどうか、入力文字数以下かどうかをチェックするメソッド。「件名」に使用
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="valueType"></param>
+        /// <param name="value">値そのもの</param>
+        /// <param name="valueType">値の種類(そのメッセージに表示される)</param>
         /// <param name="maxLength"></param>
-        /// <returns></returns>
+        /// <returns>メッセージを格納したString型の変数</returns>
         internal static String doCheck2(String value, String valueType, int maxLength)
         {
 
@@ -95,10 +100,10 @@ namespace MySchedule
         /// <summary>
         /// 入力文字数以下かどうかだけを調べるメソッド。「詳細」に使用
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="valueType"></param>
-        /// <param name="maxLength"></param>
-        /// <returns></returns>
+        /// <param name="value">値そのもの</param>
+        /// <param name="valueType">値の種類(そのメッセージに表示される)</param>
+        /// <param name="maxLength"最大文字数></param>
+        /// <returns>メッセージを格納したString型の変数</returns>
         internal static String doCheck3(String value, String valueType, int maxLength)
         {
             String result = "";
@@ -126,7 +131,12 @@ namespace MySchedule
     /// </summary>
     internal static class StringExtension
     {
-        //その文字列の長さが引数として渡した文字数より小さいかどうかを判定するメソッド
+        /// <summary>
+        /// その文字列の長さが引数として渡した文字数より小さいかどうかを判定するメソッド
+        /// </summary>
+        /// <param name="s">String型の変数「s」(拡張メソッドとしてString型の変数すべてに使用可能)</param>
+        /// <param name="maxLength">最大文字数</param>
+        /// <returns>bool型の変数</returns>
         internal static bool IsOverLength(this String s, int maxLength)
         {
             return s.Length > maxLength;

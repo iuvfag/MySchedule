@@ -188,6 +188,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.subjectTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "ScheduleDetail";
             this.Text = "予定確認画面";
             this.Load += new System.EventHandler(this.ScheduleDetail_Load);

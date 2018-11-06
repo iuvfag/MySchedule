@@ -31,9 +31,9 @@ namespace MySchedule
         /// <summary>
         /// ①ログイン用メソッド(結果としてログインIDを格納したString型の変数を返す)
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <param name="password">パスワード</param>
+        /// <returns>ログインIDを格納したString型の変数</returns>
         internal static String login(String userId, String password)
         {
 
@@ -57,7 +57,7 @@ namespace MySchedule
                 {
                     while (reader.Read() == true)   //データが読み取れているなら
                     {
-                        result = reader["user_id"] as String;   //「user_id」のカラムからとってきた値をresultに格納
+                        result = reader.GetString(1);   //「user_id」のカラムからとってきた値をresultに格納
                     }
                 }
             }
@@ -70,15 +70,20 @@ namespace MySchedule
             {
                 con.Close();        //最終的に接続は閉じておく
             }
+
+            //パラメーターに格納した値をremoveする！
+            cmd.Parameters.Remove("@userId");
+            cmd.Parameters.Remove("@password");
+
             return result;      //resultを返す
         }
 
         /// <summary>
         /// ②ユーザー登録用メソッド(結果として0か1を格納したint型の変数を返す)
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <param name="password">パスワード</param>
+        /// <returns>更新件数を格納したint型の変数</returns>
         internal static int createUser(String userId, String password)
         {
 
@@ -110,14 +115,19 @@ namespace MySchedule
             {
                 con.Close();    //最終的に接続は閉じておく
             }
+
+            //パラメーターに格納した値をremoveする！
+            cmd.Parameters.Remove("@userId");
+            cmd.Parameters.Remove("@password");
+
             return result;      //resultを返す
         }
 
         /// <summary>
         /// ③ログインIDが既に存在するか確認するメソッド
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <returns>bool型の変数</returns>
         internal static bool isExsitsUser(String userId)
         {
 
@@ -153,6 +163,10 @@ namespace MySchedule
             {
                 con.Close();        //最終的に接続は閉じておく
             }
+
+            //パラメータの中身をremoveしておく！
+            cmd.Parameters.Remove("@userId");
+
             return result;          //結果を戻す
         }
     }

@@ -144,6 +144,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "ScheduleCalender";
             this.Text = "スケジュール";
             this.Activated += new System.EventHandler(this.ScheduleCalender_Activated);

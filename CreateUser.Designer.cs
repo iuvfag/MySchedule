@@ -111,7 +111,7 @@
             this.button1.Location = new System.Drawing.Point(82, 214);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 30);
-            this.button1.TabIndex = 7;
+            this.button1.TabIndex = 8;
             this.button1.Text = "戻る";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -121,7 +121,7 @@
             this.button2.Location = new System.Drawing.Point(273, 214);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(100, 30);
-            this.button2.TabIndex = 8;
+            this.button2.TabIndex = 9;
             this.button2.Text = "登録";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -131,7 +131,7 @@
             this.textBox3.Location = new System.Drawing.Point(153, 157);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(260, 19);
-            this.textBox3.TabIndex = 11;
+            this.textBox3.TabIndex = 7;
             // 
             // label6
             // 
@@ -170,6 +170,8 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "CreateUser";
             this.Text = "新規ユーザー登録";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CreateUser_FormClosed);

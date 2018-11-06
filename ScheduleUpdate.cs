@@ -12,7 +12,7 @@ namespace MySchedule
 {
     public partial class ScheduleUpdate : Form
     {
-
+        //親フォームとの情報のやり取りに使用
         public String userId { get; set; }
         public int scheduleId { get; set; }
         public String subject { get; set; }
@@ -27,6 +27,11 @@ namespace MySchedule
             InitializeComponent();
         }
 
+        /// <summary>
+        /// このフォームの呼び出し時の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScheduleUpdate_Load(object sender, EventArgs e)
         {
             //詳細画面から受け取った値をそのまま表示していく
@@ -42,24 +47,35 @@ namespace MySchedule
             detailTextbox.Text = detail;
         }
 
-        //「戻る」ボタンが押された場合の動作
+        /// <summary>
+        /// 「戻る」ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
+            //何らかの不具合が発生した場合強制終了するためのtry-catch文
             try
             {
                 //このフォームを閉じる
                 this.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                //例外処理としてErrorMessageクラスの呼び出し
                 ErrorMessage.errorMessage();
             }
 
         }
 
-        //「更新」ボタンが押された場合の動作
+        /// <summary>
+        /// 「更新」ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
+            //何らかの不具合が発生した場合強制終了させるtry-catch文
             try
             {
                 //「件名」、「詳細」を入力欄から取得してフィールドに格納
@@ -148,8 +164,9 @@ namespace MySchedule
                     MessageBox.Show(detailCheck, "入力内容を確認してください");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                //例外処理としてErrorMessageクラスの呼び出し
                 ErrorMessage.errorMessage();
             }
 

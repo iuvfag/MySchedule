@@ -10,8 +10,11 @@ using System.Windows.Forms;
 
 namespace MySchedule
 {
+
     public partial class Login : Form
     {
+
+        public String userId { get; set; }
 
         public Login()
         {
@@ -24,14 +27,21 @@ namespace MySchedule
             textBox1.Text = "";
             textBox2.Text = "";
             textBox2.PasswordChar = '*';
+            this.userId = "";
+            
         }
-
+        /// <summary>
+        /// 「ログイン」ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
+            //何らかの不具合が発生した場合に強制終了するためのtry-catch文
             try
             {
                 //テキストボックスに入力された値を変数に格納
-                String userId = textBox1.Text;
+                userId = textBox1.Text;
                 String password = textBox2.Text;
 
                 //入力内容をInputCheckerに渡し、入力内容をチェック
@@ -57,6 +67,7 @@ namespace MySchedule
                         textBox1.Text = "";
                         textBox2.Text = "";
                         sc.Dispose();
+                        this.userId = "";
                     }
                     else
                     {
@@ -79,8 +90,10 @@ namespace MySchedule
                     }
                 }
             }
+            //何らかの不具合が発生した場合
             catch (Exception ex)
             {
+                //例外処理としてErrorMessageクラスを呼び出す
                 ErrorMessage.errorMessage();
             }
 
@@ -88,9 +101,12 @@ namespace MySchedule
 
         }
 
-        //新規登録ボタンが押された場合の動作
+        /// <summary>
+        /// 新規登録ボタンが押された場合の動作
+        /// </summary>
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            ///何らかの不具合が発生た場合に強制終了するためのtry-catch文
             try
             {
                 //新規ユーザー登録フォームを開く
@@ -102,8 +118,10 @@ namespace MySchedule
                 textBox1.Text = "";
                 textBox2.Text = "";
             }
+            //何らかの不具合が発生した場合
             catch (Exception ex)
             {
+                //例外処理としてErrorMessageクラスを呼び出す
                 ErrorMessage.errorMessage();
             }
             

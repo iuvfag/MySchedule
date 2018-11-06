@@ -41,12 +41,12 @@ namespace MySchedule
         /// <summary>
         /// ①スケジュール登録用メソッド
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="startTime"></param>
-        /// <param name="endingTime"></param>
-        /// <param name="subject"></param>
-        /// <param name="detail"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <param name="startTime">スケジュールの開始時刻</param>
+        /// <param name="endingTime">スケジュールの終了時刻</param>
+        /// <param name="subject">件名</param>
+        /// <param name="detail">詳細</param>
+        /// <returns>更新件数を格納したint型の変数</returns>
         internal int registSchedule(String userId, DateTime startTime, DateTime endingTime, String subject, String detail)
         {
 
@@ -84,6 +84,13 @@ namespace MySchedule
                 con.Close();
             }
 
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@userId");
+            cmd.Parameters.Remove("@startTime");
+            cmd.Parameters.Remove("@endingTime");
+            cmd.Parameters.Remove("@subject");
+            cmd.Parameters.Remove("@detail");
+
             //結果を戻す
             return result;
         }
@@ -91,9 +98,9 @@ namespace MySchedule
         /// <summary>
         /// ②TODOデータ習得のためのメソッド(データを格納したデータテーブルを返す)
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="today"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <param name="today">日付(検索したい日付)</param>
+        /// <returns>DBの値を格納したデータテーブル</returns>
         internal DataTable getTodo(String userId, String today)
         {
 
@@ -143,8 +150,8 @@ namespace MySchedule
         /// <summary>
         /// ③スケジュールの詳細をDBから取得しDTOに格納して、そのDTOを戻り値として渡すメソッド
         /// </summary>
-        /// <param name="scheduleId"></param>
-        /// <returns></returns>
+        /// <param name="scheduleId">スケジュールID</param>
+        /// <returns>値を格納したScheduleInfoDTOクラスのインスタンス</returns>
         internal ScheduleInfoDTO getScheduleDetail(int scheduleId)
         {
 
@@ -187,6 +194,10 @@ namespace MySchedule
                 //最終的に接続は閉じておく
                 con.Close();
             }
+
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@scheduleId");
+
             //値を格納したDTOを返す
             return siDTO;
         }
@@ -228,6 +239,9 @@ namespace MySchedule
                 con.Close();
             }
 
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("scheduleId");
+
             //結果を返す
             return result;
         }
@@ -235,12 +249,12 @@ namespace MySchedule
         /// <summary>
         /// ⑤スケジュール修正用のメソッド
         /// </summary>
-        /// <param name="scheduleId"></param>
-        /// <param name="startTime"></param>
-        /// <param name="endingTime"></param>
-        /// <param name="subject"></param>
-        /// <param name="detail"></param>
-        /// <returns></returns>
+        /// <param name="scheduleId">スケジュールの開始時刻</param>
+        /// <param name="startTime">スケジュールの開始時刻</param>
+        /// <param name="endingTime">スケジュールの終了時刻</param>
+        /// <param name="subject">件名</param>
+        /// <param name="detail">詳細</param>
+        /// <returns>更新件数を格納したint型の変数</returns>
         internal int updeteSchedule(int scheduleId, DateTime startTime, DateTime endingTime, String subject,
             String detail)
         {
@@ -278,6 +292,14 @@ namespace MySchedule
                 //最終的に接続は閉じておく
                 con.Close();
             }
+
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@startTime");
+            cmd.Parameters.Remove("@endingTime");
+            cmd.Parameters.Remove("@subject");
+            cmd.Parameters.Remove("@detail");
+            cmd.Parameters.Remove("@scheduleId");
+
             //結果を戻す
             return result;
         }
@@ -285,10 +307,10 @@ namespace MySchedule
         /// <summary>
         /// ⑥週間スケジュールに表示する情報、スケジュールIDを取得するメソッド
         /// </summary>
-        /// <param name="userid"></param>
-        /// <param name="startTime">SQL文の結合の都合で今回はString型</param>
-        /// <param name="endingTime">SQL文の接合の都合で今回はString型</param>
-        /// <returns></returns>
+        /// <param name="userid">ログインID</param>
+        /// <param name="startTime">スケジュール委開始時間(SQL文の結合の都合で今回はString型)</param>
+        /// <param name="endingTime">スケジュールの終了時刻(SQL文の接合の都合で今回はString型)</param>
+        /// <returns>値を格納したScheduleInfoDTOクラスのインスタンス</returns>
         internal ScheduleInfoDTO getWeeklySchedule(String userid, String startTime, String endingTime)
         {
             //結果を格納するDTOをインスタンス化しておく
@@ -348,6 +370,10 @@ namespace MySchedule
                 //最終的に接続は閉じておく
                 con.Close();
             }
+
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@userId");
+
             //値を格納したDTOを返す
             return siDTO;
 
@@ -356,10 +382,10 @@ namespace MySchedule
         /// <summary>
         /// ⑦既にその時間に予定が登録されているかチェックするメソッド(スケジュール修正用)
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="startTime"></param>
-        /// <param name="endingTime"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <param name="startTime">スケジュールの開始時刻</param>
+        /// <param name="endingTime">スケジュールの終了時刻</param>
+        /// <returns>int型の変数</returns>
         internal int isExistsSchedule(String userId, int scheduleId, String startTime, String endingTime)
         {
             //結果を初期化
@@ -419,6 +445,11 @@ namespace MySchedule
                 //最終的に接続は閉じておく
                 con.Close();
             }
+
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@scheduleId");
+            cmd.Parameters.Remove("@userId");
+
             //結果を戻す
             return result;
         }
@@ -426,10 +457,10 @@ namespace MySchedule
         /// <summary>
         /// ⑧既にその時間に予定が登録されているかチェックするメソッド(新規登録用)
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="startTime"></param>
-        /// <param name="endingTime"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <param name="startTime">スケジュールの開始時刻</param>
+        /// <param name="endingTime"スケジュールの終了時刻></param>
+        /// <returns>int型の変数</returns>
         internal int isExistsSchedule(String userId, String startTime, String endingTime)
         {
             //結果を初期化
@@ -438,10 +469,10 @@ namespace MySchedule
 
             //SQL文の作成。今回は複雑なので検索条件は後述
             cmd.CommandText = "SELECT * FROM schedule_info WHERE user_id = @userId " +
-                "AND (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') " +    //①
+                "AND ((start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') " +    //①
                 "OR (start_time >= '" + startTime + "' AND ending_time <= '" + endingTime + "') " +     //②
                 "OR (start_time <= '" + startTime + "' AND ending_time >= '" + startTime + "' ) " +     //③
-                "OR (start_time <= '" + endingTime + "' AND ending_time >= '" + endingTime + "')";      //④
+                "OR (start_time <= '" + endingTime + "' AND ending_time >= '" + endingTime + "'))";      //④
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
 
@@ -483,51 +514,79 @@ namespace MySchedule
                 //最終的に接続は閉じておく
                 con.Close();
             }
+
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@userId");
+
             //結果を戻す
             return result;
         }
+
         /// <summary>
-        /// 
+        /// ログインIDなどの情報をもとにスケジュールIDを求めるメソッド
         /// </summary>
-        /// <param name="scheduleId"></param>
-        /// <returns></returns>
+        /// <param name="userId">ログインID</param>
+        /// <param name="startTime">スケジュールの開始時刻</param>
+        /// <param name="endingTime">スケジュールの終了時刻</param>
+        /// <param name="subject">件名</param>
+        /// <param name="detail">詳細</param>
+        /// <returns>スケジュールIDを格納したint型変数</returns>
         internal int getScheduleInfomation(String userId, DateTime startTime, 
             DateTime endingTime, String subject, String detail)
         {
+            //結果を初期化
             int result = 0;
             cmd.Connection = con;
 
+            //SQL文の作成
             cmd.CommandText = "SELECT schedule_id FROM schedule_info " +
                 "WHERE user_id = @userId AND start_time = @startTime AND ending_time = @endingTime " +
                 "AND subject = @subject AND detail = @detail";
 
+            //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
             cmd.Parameters.Add(new NpgsqlParameter("@startTime", startTime));
             cmd.Parameters.Add(new NpgsqlParameter("@endingTime", endingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
 
+            //接続開始
             con.Open();
 
             try
             {
+                //リーダーの呼び出し
                 using (var reader = cmd.ExecuteReader())
                 {
+                    //リーダーが読み取っている間は
+
                     while (reader.Read())
                     {
+                        //結果に取得してきたスケジュールIDを格納
                         result = reader.GetInt32(0);
                     }
                 }
             }
             catch (Exception ex)
             {
+                //例外処理
                 MessageBox.Show(ex.ToString());
                 throw;
             }
             finally
             {
+                //最終的に接続は閉じておく
                 con.Close();
             }
+
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@userId");
+            cmd.Parameters.Remove("@startTime");
+            cmd.Parameters.Remove("@endingTime");
+            cmd.Parameters.Remove("@subject");
+            cmd.Parameters.Remove("@detail");
+
+            //結果を戻す
             return result;
         }
 
