@@ -15,6 +15,7 @@ namespace MySchedule
     /// ①ログイン用メソッド
     /// ②ユーザー登録用メソッド
     /// ③ログインIDが既に存在するか確認するメソッド
+    /// ④パスワード再設定用のメソッド
     /// </summary>
     static class UserInfoDAO
     {
@@ -124,11 +125,11 @@ namespace MySchedule
         }
 
         /// <summary>
-        /// ③ログインIDが既に存在するか確認するメソッド
+        /// ③ログインIDが既に存在するか確認するメソッド(ログインIDのみで判定)
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <returns>bool型の変数</returns>
-        internal static bool isExsitsUser(String userId)
+        internal static bool isExistsUser(String userId)
         {
 
             //結果を初期化
@@ -169,5 +170,108 @@ namespace MySchedule
 
             return result;          //結果を戻す
         }
+
+        /// <summary>
+        /// ④ログインIDが既に存在するか確認するメソッド(ログインIDとパスワードで判定)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        internal static bool isExistsUser(String userId, String password)
+        {
+            //結果を初期化
+            bool result = false;
+            cmd.Connection = con;
+
+            //SQL文の作成
+            cmd.CommandText = "SELECT * FROM user_info WHERE user_id = @userId AND password = @password";
+
+            //SQL文の@部分に値を格納
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
+            cmd.Parameters.Add(new NpgsqlParameter("@password", password));
+
+            //接続開始
+            con.Open();
+
+            try
+            {
+                using (var reader = cmd.ExecuteReader())    //リーダーの呼び出し
+                {
+                    while (reader.Read())       //リーダーが読み取れたら
+                    {
+                        result = true;      //結果はtrue
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //例外処理
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                //最終的に接続は閉じておく
+                con.Close();
+            }
+            //パラメーターの値はremoveしておく！
+            cmd.Parameters.Remove("@userId");
+            cmd.Parameters.Remove("@password");
+
+            //結果を戻す
+            return result;
+        }
+
+
+        /// <summary>
+        /// ⑤パスワード再設定用のメソッド
+        /// </summary>
+        /// <param name="userId">ログインID</param>
+        /// <param name="password">パスワード</param>
+        /// <param name="newPassword">新しいパスワード</param>
+        /// <returns></returns>
+        internal static int resetPassword(String userId, String password, String newPassword)
+        {
+            //結果の初期化
+            int result = 0;
+            cmd.Connection = con;
+
+            //SQL文の作成
+            cmd.CommandText = "UPDATE user_info SET password = @newPassword WHERE user_id = @userId AND " +
+                "password = @password";
+
+            //SQL文の@部分に値を格納
+            cmd.Parameters.Add(new NpgsqlParameter("@userid", userId));
+            cmd.Parameters.Add(new NpgsqlParameter("@password", password));
+            cmd.Parameters.Add(new NpgsqlParameter("@newPassword", newPassword));
+
+            con.Open();
+
+            try
+            {
+                //結果をresultに格納
+                result = cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                //例外処理
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                //最終的に接続は閉じておく
+                con.Close();
+            }
+
+            //パラメーターの値はremoveしておく！
+            cmd.Parameters.Remove("@userId");
+            cmd.Parameters.Remove("@password");
+            cmd.Parameters.Remove("@newPassword");
+
+            //結果を戻す
+            return result;
+        }
+
     }
 }

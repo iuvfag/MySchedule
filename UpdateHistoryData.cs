@@ -101,7 +101,11 @@ namespace MySchedule
             //}
         }
 
-        //「」ボタンが押された場合の動作
+        /// <summary>
+        /// 「」ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
@@ -130,17 +134,17 @@ namespace MySchedule
                 for (int i = 0; i < dataGridView1.RowCount; i++)
                 {
                     //DBのそれぞれの値をフィールドに格納していく
-                    updateType = dataGridView1.Rows[i].Cells[1].Value.ToString();
-                    scheduleId = (int)dataGridView1.Rows[i].Cells[2].Value;
+                    updateType = dataGridView1.Rows[i].Cells[1].Value.ToString();   //更新内容
+                    scheduleId = (int)dataGridView1.Rows[i].Cells[2].Value;         //スケジュールID
 
-                    ust = dataGridView1.Rows[i].Cells[3].Value.ToString();
-                    uet = dataGridView1.Rows[i].Cells[4].Value.ToString();
+                    ust = dataGridView1.Rows[i].Cells[3].Value.ToString();          //更新したスケジュールの開始時刻(String型)
+                    uet = dataGridView1.Rows[i].Cells[4].Value.ToString();          //更新したスケジュールの終了時刻(String型)
 
-                    DateTime updateStartTime = DateTime.Parse(ust);
-                    DateTime updateEndingTime = DateTime.Parse(uet);
-                    subject = dataGridView1.Rows[i].Cells[5].Value.ToString();
-                    detail = dataGridView1.Rows[i].Cells[6].Value.ToString();
-                    key = dataGridView1.Rows[i].Cells[7].Value.ToString();
+                    DateTime updateStartTime = DateTime.Parse(ust);                 //更新したスケジュールの開始時刻(DateTime型)
+                    DateTime updateEndingTime = DateTime.Parse(uet);                //更新したスケジュールの終了時刻(DateTime型)
+                    subject = dataGridView1.Rows[i].Cells[5].Value.ToString();      //件名
+                    detail = dataGridView1.Rows[i].Cells[6].Value.ToString();       //詳細
+                    key = dataGridView1.Rows[i].Cells[7].Value.ToString();          //ハッシュキー
 
                     //そのユーザーで1番最初に登録された予定は1番目に来ている
                     if (i == 0)
@@ -166,6 +170,7 @@ namespace MySchedule
                     
                 }
 
+                //処理の終了をメッセージで表示
                 MessageBox.Show("履歴の照合が完了しました");
 
             }
@@ -178,7 +183,7 @@ namespace MySchedule
 
         /// <summary>
         /// ハッシュキー作成用のメソッド
-        /// RegistHistoryDAOのものとレシピは同じ
+        /// RegistHistoryDAOのものと同じ
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <param name="scheduleId">スケジュールID</param>
@@ -209,7 +214,7 @@ namespace MySchedule
                 hash = sha256.ComputeHash(bytes);
             }
             //結果を戻す
-            result = String.Join("", hash.Select(x => x.ToString()));
+            result = String.Join("", hash.Select(x => x.ToString("X")));
 
             return result;
         }

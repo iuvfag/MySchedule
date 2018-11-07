@@ -52,6 +52,8 @@ namespace MySchedule
                 if (string.IsNullOrWhiteSpace(userIdCheck) && String.IsNullOrWhiteSpace(passwordCheck))
                 {
 
+                    password = InputChecker.createHashKey(password);
+
                     //ログインIDとパスワードをログイン用メソッドに渡し、結果をresultに格納
                     String result = UserInfoDAO.login(userId, password);
 

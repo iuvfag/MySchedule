@@ -32,11 +32,6 @@ namespace MySchedule
                                                     "Database=myschedule");
 
         NpgsqlCommand cmd = new NpgsqlCommand();
-        NpgsqlDataReader dr;
-
-        //データベースの値をデータグリッドに格納するために、データセット・データテーブルもインスタンス化しておく
-        DataSet ds = new DataSet();
-        DataTable dt = new DataTable();
 
         /// <summary>
         /// ①スケジュール登録用メソッド
@@ -103,7 +98,9 @@ namespace MySchedule
         /// <returns>DBの値を格納したデータテーブル</returns>
         internal DataTable getTodo(String userId, String today)
         {
-
+            //データベースの値をデータグリッドに格納するために、データセット・データテーブルもインスタンス化しておく
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
             cmd.Connection = con;
 
             //SQL文の作成。今回は直接接続して作成
@@ -311,7 +308,7 @@ namespace MySchedule
         /// <param name="startTime">スケジュール委開始時間(SQL文の結合の都合で今回はString型)</param>
         /// <param name="endingTime">スケジュールの終了時刻(SQL文の接合の都合で今回はString型)</param>
         /// <returns>値を格納したScheduleInfoDTOクラスのインスタンス</returns>
-        internal ScheduleInfoDTO getWeeklySchedule(String userid, String startTime, String endingTime)
+        internal ScheduleInfoDTO getWeeklySchedule(String userId, String startTime, String endingTime)
         {
             //結果を格納するDTOをインスタンス化しておく
             ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
@@ -319,10 +316,10 @@ namespace MySchedule
 
             //SQL文の作成。今回は複雑なので検索条件は後述
             cmd.CommandText = "SELECT subject, schedule_id FROM schedule_info WHERE user_id = @userId " +
-                "AND (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') " +        //①
+                "AND ( (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') " +        //①
                 "OR (start_time >= '" + startTime + "' AND ending_time <= '" + endingTime + "') " +         //②
                 "OR (start_time <= '" + startTime + "' AND ending_time >= '" + startTime + "') " +          //③
-                "OR (start_time <= '" + endingTime + "' AND ending_time >= '" + endingTime + "')";          //④
+                "OR (start_time <= '" + endingTime + "' AND ending_time >= '" + endingTime + "') )";          //④
 
             /* 検索条件
              * 
@@ -340,7 +337,7 @@ namespace MySchedule
              */
 
             //SQLの@部分に値を格納
-            cmd.Parameters.Add(new NpgsqlParameter("@userId", userid));
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
 
             //接続開始
             con.Open();
@@ -531,7 +528,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>スケジュールIDを格納したint型変数</returns>
-        internal int getScheduleInfomation(String userId, DateTime startTime, 
+        internal int getScheduleInfomation(String userId, DateTime startTime,
             DateTime endingTime, String subject, String detail)
         {
             //結果を初期化
@@ -589,6 +586,45 @@ namespace MySchedule
             //結果を戻す
             return result;
         }
+
+
+        internal DataTable getAllSchedule(String userId)
+        {
+            //データベースの値をデータグリッドに格納するために、データセット・データテーブルもインスタンス化しておく
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
+
+            cmd.Connection = con;
+
+            String sql = "SELECT schedule_id, CAST(start_time as date)as 日付, CAST(start_time as time) as 開始時刻, " +
+                "CAST(ending_time as time) as 終了時刻, subject as 件名, detail as 詳細 " +
+                "FROM schedule_info WHERE user_id = '" + userId + "' ORDER BY CAST(start_time as date) ASC";
+
+            con.Open();
+
+            try
+            {
+                NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
+
+                ds.Reset();
+
+                da.Fill(ds);
+
+                dt = ds.Tables[0];
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
+
+            return dt;
+        }
+
 
     }
 }

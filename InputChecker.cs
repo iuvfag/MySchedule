@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace MySchedule
 {
@@ -54,7 +55,8 @@ namespace MySchedule
         /// <param name="password">パスワード</param>
         /// <param name="reComfirmationPassword">再確認用パスワード</param>
         /// <returns>メッセージを格納したString型の変数</returns>
-        internal static String passwordCompare(String password, String reComfirmationPassword)
+        internal static String passwordCompare(String password, String reComfirmationPassword,
+            String passwordType1, String passwordType2)
         {
 
             //結果を初期化
@@ -64,7 +66,7 @@ namespace MySchedule
             if (password != reComfirmationPassword)
             {
                 //等しくなければメッセージを格納
-                result = "パスワードと再確認用パスワードが一致しません";
+                result = $"{passwordType1}と{passwordType2}が一致しません";
             }
             //結果を返す
             return result;
@@ -116,7 +118,39 @@ namespace MySchedule
 
         }
 
-    }
+        /// <summary>
+        /// 渡された値をもとにSHA256のハッシュ関数を作るメソッド
+        /// </summary>
+        /// <param name="value">渡す値</param>
+        /// <returns></returns>
+        internal static String createHashKey(String value)
+        {
+            byte[] hash = null;
+            var bytes = Encoding.Unicode.GetBytes(value);
+
+            using (var sha256 = new SHA256CryptoServiceProvider())
+            {
+                hash = sha256.ComputeHash(bytes);
+            }
+            String result = String.Join("", hash.Select(x => x.ToString("X")));
+            return result;
+        }
+
+        internal static String createHashKey(String value1, String value2)
+        {
+            byte[] hash = null;
+            var bytes = Encoding.Unicode.GetBytes($"{value1}{value2}");
+
+            using (var sha256 = new SHA256CryptoServiceProvider())
+            {
+                hash = sha256.ComputeHash(bytes);
+            }
+            String result = String.Join("", hash.Select(x => x.ToString("X")));
+            return result;
+        }
+
+
+        }
 
     /// <summary>
     /// 拡張メソッド
@@ -141,6 +175,7 @@ namespace MySchedule
         {
             return s.Length > maxLength;
         }
-    }
 
+
+    }
 }

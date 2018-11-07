@@ -16,6 +16,9 @@ namespace MySchedule
         //親フォームから情報を受け取るために使用(ログインID)
         public String userId { get; set; }
         public DateTime defaultDate { get; set; }
+        public bool flg { get; set; }
+        public DateTime start{ get; set; }
+        public DateTime ending { get; set; }
 
         public ScheduleRegistration()
         {
@@ -30,6 +33,14 @@ namespace MySchedule
         private void ScheduleRegistration_Load(object sender, EventArgs e)
         {
             scheduleDatePicker.Value = defaultDate;
+
+            //flgがtrue(週間スケジュールから飛んできた場合)
+            if (flg)
+            {
+                //データグリッドに選択された開始時刻と終了時刻をこちらの入力欄に反映させる
+                startTimePicker.Value = start;
+                endingTimePicker.Value = ending;
+            }
         }
 
         /// <summary>
@@ -94,13 +105,15 @@ namespace MySchedule
                         //登録件数が1件以上あれば
                         if (result > 0)
                         {
-                            //メッセージを表示し、画面を閉じる
-                            MessageBox.Show("スケジュールを登録しました！", "登録完了！");
+                            //スケジュールIDを取得して
                             int scheduleId = siDAO.getScheduleInfomation(userId, startTime, endingTime, subject, detail);
+
+                            //履歴登録メソッドを使用して変更履歴登録
                             RegistHistoryDAO rhDAO = new RegistHistoryDAO();
                             rhDAO.registHistory(userId, scheduleId, "スケジュール登録", startTime, endingTime,
                                 subject, detail);
-
+                            //メッセージを表示し、画面を閉じる
+                            MessageBox.Show("スケジュールを登録しました！", "登録完了！");
                             this.Close();
                         }
                         else

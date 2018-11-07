@@ -102,8 +102,8 @@ namespace MySchedule
         /// <returns>DBの値を格納したデータテーブル</returns>
         internal DataTable getRegistHistoryData(String userId)
         {
-            DataSet ds = new DataSet();
-            DataTable dt = new DataTable();
+            DataSet ds = new DataSet();         //データセットのインスタンス化
+            DataTable dt = new DataTable();     //データテーブルのインスタンス化
             cmd.Connection = con;
 
             //SQL文の作成
@@ -222,7 +222,7 @@ namespace MySchedule
                 hash = sha256.ComputeHash(bytes);
             }
             //結果を戻す
-            String result = String.Join("", hash.Select(x => x.ToString()));
+            String result = String.Join("", hash.Select(x => x.ToString("X")));
             return result;
         }
 

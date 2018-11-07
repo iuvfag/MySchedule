@@ -71,8 +71,10 @@ namespace MySchedule
                 //それぞれの値のチェック
                 String userIdCheck = InputChecker.doCheck(userId, "ログインID", 1, 15);
                 String passwordCheck = InputChecker.doCheck(password, "パスワード", 5, 15);
-                String reConfirmationPasswordCheck = InputChecker.doCheck(reConfirmationPassword, "再確認用パスワード", 5, 15);
-                String passwordCompare = InputChecker.passwordCompare(password, reConfirmationPassword);
+                String reConfirmationPasswordCheck = InputChecker.doCheck(reConfirmationPassword, 
+                    "再確認用パスワード", 5, 15);
+                String passwordCompare = InputChecker.passwordCompare(password, reConfirmationPassword, 
+                    "パスワード", "パスワード(再確認用)");
 
                 //値のチェックの結果何も戻り値がなければ次の処理へ
                 if (userIdCheck == "" && passwordCheck == "" && reConfirmationPasswordCheck == "")
@@ -81,8 +83,10 @@ namespace MySchedule
                     if (passwordCompare == "")
                     {
 
+                        password = InputChecker.createHashKey(password);
+
                         //ログインIDが既に存在するか確認し、問題ないなら次の処理へ
-                        if (!(UserInfoDAO.isExsitsUser(userId)))
+                        if (!(UserInfoDAO.isExistsUser(userId)))
                         {
                             //ユーザー情報を登録し、登録件数を戻り値として受け取る
                             int result = UserInfoDAO.createUser(userId, password);

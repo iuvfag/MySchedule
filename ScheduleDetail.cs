@@ -40,13 +40,13 @@ namespace MySchedule
                 ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
                 //スケジュールの詳細をDBから取得し、DTOクラスに格納
-                //siDTO = siDAO.getScheduleDetail(scheduleId);
+                siDTO = siDAO.getScheduleDetail(scheduleId);
 
                 ////このクラスのフィールドにDTOクラスの情報を格納する
-                //subject = siDTO.subject;
-                //startTime = siDTO.startTime;
-                //endingTime = siDTO.endingTime;
-                //detail = siDTO.detail;
+                subject = siDTO.subject;
+                startTime = siDTO.startTime;
+                endingTime = siDTO.endingTime;
+                detail = siDTO.detail;
 
                 //取得した情報を、対応するTextBoxに格納していく
                 subjectTextBox.Text = subject;

@@ -36,7 +36,11 @@ namespace MySchedule
             InitializeComponent();
         }
 
-        //このフォームが読み込まれた時点での動作
+        /// <summary>
+        /// このフォームが読み込まれた時点での動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScheduleCalender_Load(object sender, EventArgs e)
         {
             //ログインIDに表示
@@ -57,12 +61,12 @@ namespace MySchedule
             //monthCalenderの選択件数を1件のみにしておく
             monthCalendar1.MaxSelectionCount = 1;
 
-
-
         }
 
 
-        //TODOの呼び出しに使用するメソッド
+        /// <summary>
+        /// TODOの呼び出しに使用するメソッド
+        /// </summary>
         private void setToDo()
         {
 
@@ -78,7 +82,9 @@ namespace MySchedule
 
         }
 
-        //週間スケジュールのひな型作成用メソッド
+        /// <summary>
+        /// 週間スケジュールのひな型作成用メソッド
+        /// </summary>
         private void setCalenderGrid()
         {
             //行数の指定(表示用の7行+スケジュールIDを入れておく7行+ヘッダーの1行)
@@ -136,7 +142,10 @@ namespace MySchedule
 
         }
 
-        //渡された日付から1週間の日付をセルとリストに格納してくれるメソッド
+        /// <summary>
+        /// 渡された日付から1週間の日付をセルとリストに格納してくれるメソッド
+        /// </summary>
+        /// <param name="day"></param>
         private void setCalenderDate(DateTime day)
         {
             //週間リストは初期化しておく
@@ -151,7 +160,7 @@ namespace MySchedule
 
         }
 
-        ////週間スケジュールに予定を表示するためのメソッド
+        //週間スケジュールに予定を表示するためのメソッド
         //private void setWeeklySchedule()
         //{
         //    //DTOクラスのインスタンス化
@@ -187,14 +196,22 @@ namespace MySchedule
         //    }
         //}
 
-        //渡された日付が含まれる週の日曜日の日付を割り出すメソッド
+        /// <summary>
+        /// 渡された日付が含まれる週の日曜日の日付を割り出すメソッド
+        /// </summary>
+        /// <param name="day"></param>
+        /// <returns></returns>
         private DateTime getSundayDate(DateTime day)
         {
             //週における日曜日の日付(0)から、渡された日が週の何日目かを引く
             return day.AddDays(DayOfWeek.Sunday - day.DayOfWeek);
         }
 
-        //MonthCalenderの日付が変更された場合の動作
+        /// <summary>
+        /// MonthCalenderの日付が変更された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
         {
             var selectedDate = monthCalendar1.SelectionStart;   //選択された日付の取得
@@ -208,7 +225,11 @@ namespace MySchedule
             label2.Text = $"{selectedDate}";
         }
 
-        //予定登録ボタンが押された場合の動作
+        /// <summary>
+        /// 予定登録ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             //予定登録画面を開く
@@ -219,7 +240,11 @@ namespace MySchedule
             sr.Dispose();
         }
 
-        //このページが再度アクティブになった場合の動作(子フォームが閉じられた場合)
+        /// <summary>
+        /// このページが再度アクティブになった場合の動作(子フォームが閉じられた場合)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScheduleCalender_Activated(object sender, EventArgs e)
         {
             //monthCalenderの日付を取得(前回選択された日付のまま)
@@ -230,44 +255,58 @@ namespace MySchedule
             //setWeeklySchedule();
         }
 
-        //このフォームが閉じられた場合の動作
+        /// <summary>
+        /// このフォームが閉じられた場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScheduleCalender_FormClosed(object sender, FormClosedEventArgs e)
         {
 
         }
 
-        //TODOがダブルクリックされた場合の動作
+        /// <summary>
+        /// TODOがダブルクリックされた場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toDo_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            //クリックされたセルの最初の行(見えないがスケジュールIDが格納されている)の値を取得
+            //ダブルクリックされたセルの場所を取得
             Point p = toDo.PointToClient(Cursor.Position);
-
             DataGridView.HitTestInfo hti = toDo.HitTest(p.X, p.Y);
 
-            if (hti.RowIndex > 0 && hti.ColumnIndex > 0)
+            //クリックされたセルの最初の行(見えないがスケジュールIDが格納されている)の値を取得
+            //押下されたセルがヘッダー部分ではないことを確認
+            if (hti.RowIndex > -1 && hti.ColumnIndex > -1)
             {
+                //スケジュールID(見えない部分に格納されている)を取得
                 scheduleId = (int)toDo.Rows[hti.RowIndex].Cells[0].Value;
 
+                //詳細画面を開く
                 ScheduleDetail sd = new ScheduleDetail();
                 sd.userId = userId;           //ログインIDを渡す
-                sd.scheduleId = scheduleId;   //スケジュールIDを渡しておく
+                sd.scheduleId = scheduleId;   //スケジュールIDを渡す
                 sd.ShowDialog(this);
                 sd.Dispose();
             }
-            else
-            {
 
-            }
 
         }
 
-        //週間スケジュールが1度クリックされた場合の動作(TODOや左上のカレンダーの日付も連動させる)
+        /// <summary>
+        /// 週間スケジュールが1度クリックされた場合の動作(TODOや左上のカレンダーの日付も連動させる)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void scheduleGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            //クリックされたセルの日付を取得
+            //クリックされたセルの場所を取得
             Point p = scheduleGrid.PointToClient(Cursor.Position);
 
             DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
+
+            //セルの場所から今度は日付を取得
             var selectedDate = scheduleGrid.Rows[0].Cells[hti.ColumnIndex].Value;
 
             //押下されたセルが週の部分か確認(そうでなければnull)
@@ -278,38 +317,115 @@ namespace MySchedule
             }
         }
 
+        /// <summary>
+        /// 週間スケジュールがダブルクリックされた場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void scheduleGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+
+            //ダブルクリックされた場所の取得
             Point p = scheduleGrid.PointToClient(Cursor.Position);
-
             DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
-
-            if (hti.RowIndex > 0 && hti.ColumnIndex > 0)
+            if (hti.ColumnIndex == -1 || hti.RowIndex == -1)
             {
-                var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
+                return;
+            }
 
-                if (selectedCell != null && (int)selectedCell != 0)
+            //7つ右のスケジュールIDを格納しているセルを取得
+            var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
+
+            //セルの値がnullでも0でもなければ次の処理へ
+            if (selectedCell != null && (int)selectedCell != 0)
+            {
+                //ログインIDとスケジュールIDを渡して詳細画面を開く
+                ScheduleDetail sd = new ScheduleDetail();
+                sd.userId = userId;           //ログインIDを渡す
+                sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
+                sd.ShowDialog(this);
+                sd.Dispose();
+            }
+            //セルの値が0(何も予定が入っていない)場合
+            if ((int)selectedCell == 0)
+            {
+                //新規登録フォームを開く
+                ScheduleRegistration sr = new ScheduleRegistration();
+                //flgを立てておく(これをもとにどの画面から来たかを整理する)
+                sr.flg = true;
+
+                //日付・時刻をそれぞれのスケジュールのセルのヘッダーから持ってくる
+                String defaultdate = scheduleGrid.Rows[0].Cells[hti.ColumnIndex].Value.ToString();
+                String start = scheduleGrid.Rows[hti.RowIndex].Cells[0].Value.ToString();
+                String ending;
+                //もし最後のセルなら
+                if (start == "23:00")
                 {
-                    ScheduleDetail sd = new ScheduleDetail();
-                    sd.userId = userId;           //ログインIDを渡す
-                    sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
-                    sd.ShowDialog(this);
-                    sd.Dispose();
+                    //時間が24時間を超えないよう調整
+                    ending = "23:59";
                 }
-            }
-            else
-            {
+                //最後のセルではない場合
+                else
+                {
+                    //1つ下のセルのヘッダーから取得
+                    ending = scheduleGrid.Rows[hti.RowIndex + 1].Cells[0].Value.ToString();
+                }
+                sr.userId = userId;                             //ログインIDを渡す
+                sr.defaultDate = DateTime.Parse(defaultdate);   //日付をDateTime変換して渡す
+                sr.start = DateTime.Parse(start);               //開始時刻をDateTime変換して壊す
+                sr.ending = DateTime.Parse(ending);             //終了時間をDateTime変換して渡す
 
+                sr.ShowDialog(this);
+                sr.Dispose();
             }
-            
+            else if (selectedCell == null)
+            {
+                //セルの中身がnullの場合
+            }
+
+
         }
 
+        /// <summary>
+        /// 「履歴確認」ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
+            //履歴確認画面を開く
             UpdateHistoryData uhd = new UpdateHistoryData();
-            uhd.userId = userId;
+            uhd.userId = userId;    //ログインIDを渡す
             uhd.ShowDialog(this);
             uhd.Dispose();
+        }
+
+        /// <summary>
+        /// 「パスワード再設定」ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //パスワード再設定画面を開く
+            ResetPassword rp = new ResetPassword();
+            rp.userId = userId;     //ログインIDを渡す
+            rp.ShowDialog(this);
+            rp.Dispose();
+        }
+
+        /// <summary>
+        /// 「予定一覧」ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //予定一覧画面を開く
+            AllSchedules als = new AllSchedules();
+            als.userId = userId;        //ログインIDを渡す
+            als.ShowDialog(this);
+            als.Dispose();
         }
     }
 }
