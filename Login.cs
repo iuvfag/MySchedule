@@ -51,8 +51,12 @@ namespace MySchedule
                 //入力内容に問題がなく何も帰ってこなかった場合は次の処理へ
                 if (string.IsNullOrWhiteSpace(userIdCheck) && String.IsNullOrWhiteSpace(passwordCheck))
                 {
-
+                    //パスワード暗号化の準備、まずログインIDをハッシュ関数化する
+                    String userIdHash = InputChecker.createHashKey(userId);
+                    //パスワードをハッシュ関数に変換する
                     password = InputChecker.createHashKey(password);
+                    //上記2つの値を連結してハッシュ関数化したものをパスワードとして格納する
+                    password = InputChecker.createHashKey(userIdHash, password);
 
                     //ログインIDとパスワードをログイン用メソッドに渡し、結果をresultに格納
                     String result = UserInfoDAO.login(userId, password);
@@ -71,9 +75,10 @@ namespace MySchedule
                         sc.Dispose();
                         this.userId = "";
                     }
+                    //何も取ってこれなかったとき
                     else
                     {
-                        //何も取ってこれなかったとき
+                        //メッセージ表示
                         MessageBox.Show("ログインIDとパスワードの組み合わせが正しくありません", "入力内容を確認してください");
                     }
                 }

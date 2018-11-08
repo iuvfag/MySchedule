@@ -161,40 +161,40 @@ namespace MySchedule
         }
 
         //週間スケジュールに予定を表示するためのメソッド
-        //private void setWeeklySchedule()
-        //{
-        //    //DTOクラスのインスタンス化
-        //    ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
-        //    //まず、1週間分for文を回す(1～7なのはグリッドの番地に合わせているため)
-        //    for (int i = 1; i <= 7; i++)
-        //    {
-        //        //その週の日付を格納したリストから日付を取り出す(インデックス0から)
-        //        String columnValue = weekList[i - 1].ToString("yyyy-MM-dd");
+        private void setWeeklySchedule()
+        {
+            //DTOクラスのインスタンス化
+            ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
+            //まず、1週間分for文を回す(1～7なのはグリッドの番地に合わせているため)
+            for (int i = 1; i <= 7; i++)
+            {
+                //その週の日付を格納したリストから日付を取り出す(インデックス0から)
+                String columnValue = weekList[i - 1].ToString("yyyy-MM-dd");
 
-        //        //24時間分回すfor文
-        //        for (int n = 1; n <= 24; n++)
-        //        {
-        //            //開始時刻と終了時刻を設定(変数nと実際セルに格納されている時間が違うことに注意！)
-        //            String startTime = $"{n - 1}:00";     //開始時刻
-        //            String endingTime = $"{n - 1}:59";    //終了時刻(24時以上になるのを防ぐ)
+                //24時間分回すfor文
+                for (int n = 1; n <= 24; n++)
+                {
+                    //開始時刻と終了時刻を設定(変数nと実際セルに格納されている時間が違うことに注意！)
+                    String startTime = $"{n - 1}:00";     //開始時刻
+                    String endingTime = $"{n - 1}:59";    //終了時刻(24時以上になるのを防ぐ)
 
-        //            //日付と時刻を結合させる
-        //            startTime = $"{columnValue} {startTime}";
-        //            endingTime = $"{columnValue} {endingTime}";
+                    //日付と時刻を結合させる
+                    startTime = $"{columnValue} {startTime}";
+                    endingTime = $"{columnValue} {endingTime}";
 
-        //            //DTOクラスに該当する時間の予定とスケジュールIDを格納
-        //            siDTO = siDAO.getWeeklySchedule(userId, startTime, endingTime);
+                    //DTOクラスに該当する時間の予定とスケジュールIDを格納
+                    siDTO = siDAO.getWeeklySchedule(userId, startTime, endingTime);
 
-        //            //セルに取得してきた予定を格納
-        //            scheduleGrid.Rows[n].Cells[i].Value = siDTO.subject;
+                    //セルに取得してきた予定を格納
+                    scheduleGrid.Rows[n].Cells[i].Value = siDTO.subject;
 
-        //            //7個右のセルにスケジュールIDを格納
-        //            scheduleGrid.Rows[n].Cells[i + 7].Value = siDTO.scheduleId;
+                    //7個右のセルにスケジュールIDを格納
+                    scheduleGrid.Rows[n].Cells[i + 7].Value = siDTO.scheduleId;
 
-        //        }
+                }
 
-        //    }
-        //}
+            }
+        }
 
         /// <summary>
         /// 渡された日付が含まれる週の日曜日の日付を割り出すメソッド
@@ -218,7 +218,7 @@ namespace MySchedule
             var startDate = getSundayDate(selectedDate);        //選択された日付から、週の日曜を割り出す
 
             setCalenderDate(startDate);     //日付を週間スケジュールに格納していくメソッドの呼び出し
-            //setWeeklySchedule();            //週間予定を表示する
+            setWeeklySchedule();            //週間予定を表示する
 
             //選択された日付をもとにTODOに予定を読み込ませる
             toDo.DataSource = siDAO.getTodo(userId, selectedDate.ToShortDateString());
@@ -252,7 +252,7 @@ namespace MySchedule
             //日付をもとにTODO作成
             toDo.DataSource = siDAO.getTodo(userId, day.ToShortDateString());
             //週間スケジュールを読み込みなおす
-            //setWeeklySchedule();
+            setWeeklySchedule();
         }
 
         /// <summary>
@@ -315,6 +315,7 @@ namespace MySchedule
                 //週間スケジュールで押下された部分の日付をmonthCalenderの選択にも反映させる
                 monthCalendar1.SelectionStart = DateTime.Parse(selectedDate.ToString());
             }
+
         }
 
         /// <summary>
@@ -324,65 +325,77 @@ namespace MySchedule
         /// <param name="e"></param>
         private void scheduleGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-
-            //ダブルクリックされた場所の取得
-            Point p = scheduleGrid.PointToClient(Cursor.Position);
-            DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
-            if (hti.ColumnIndex == -1 || hti.RowIndex == -1)
+            try
             {
-                return;
-            }
 
-            //7つ右のスケジュールIDを格納しているセルを取得
-            var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
+                //ダブルクリックされた場所の取得
+                Point p = scheduleGrid.PointToClient(Cursor.Position);
+                DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
+                if (hti.ColumnIndex > 0)
+                { 
+                if (hti.RowIndex > 0)
+                    {
+                        //7つ右のスケジュールIDを格納しているセルを取得
+                        var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
 
-            //セルの値がnullでも0でもなければ次の処理へ
-            if (selectedCell != null && (int)selectedCell != 0)
-            {
-                //ログインIDとスケジュールIDを渡して詳細画面を開く
-                ScheduleDetail sd = new ScheduleDetail();
-                sd.userId = userId;           //ログインIDを渡す
-                sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
-                sd.ShowDialog(this);
-                sd.Dispose();
-            }
-            //セルの値が0(何も予定が入っていない)場合
-            if ((int)selectedCell == 0)
-            {
-                //新規登録フォームを開く
-                ScheduleRegistration sr = new ScheduleRegistration();
-                //flgを立てておく(これをもとにどの画面から来たかを整理する)
-                sr.flg = true;
+                        //セルの値がnullでも0でもなければ次の処理へ
+                        if (selectedCell != null && (int)selectedCell != 0)
+                        {
+                            //ログインIDとスケジュールIDを渡して詳細画面を開く
+                            ScheduleDetail sd = new ScheduleDetail();
+                            sd.userId = userId;           //ログインIDを渡す
+                            sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
+                            sd.ShowDialog(this);
+                            sd.Dispose();
+                        }
+                        else if (selectedCell == null && (int)selectedCell == 0)
+                        {
+                            //セルの中身がnullの場合
+                            return;
+                        }
+                        //セルの値が0(何も予定が入っていない)場合
+                        if ((int)selectedCell == 0)
+                        {
+                            //新規登録フォームを開く
+                            ScheduleRegistration sr = new ScheduleRegistration();
+                            //flgを立てておく(これをもとにどの画面から来たかを整理する)
+                            sr.flg = true;
 
-                //日付・時刻をそれぞれのスケジュールのセルのヘッダーから持ってくる
-                String defaultdate = scheduleGrid.Rows[0].Cells[hti.ColumnIndex].Value.ToString();
-                String start = scheduleGrid.Rows[hti.RowIndex].Cells[0].Value.ToString();
-                String ending;
-                //もし最後のセルなら
-                if (start == "23:00")
-                {
-                    //時間が24時間を超えないよう調整
-                    ending = "23:59";
+                            //日付・時刻をそれぞれのスケジュールのセルのヘッダーから持ってくる
+                            String defaultdate = scheduleGrid.Rows[0].Cells[hti.ColumnIndex].Value.ToString();
+                            String start = scheduleGrid.Rows[hti.RowIndex].Cells[0].Value.ToString();
+                            String ending;
+                            //もし最後のセルなら
+                            if (start == "23:00")
+                            {
+                                //時間が24時間を超えないよう調整
+                                ending = "23:59";
+                            }
+                            //最後のセルではない場合
+                            else
+                            {
+                                //1つ下のセルのヘッダーから取得
+                                ending = scheduleGrid.Rows[hti.RowIndex + 1].Cells[0].Value.ToString();
+                            }
+                            sr.userId = userId;                             //ログインIDを渡す
+                            sr.defaultDate = DateTime.Parse(defaultdate);   //日付をDateTime変換して渡す
+                            sr.start = DateTime.Parse(start);               //開始時刻をDateTime変換して壊す
+                            sr.ending = DateTime.Parse(ending);             //終了時間をDateTime変換して渡す
+
+                            sr.ShowDialog(this);
+                            sr.Dispose();
+                        }
+                        else if (selectedCell == null)
+                        {
+                            //セルの中身がnullの場合
+                        }
+                    }
                 }
-                //最後のセルではない場合
-                else
-                {
-                    //1つ下のセルのヘッダーから取得
-                    ending = scheduleGrid.Rows[hti.RowIndex + 1].Cells[0].Value.ToString();
-                }
-                sr.userId = userId;                             //ログインIDを渡す
-                sr.defaultDate = DateTime.Parse(defaultdate);   //日付をDateTime変換して渡す
-                sr.start = DateTime.Parse(start);               //開始時刻をDateTime変換して壊す
-                sr.ending = DateTime.Parse(ending);             //終了時間をDateTime変換して渡す
-
-                sr.ShowDialog(this);
-                sr.Dispose();
             }
-            else if (selectedCell == null)
+            catch (Exception ex)
             {
-                //セルの中身がnullの場合
+                MessageBox.Show(ex.ToString());
             }
-
 
         }
 

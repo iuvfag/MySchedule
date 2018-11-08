@@ -62,9 +62,14 @@ namespace MySchedule
             if (currentPasswordCheck == "" && newPasswordCheck == "" && reConfirmarionNewPasswordCheck == "" &&
                 passwordCompare == "")
             {
+                String userIdHash = InputChecker.createHashKey(userId);
 
                 currentPassword = InputChecker.createHashKey(currentPassword);
+
+                currentPassword = InputChecker.createHashKey(userIdHash, currentPassword);
+
                 newPassword = InputChecker.createHashKey(newPassword);
+                newPassword = InputChecker.createHashKey(userIdHash, newPassword);
 
                 //ログインIDとパスワードをもとに、まず該当するユーザーがいるかどうか調べる
                 if (UserInfoDAO.isExistsUser(userId, currentPassword))

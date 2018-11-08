@@ -82,8 +82,12 @@ namespace MySchedule
                     //入力された2つのパスワードが一致するなら次の処理へ
                     if (passwordCompare == "")
                     {
-
+                        //パスワード暗号化の準備、まず、ログインIDをハッシュ関数化
+                        String userIdHash = InputChecker.createHashKey(userId);
+                        //パスワードをハッシュ関数化
                         password = InputChecker.createHashKey(password);
+                        //上記二つを連結してハッシュ関数化したものをパスワードとしてDBに保存する
+                        password = InputChecker.createHashKey(userIdHash, password);
 
                         //ログインIDが既に存在するか確認し、問題ないなら次の処理へ
                         if (!(UserInfoDAO.isExistsUser(userId)))

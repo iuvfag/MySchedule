@@ -135,7 +135,12 @@ namespace MySchedule
             String result = String.Join("", hash.Select(x => x.ToString("X")));
             return result;
         }
-
+        /// <summary>
+        /// 渡された2つの値を連結してSHA256のハッシュ関数を作るメソッド
+        /// </summary>
+        /// <param name="value1">渡す値①</param>
+        /// <param name="value2">渡す値②</param>
+        /// <returns></returns>
         internal static String createHashKey(String value1, String value2)
         {
             byte[] hash = null;
@@ -145,12 +150,13 @@ namespace MySchedule
             {
                 hash = sha256.ComputeHash(bytes);
             }
+
             String result = String.Join("", hash.Select(x => x.ToString("X")));
             return result;
         }
 
 
-        }
+    }
 
     /// <summary>
     /// 拡張メソッド
