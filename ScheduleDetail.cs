@@ -35,25 +35,25 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
-                ////DAO、DTOクラスのインスタンス化
-                //ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
-                //ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
+                //DAO、DTOクラスのインスタンス化
+                ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
+                ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
-                ////スケジュールの詳細をDBから取得し、DTOクラスに格納
-                //siDTO = siDAO.getScheduleDetail(scheduleId);
+                //スケジュールの詳細をDBから取得し、DTOクラスに格納
+                siDTO = siDAO.getScheduleDetail(scheduleId);
 
-                //////このクラスのフィールドにDTOクラスの情報を格納する
-                //subject = siDTO.subject;
-                //startTime = siDTO.startTime;
-                //endingTime = siDTO.endingTime;
-                //detail = siDTO.detail;
+                ////このクラスのフィールドにDTOクラスの情報を格納する
+                subject = siDTO.subject;
+                startTime = siDTO.startTime;
+                endingTime = siDTO.endingTime;
+                detail = siDTO.detail;
 
-                ////取得した情報を、対応するTextBoxに格納していく
-                //subjectTextBox.Text = subject;
-                //dateTextBox.Text = startTime.ToShortDateString();
-                //startTimeTextbox.Text = startTime.ToShortTimeString();
-                //endingTimeTextBox.Text = endingTime.ToShortTimeString();
-                //detailTextBox.Text = detail;
+                //取得した情報を、対応するTextBoxに格納していく
+                subjectTextBox.Text = subject;
+                dateTextBox.Text = startTime.ToShortDateString();
+                startTimeTextbox.Text = startTime.ToShortTimeString();
+                endingTimeTextBox.Text = endingTime.ToShortTimeString();
+                detailTextBox.Text = detail;
             }
             //何らかの不具合が発生した場合
             catch (Exception)

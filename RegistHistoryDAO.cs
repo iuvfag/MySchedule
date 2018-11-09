@@ -16,6 +16,11 @@ namespace MySchedule
     {
         /// <summary>
         /// 更新履歴登録用のクラス
+        /// ①更新履歴登録用のメソッド
+        /// ②更新履歴をログインIDごとに取得し、データテーブルに格納するメソッド
+        /// ③前回のハッシュキー(最も新しい履歴IDのハッシュキー)を取得するためのメソッド
+        /// ④ハッシュキー生成のためのメソッド
+        /// ⑤テーブルの全レコードを取得するメソッド(管理者用)
         /// </summary>
 
         NpgsqlConnection con = new NpgsqlConnection(@"Server=localhost;
@@ -26,7 +31,7 @@ namespace MySchedule
         NpgsqlCommand cmd = new NpgsqlCommand();
 
         /// <summary>
-        /// 更新履歴登録用のメソッド
+        /// ①更新履歴登録用のメソッド
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <param name="scheduleId">スケジュールID</param>
@@ -96,7 +101,7 @@ namespace MySchedule
         }
 
         /// <summary>
-        /// 更新履歴をログインIDごとに取得し、データテーブルに格納するメソッド
+        /// ②更新履歴をログインIDごとに取得し、データテーブルに格納するメソッド
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <returns>DBの値を格納したデータテーブル</returns>
@@ -142,7 +147,7 @@ namespace MySchedule
         }
 
         /// <summary>
-        /// 前回のハッシュキー(最も新しい履歴IDのハッシュキー)を取得するためのメソッド
+        /// ③前回のハッシュキー(最も新しい履歴IDのハッシュキー)を取得するためのメソッド
         /// </summary>
         /// <returns>前回のハッシュキーを格納したString型の変数</returns>
         internal String getPreviousHashKey(String userId)
@@ -189,7 +194,7 @@ namespace MySchedule
         }
 
         /// <summary>
-        /// ハッシュキー生成のためのメソッド
+        /// ④ハッシュキー生成のためのメソッド
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <param name="scheduleId">スケジュールID</param>
@@ -224,6 +229,51 @@ namespace MySchedule
             //結果を戻す
             String result = String.Join("", hash.Select(x => x.ToString("X")));
             return result;
+        }
+
+        /// <summary>
+        /// ⑤テーブルの全レコードを取得するメソッド(管理者用)
+        /// </summary>
+        /// <returns>DBの値を格納したデータテーブル</returns>
+        internal DataTable getAllRegistHistory()
+        {
+            //DataSet、DataTableの初期化
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
+
+            cmd.Connection = con;
+
+            //SQL文の作成
+            String sql = "SELECT history_id as 履歴ID, user_id as ログインID, update_type as 変更内容, " +
+                "schedule_id as スケジュールID, update_start_time as 予定開始時刻, update_ending_time as 予定終了時刻, " +
+                "subject as 予定, detail as 詳細, key as キー FROM update_history";
+
+            //接続開始
+            con.Open();
+
+            try
+            {
+                //SQL文を実行し、データセットに値を入れるために必要
+                //データを格納する準備
+                NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
+
+                ds.Reset();             //データ格納前にリセットしておく
+                da.Fill(ds);            //データ格納
+                dt = ds.Tables[0];      //今回は最初のテーブルに入っているためインデックス[0]を指定
+            }
+            catch (Exception ex)
+            {
+                //例外処理
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                //最終的に接続は閉じておく
+                con.Close();
+            }
+            //データテーブルを返す
+            return dt;
         }
 
     }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScheduleCalender));
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.toDo = new System.Windows.Forms.DataGridView();
@@ -168,12 +169,14 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "ScheduleCalender";
             this.Text = "スケジュール";
             this.Activated += new System.EventHandler(this.ScheduleCalender_Activated);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScheduleCalender_FormClosed);
             this.Load += new System.EventHandler(this.ScheduleCalender_Load);
+            this.Shown += new System.EventHandler(this.ScheduleCalender_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.toDo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.scheduleGrid)).EndInit();
             this.ResumeLayout(false);

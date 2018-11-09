@@ -58,22 +58,40 @@ namespace MySchedule
                     //上記2つの値を連結してハッシュ関数化したものをパスワードとして格納する
                     password = InputChecker.createHashKey(userIdHash, password);
 
-                    //ログインIDとパスワードをログイン用メソッドに渡し、結果をresultに格納
-                    String result = UserInfoDAO.login(userId, password);
+                    //ログインIDとパスワードをログイン用メソッドに渡し、結果をUserInfoDTOに格納
+                    UserInfoDTO uiDTO = new UserInfoDTO();
+                    UserInfoDAO uiDAO = new UserInfoDAO();
+                    uiDTO = uiDAO.login(userId, password);
 
                     //値が取れたかどうかチェック
-                    if (result != "")
+                    if (uiDTO.userId != null)
                     {
-                        //とれていたらスケジュールを呼び出し、ログインIDを渡す
-                        ScheduleCalender sc = new ScheduleCalender();
-                        sc.userId = result;
-                        sc.ShowDialog(this);
 
-                        //スケジュールを閉じた場合はログインIDとパスワード入力欄は空に戻しておく
-                        textBox1.Text = "";
-                        textBox2.Text = "";
-                        sc.Dispose();
-                        this.userId = "";
+                        if (uiDTO.status == 1)
+                        {
+                            AdminForm af = new AdminForm();
+                            af.ShowDialog(this);
+                            af.Dispose();
+                            textBox1.Text = "";
+                            textBox2.Text = "";
+                            
+                        }
+                        else
+                        {
+
+
+
+                            //とれていたらスケジュールを呼び出し、ログインIDを渡す
+                            ScheduleCalender sc = new ScheduleCalender();
+                            sc.userId = uiDTO.userId;
+                            sc.ShowDialog(this);
+
+                            //スケジュールを閉じた場合はログインIDとパスワード入力欄は空に戻しておく
+                            textBox1.Text = "";
+                            textBox2.Text = "";
+                            sc.Dispose();
+                            this.userId = "";
+                        }
                     }
                     //何も取ってこれなかったとき
                     else
@@ -96,6 +114,8 @@ namespace MySchedule
                         MessageBox.Show(passwordCheck, "入力内容を確認してください");
                     }
                 }
+
+
             }
             //何らかの不具合が発生した場合
             catch (Exception ex)

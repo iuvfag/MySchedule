@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data;
 using Npgsql;
 
 namespace MySchedule
@@ -16,34 +17,35 @@ namespace MySchedule
     /// ②ユーザー登録用メソッド
     /// ③ログインIDが既に存在するか確認するメソッド
     /// ④パスワード再設定用のメソッド
+    /// ⑤テーブルの全レコードを取得するメソッド(管理者用)
     /// </summary>
-    static class UserInfoDAO
+    class UserInfoDAO
     {
 
         //DBへの接続準備
-        static NpgsqlConnection con = new NpgsqlConnection(@"Server=localhost;
+        NpgsqlConnection con = new NpgsqlConnection(@"Server=localhost;
                                                     Port=5432;
                                                     UserId=postgres;
                                                     Password=postgres;
                                                     DataBase=myschedule");
         //のちに使用するためインスタンス化しておく
-        static NpgsqlCommand cmd = new NpgsqlCommand();
+        NpgsqlCommand cmd = new NpgsqlCommand();
 
         /// <summary>
-        /// ①ログイン用メソッド(結果としてログインIDを格納したString型の変数を返す)
+        /// ①ログイン用メソッド(結果としてログインID,statusを格納したUserInfoDTOを返す)
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <param name="password">パスワード</param>
         /// <returns>ログインIDを格納したString型の変数</returns>
-        internal static String login(String userId, String password)
+        internal UserInfoDTO login(String userId, String password)
         {
 
             //結果を初期化
-            String result = "";
+            UserInfoDTO uiDTO = new UserInfoDTO();
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "SELECT * FROM user_info WHERE user_id = @userId AND password = @password";
+            cmd.CommandText = "SELECT user_id, status FROM user_info WHERE user_id = @userId AND password = @password";
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
             cmd.Parameters.Add(new NpgsqlParameter("@password", password));
             //上記の分で@にした部分にそれぞれ値を格納する
@@ -58,7 +60,8 @@ namespace MySchedule
                 {
                     while (reader.Read() == true)   //データが読み取れているなら
                     {
-                        result = reader.GetString(1);   //「user_id」のカラムからとってきた値をresultに格納
+                        uiDTO.userId = reader.GetString(0);    //取得した最初の値「user_id」をUserInfoDTOに格納
+                        uiDTO.status = reader.GetInt32(1);      //取得した次の値「status」をUserInfoDTOに格納
                     }
                 }
             }
@@ -76,7 +79,7 @@ namespace MySchedule
             cmd.Parameters.Remove("@userId");
             cmd.Parameters.Remove("@password");
 
-            return result;      //resultを返す
+            return uiDTO;      //resultを返す
         }
 
         /// <summary>
@@ -85,7 +88,7 @@ namespace MySchedule
         /// <param name="userId">ログインID</param>
         /// <param name="password">パスワード</param>
         /// <returns>更新件数を格納したint型の変数</returns>
-        internal static int createUser(String userId, String password)
+        internal int createUser(String userId, String password)
         {
 
             //結果を初期化
@@ -93,8 +96,8 @@ namespace MySchedule
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "INSERT INTO user_info (user_id, password, registration_date) " +
-                "VALUES (@userId, @password, now())";
+            cmd.CommandText = "INSERT INTO user_info (user_id, password, registration_date, status) " +
+                "VALUES (@userId, @password, now(), 0)";
 
             //SQl文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
@@ -129,7 +132,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <returns>bool型の変数</returns>
-        internal static bool isExistsUser(String userId)
+        internal bool isExistsUser(String userId)
         {
 
             //結果を初期化
@@ -177,7 +180,7 @@ namespace MySchedule
         /// <param name="userId"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        internal static bool isExistsUser(String userId, String password)
+        internal bool isExistsUser(String userId, String password)
         {
             //結果を初期化
             bool result = false;
@@ -230,7 +233,7 @@ namespace MySchedule
         /// <param name="password">パスワード</param>
         /// <param name="newPassword">新しいパスワード</param>
         /// <returns></returns>
-        internal static int resetPassword(String userId, String password, String newPassword)
+        internal int resetPassword(String userId, String password, String newPassword)
         {
             //結果の初期化
             int result = 0;
@@ -271,6 +274,50 @@ namespace MySchedule
 
             //結果を戻す
             return result;
+        }
+
+        /// <summary>
+        /// ⑤テーブルの全レコードを取得するメソッド(管理者用)
+        /// </summary>
+        /// <returns>DBの値を格納したデータテーブル</returns>
+        internal DataTable getAllUserInfo()
+        {
+            //DataSet、DataTableの初期化
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
+
+            cmd.Connection = con;
+
+            //SQL文の作成
+            String sql = "SELECT id as ユーザー管理ID, user_id as ログインID, password as パスワード," +
+                "registration_date as 登録日時, status as ステータス FROM user_info;";
+
+            //接続開始
+            con.Open();
+
+            try
+            {
+                //SQL文を実行し、データセットに値を入れるために必要
+                //データを格納する準備
+                NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
+
+                ds.Reset();             //データ格納前にリセットしておく
+                da.Fill(ds);            //データ格納
+                dt = ds.Tables[0];      //今回は最初のテーブルに入っているためインデックス[0]を指定
+            }
+            catch (Exception ex)
+            {
+                //例外処理
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                //最終的に接続は閉じておく
+                con.Close();
+            }
+            //データテーブルを戻す
+            return dt;
         }
 
     }

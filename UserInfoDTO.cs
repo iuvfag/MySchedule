@@ -10,5 +10,6 @@ namespace MySchedule
     {
         public String userId { get; set; }
         public String password { get; set; }
+        public int status { get; set; }
     }
 }

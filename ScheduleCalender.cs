@@ -36,6 +36,13 @@ namespace MySchedule
             InitializeComponent();
         }
 
+        private void ScheduleCalender_Shown(object sender, EventArgs e)
+        {
+            //TODO、週間スケジュールともに初期にセルが選択状態になっているのを防ぐ
+            toDo.CurrentCell = null;
+            scheduleGrid.CurrentCell = null;
+        }
+
         /// <summary>
         /// このフォームが読み込まれた時点での動作
         /// </summary>
@@ -440,5 +447,6 @@ namespace MySchedule
             als.ShowDialog(this);
             als.Dispose();
         }
+
     }
 }

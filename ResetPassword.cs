@@ -71,11 +71,13 @@ namespace MySchedule
                 newPassword = InputChecker.createHashKey(newPassword);
                 newPassword = InputChecker.createHashKey(userIdHash, newPassword);
 
+                UserInfoDAO uiDAO = new UserInfoDAO();
+
                 //ログインIDとパスワードをもとに、まず該当するユーザーがいるかどうか調べる
-                if (UserInfoDAO.isExistsUser(userId, currentPassword))
+                if (uiDAO.isExistsUser(userId, currentPassword))
                 {
                     //新しいパスワードを設定するメソッドの呼び出し、更新件数を格納したresultを受け取る
-                    int result = UserInfoDAO.resetPassword(userId, currentPassword, newPassword);
+                    int result = uiDAO.resetPassword(userId, currentPassword, newPassword);
 
                     //更新件数が1件以上なら
                     if (result > 0)

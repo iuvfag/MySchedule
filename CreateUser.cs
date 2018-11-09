@@ -82,6 +82,8 @@ namespace MySchedule
                     //入力された2つのパスワードが一致するなら次の処理へ
                     if (passwordCompare == "")
                     {
+                        UserInfoDAO uiDAO = new UserInfoDAO();
+
                         //パスワード暗号化の準備、まず、ログインIDをハッシュ関数化
                         String userIdHash = InputChecker.createHashKey(userId);
                         //パスワードをハッシュ関数化
@@ -90,10 +92,10 @@ namespace MySchedule
                         password = InputChecker.createHashKey(userIdHash, password);
 
                         //ログインIDが既に存在するか確認し、問題ないなら次の処理へ
-                        if (!(UserInfoDAO.isExistsUser(userId)))
+                        if (!(uiDAO.isExistsUser(userId)))
                         {
                             //ユーザー情報を登録し、登録件数を戻り値として受け取る
-                            int result = UserInfoDAO.createUser(userId, password);
+                            int result = uiDAO.createUser(userId, password);
 
                             //登録件数が1件でもあれば
                             if (result > 0)
