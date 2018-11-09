@@ -108,11 +108,9 @@ namespace MySchedule
                     {
                         //DAOクラスのインスタンス化
                         ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
-                        //既に同時刻に登録されているスケジュールがないか調べる(現在修正しているスケジュールは除く)
-                        int check = siDAO.isExistsSchedule(userId, scheduleId,  st, et);
 
-                        //同時刻に同時刻に登録されているスケジュールがなければ次の処理へ
-                        if (check == 0)
+                        ////既に同時刻に登録されているスケジュールがないか調べる(現在修正しているスケジュールは除く)
+                        if (!(siDAO.isExistsSchedule(userId, scheduleId, st, et)))
                         {
                             //スケジュールの更新を行い結果(更新数)をresultに格納
                             int result = siDAO.updeteSchedule(scheduleId, startTime, endingTime, subject, detail);

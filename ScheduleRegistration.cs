@@ -92,11 +92,8 @@ namespace MySchedule
                     //DAOクラスのインスタンス化
                     ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
-                    //スケジュールチェックのメソッドをここに追記
-                    int check = siDAO.isExistsSchedule(userId, st, et);
-
                     //重複しているスケジュールがあるか確認
-                    if (check == 0)
+                    if (!(siDAO.isExistsSchedule(userId, st, et)))
                     {
 
 

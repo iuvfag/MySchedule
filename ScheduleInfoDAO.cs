@@ -22,6 +22,7 @@ namespace MySchedule
          * ⑥週間スケジュールに表示する情報、スケジュールIDを取得するメソッド
          * ⑦既にその時間に予定が登録されているかチェックするメソッド(スケジュール修正用)
          * ⑧既にその時間に予定が登録されているかチェックするメソッド(新規登録用)
+         * ⑨ログインIDをもとにすべての予定を取得し、データテーブルに格納するメソッド
          */
 
         //DBへの接続の準備
@@ -119,14 +120,10 @@ namespace MySchedule
                 //SQL文を実行しデータセットに値を格納するために必要。データ格納の準備
                 NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
 
-                //データ格納前にリセットしておく
-                ds.Reset();
+                ds.Reset();     //データ格納前にリセットしておく            
+                da.Fill(ds);    //データセットにデータアダプターが取得してきた値を格納             
+                dt = ds.Tables[0];//複数テーブル存在するが、今回は最初のテーブルに入っているためインデックス[0]を指定
 
-                //データセットにデータアダプターが取得してきた値を格納
-                da.Fill(ds);
-
-                //複数テーブルに格納できるが、今回は最初のテーブルに入っているためインデックス[0]を指定
-                dt = ds.Tables[0];
             }
             catch (Exception ex)
             {
@@ -383,10 +380,10 @@ namespace MySchedule
         /// <param name="startTime">スケジュールの開始時刻</param>
         /// <param name="endingTime">スケジュールの終了時刻</param>
         /// <returns>int型の変数</returns>
-        internal int isExistsSchedule(String userId, int scheduleId, String startTime, String endingTime)
+        internal bool isExistsSchedule(String userId, int scheduleId, String startTime, String endingTime)
         {
             //結果を初期化
-            int result = 0;
+            bool result = false;
             cmd.Connection = con;
 
             //SQL文の作成。今回は複雑なので検索条件は後述
@@ -427,7 +424,7 @@ namespace MySchedule
                     while (reader.Read() == true)
                     {
                         //resultに1を代入
-                        result = 1;
+                        result = true;
                     }
                 }
             }
@@ -458,10 +455,10 @@ namespace MySchedule
         /// <param name="startTime">スケジュールの開始時刻</param>
         /// <param name="endingTime"スケジュールの終了時刻></param>
         /// <returns>int型の変数</returns>
-        internal int isExistsSchedule(String userId, String startTime, String endingTime)
+        internal bool isExistsSchedule(String userId, String startTime, String endingTime)
         {
             //結果を初期化
-            int result = 0;
+            bool result = false;
             cmd.Connection = con;
 
             //SQL文の作成。今回は複雑なので検索条件は後述
@@ -496,7 +493,7 @@ namespace MySchedule
                     while (reader.Read() == true)
                     {
                         //resultに1を代入
-                        result = 1;
+                        result = true;
                     }
                 }
             }
@@ -587,7 +584,11 @@ namespace MySchedule
             return result;
         }
 
-
+        /// <summary>
+        /// ⑨ログインIDをもとにすべての予定を取得し、データテーブルに格納するメソッド
+        /// </summary>
+        /// <param name="userId">ログインID</param>
+        /// <returns></returns>
         internal DataTable getAllSchedule(String userId)
         {
             //データベースの値をデータグリッドに格納するために、データセット・データテーブルもインスタンス化しておく
@@ -596,32 +597,36 @@ namespace MySchedule
 
             cmd.Connection = con;
 
+            //SQL文の作成(データテーブルに格納するため、カラム名も変えておく)
             String sql = "SELECT schedule_id, CAST(start_time as date)as 日付, CAST(start_time as time) as 開始時刻, " +
                 "CAST(ending_time as time) as 終了時刻, subject as 件名, detail as 詳細 " +
                 "FROM schedule_info WHERE user_id = '" + userId + "' ORDER BY CAST(start_time as date) ASC";
 
+            //接続開始
             con.Open();
 
             try
             {
+                //SQL文を実行し、データセットに値を入れるために必要
+                //データを格納する準備
                 NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
 
-                ds.Reset();
-
-                da.Fill(ds);
-
-                dt = ds.Tables[0];
+                ds.Reset();         //データ格納前にリセットしておく
+                da.Fill(ds);        //データ格納
+                dt = ds.Tables[0];  //今回は最初のテーブルに入っているためインデックス[0]を指定
             }
             catch (Exception ex)
             {
+                //例外処理
                 MessageBox.Show(ex.ToString());
                 throw;
             }
             finally
             {
+                //最終的に接続は閉じておく
                 con.Close();
             }
-
+            //データテーブルを返す
             return dt;
         }
 

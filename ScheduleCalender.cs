@@ -63,7 +63,7 @@ namespace MySchedule
             //週間スケジュールのひな型呼び出し
             setCalenderGrid();
 
-            //setWeeklySchedule();
+            setWeeklySchedule();
 
             //monthCalenderの選択件数を1件のみにしておく
             monthCalendar1.MaxSelectionCount = 1;
@@ -332,77 +332,77 @@ namespace MySchedule
         /// <param name="e"></param>
         private void scheduleGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            try
-            {
+            //try
+            //{
 
-                //ダブルクリックされた場所の取得
-                Point p = scheduleGrid.PointToClient(Cursor.Position);
-                DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
-                if (hti.ColumnIndex > 0)
-                { 
-                if (hti.RowIndex > 0)
-                    {
-                        //7つ右のスケジュールIDを格納しているセルを取得
-                        var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
+            //    //ダブルクリックされた場所の取得
+            //    Point p = scheduleGrid.PointToClient(Cursor.Position);
+            //    DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
+            //    if (hti.ColumnIndex > 0)
+            //    { 
+            //    if (hti.RowIndex > 0)
+            //        {
+            //            //7つ右のスケジュールIDを格納しているセルを取得
+            //            var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
 
-                        //セルの値がnullでも0でもなければ次の処理へ
-                        if (selectedCell != null && (int)selectedCell != 0)
-                        {
-                            //ログインIDとスケジュールIDを渡して詳細画面を開く
-                            ScheduleDetail sd = new ScheduleDetail();
-                            sd.userId = userId;           //ログインIDを渡す
-                            sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
-                            sd.ShowDialog(this);
-                            sd.Dispose();
-                        }
-                        else if (selectedCell == null && (int)selectedCell == 0)
-                        {
-                            //セルの中身がnullの場合
-                            return;
-                        }
-                        //セルの値が0(何も予定が入っていない)場合
-                        if ((int)selectedCell == 0)
-                        {
-                            //新規登録フォームを開く
-                            ScheduleRegistration sr = new ScheduleRegistration();
-                            //flgを立てておく(これをもとにどの画面から来たかを整理する)
-                            sr.flg = true;
+            //            //セルの値がnullでも0でもなければ次の処理へ
+            //            if (selectedCell != null && (int)selectedCell != 0)
+            //            {
+            //                //ログインIDとスケジュールIDを渡して詳細画面を開く
+            //                ScheduleDetail sd = new ScheduleDetail();
+            //                sd.userId = userId;           //ログインIDを渡す
+            //                sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
+            //                sd.ShowDialog(this);
+            //                sd.Dispose();
+            //            }
+            //            else if (selectedCell == null && (int)selectedCell == 0)
+            //            {
+            //                //セルの中身がnullの場合
+            //                return;
+            //            }
+            //            //セルの値が0(何も予定が入っていない)場合
+            //            if ((int)selectedCell == 0)
+            //            {
+            //                //新規登録フォームを開く
+            //                ScheduleRegistration sr = new ScheduleRegistration();
+            //                //flgを立てておく(これをもとにどの画面から来たかを整理する)
+            //                sr.flg = true;
 
-                            //日付・時刻をそれぞれのスケジュールのセルのヘッダーから持ってくる
-                            String defaultdate = scheduleGrid.Rows[0].Cells[hti.ColumnIndex].Value.ToString();
-                            String start = scheduleGrid.Rows[hti.RowIndex].Cells[0].Value.ToString();
-                            String ending;
-                            //もし最後のセルなら
-                            if (start == "23:00")
-                            {
-                                //時間が24時間を超えないよう調整
-                                ending = "23:59";
-                            }
-                            //最後のセルではない場合
-                            else
-                            {
-                                //1つ下のセルのヘッダーから取得
-                                ending = scheduleGrid.Rows[hti.RowIndex + 1].Cells[0].Value.ToString();
-                            }
-                            sr.userId = userId;                             //ログインIDを渡す
-                            sr.defaultDate = DateTime.Parse(defaultdate);   //日付をDateTime変換して渡す
-                            sr.start = DateTime.Parse(start);               //開始時刻をDateTime変換して壊す
-                            sr.ending = DateTime.Parse(ending);             //終了時間をDateTime変換して渡す
+            //                //日付・時刻をそれぞれのスケジュールのセルのヘッダーから持ってくる
+            //                String defaultdate = scheduleGrid.Rows[0].Cells[hti.ColumnIndex].Value.ToString();
+            //                String start = scheduleGrid.Rows[hti.RowIndex].Cells[0].Value.ToString();
+            //                String ending;
+            //                //もし最後のセルなら
+            //                if (start == "23:00")
+            //                {
+            //                    //時間が24時間を超えないよう調整
+            //                    ending = "23:59";
+            //                }
+            //                //最後のセルではない場合
+            //                else
+            //                {
+            //                    //1つ下のセルのヘッダーから取得
+            //                    ending = scheduleGrid.Rows[hti.RowIndex + 1].Cells[0].Value.ToString();
+            //                }
+            //                sr.userId = userId;                             //ログインIDを渡す
+            //                sr.defaultDate = DateTime.Parse(defaultdate);   //日付をDateTime変換して渡す
+            //                sr.start = DateTime.Parse(start);               //開始時刻をDateTime変換して壊す
+            //                sr.ending = DateTime.Parse(ending);             //終了時間をDateTime変換して渡す
 
-                            sr.ShowDialog(this);
-                            sr.Dispose();
-                        }
-                        else if (selectedCell == null)
-                        {
-                            //セルの中身がnullの場合
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+            //                sr.ShowDialog(this);
+            //                sr.Dispose();
+            //            }
+            //            else if (selectedCell == null)
+            //            {
+            //                //セルの中身がnullの場合
+            //            }
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.ToString());
+            //}
 
         }
 
@@ -413,11 +413,11 @@ namespace MySchedule
         /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
-            //履歴確認画面を開く
-            UpdateHistoryData uhd = new UpdateHistoryData();
-            uhd.userId = userId;    //ログインIDを渡す
-            uhd.ShowDialog(this);
-            uhd.Dispose();
+            ////履歴確認画面を開く
+            //UpdateHistoryData uhd = new UpdateHistoryData();
+            //uhd.userId = userId;    //ログインIDを渡す
+            //uhd.ShowDialog(this);
+            //uhd.Dispose();
         }
 
         /// <summary>
@@ -427,11 +427,11 @@ namespace MySchedule
         /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
-            //パスワード再設定画面を開く
-            ResetPassword rp = new ResetPassword();
-            rp.userId = userId;     //ログインIDを渡す
-            rp.ShowDialog(this);
-            rp.Dispose();
+            ////パスワード再設定画面を開く
+            //ResetPassword rp = new ResetPassword();
+            //rp.userId = userId;     //ログインIDを渡す
+            //rp.ShowDialog(this);
+            //rp.Dispose();
         }
 
         /// <summary>
@@ -441,11 +441,11 @@ namespace MySchedule
         /// <param name="e"></param>
         private void button4_Click(object sender, EventArgs e)
         {
-            //予定一覧画面を開く
-            AllSchedules als = new AllSchedules();
-            als.userId = userId;        //ログインIDを渡す
-            als.ShowDialog(this);
-            als.Dispose();
+            ////予定一覧画面を開く
+            //AllSchedules als = new AllSchedules();
+            //als.userId = userId;        //ログインIDを渡す
+            //als.ShowDialog(this);
+            //als.Dispose();
         }
 
     }
