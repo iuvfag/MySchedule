@@ -31,7 +31,7 @@ namespace MySchedule
             //ログインIDをもとにすべてのスケジュールを取得し、データテーブルに格納する
             ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
             //格納したデータテーブルとデータグリッドを紐づける
-            dataGridView1.DataSource = siDAO.getAllSchedule(userId);
+            dataGridView1.DataSource = siDAO.GetAllSchedule(userId);
             dataGridView1.Columns[0].Visible = false;   //1行目は見えなくする(スケジュールID)
             //カラムの幅設定など
             dataGridView1.Columns[1].Width = 80;
@@ -45,7 +45,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             //クリックされたセルを調べる
             Point p = dataGridView1.PointToClient(Cursor.Position);
@@ -71,7 +71,7 @@ namespace MySchedule
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
@@ -110,7 +110,7 @@ namespace MySchedule
                     key = dataGridView1.Rows[i].Cells[6].Value.ToString();          //ハッシュキー
 
                     //データグリッドの値をもとにハッシュキーを作成
-                    checkKey = createHashKey(userId, startTime, endingTime, subject, detail);
+                    checkKey = CreateHashKey(userId, startTime, endingTime, subject, detail);
                     //現在表示されているものと比較
                     if (key != checkKey)
                     {
@@ -139,7 +139,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>作成したハッシュキーを格納したString型の変数</returns>
-        private String createHashKey(String userId, DateTime startTime, DateTime endingTime, String subject,
+        private String CreateHashKey(String userId, DateTime startTime, DateTime endingTime, String subject,
             String detail)
         {
             //まず、引数をすべて連結

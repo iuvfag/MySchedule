@@ -27,7 +27,7 @@ namespace MySchedule
         {
             //表示する編集履歴をDBから取得
             RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-            dt = rhDAO.getRegistHistoryData(userId);
+            dt = rhDAO.GetRegistHistoryData(userId);
             //データテーブルとデータグリッドをつなげる
             dataGridView1.DataSource = dt;
 
@@ -40,7 +40,7 @@ namespace MySchedule
             label1.TextAlign = ContentAlignment.MiddleCenter;
         }
 
-        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             //try
             //{
@@ -106,7 +106,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
@@ -159,7 +159,7 @@ namespace MySchedule
                     }
                     
                     //データグリッドの値をもとにハッシュキーを作成
-                    checkKey = createHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, subject,
+                    checkKey = CreateHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, subject,
                         detail, previousHashKey);
                     //現在表示されているものと比較
                     if (key != checkKey)
@@ -194,7 +194,7 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <param name="previousHashKey">前回のハッシュキー</param>
         /// <returns></returns>
-        private String createHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
+        private String CreateHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
             DateTime updateEndingTime, String subject, String detail, String previousHashKey)
         {
             //結果を初期化しておく

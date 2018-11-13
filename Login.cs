@@ -36,7 +36,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合に強制終了するためのtry-catch文
             try
@@ -46,8 +46,8 @@ namespace MySchedule
                 String password = textBox2.Text;
 
                 //入力内容をInputCheckerに渡し、入力内容をチェック
-                String userIdCheck = userId.doCheck("ログインID", 1, 15);
-                String passwordCheck = password.doCheck("パスワード", 5, 15);
+                String userIdCheck = userId.DoCheck("ログインID", 1, 15);
+                String passwordCheck = password.DoCheck("パスワード", 5, 15);
 
                 //入力内容に問題がなく何も帰ってこなかった場合は次の処理へ
                 if (string.IsNullOrWhiteSpace(userIdCheck) && String.IsNullOrWhiteSpace(passwordCheck))
@@ -55,16 +55,16 @@ namespace MySchedule
 
                     CommonUtility cu = new CommonUtility();
                     //パスワード暗号化の準備、まずログインIDをハッシュ関数化する
-                    String userIdHash = cu.createHashKey(userId);
+                    String userIdHash = cu.CreateHashKey(userId);
                     //パスワードをハッシュ関数に変換する
-                    password = cu.createHashKey(password);
+                    password = cu.CreateHashKey(password);
                     //上記2つの値を連結してハッシュ関数化したものをパスワードとして格納する
-                    password = cu.createHashKey(userIdHash, password);
+                    password = cu.CreateHashKey(userIdHash, password);
 
                     //ログインIDとパスワードをログイン用メソッドに渡し、結果をUserInfoDTOに格納
                     UserInfoDTO uiDTO = new UserInfoDTO();
                     UserInfoDAO uiDAO = new UserInfoDAO();
-                    uiDTO = uiDAO.login(userId, password);
+                    uiDTO = uiDAO.Login(userId, password);
 
                     //値が取れたかどうかチェック
                     if (uiDTO.userId != null)
@@ -82,8 +82,10 @@ namespace MySchedule
                         else
                         {
                             //とれていたらスケジュールを呼び出し、ログインIDを渡す
-                            ScheduleCalender sc = new ScheduleCalender();
-                            sc.userId = uiDTO.userId;
+                            ScheduleCalender sc = new ScheduleCalender()
+                            {
+                                userId = uiDTO.userId
+                            };
                             sc.ShowDialog(this);
 
                             //スケジュールを閉じた場合はログインIDとパスワード入力欄は空に戻しておく
@@ -121,7 +123,7 @@ namespace MySchedule
             catch (Exception ex)
             {
                 //例外処理としてErrorMessageクラスを呼び出す
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
 
             
@@ -131,7 +133,7 @@ namespace MySchedule
         /// <summary>
         /// 新規登録ボタンが押された場合の動作
         /// </summary>
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             ///何らかの不具合が発生た場合に強制終了するためのtry-catch文
             try
@@ -149,7 +151,7 @@ namespace MySchedule
             catch (Exception ex)
             {
                 //例外処理としてErrorMessageクラスを呼び出す
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
             
         }

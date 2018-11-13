@@ -20,7 +20,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="value">渡す値</param>
         /// <returns></returns>
-        internal String createHashKey(String value)
+        internal String CreateHashKey(String value)
         {
             byte[] hash = null;
             var bytes = Encoding.Unicode.GetBytes(value);
@@ -38,7 +38,7 @@ namespace MySchedule
         /// <param name="value1">渡す値①</param>
         /// <param name="value2">渡す値②</param>
         /// <returns></returns>
-        internal String createHashKey(String value1, String value2)
+        internal String CreateHashKey(String value1, String value2)
         {
             byte[] hash = null;
             var bytes = Encoding.Unicode.GetBytes($"{value1}{value2}");
@@ -63,7 +63,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>作成したハッシュキーを格納したString型の変数</returns>
-        internal String createHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
+        internal String CreateHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
             DateTime updateEndingTime, String subject, String detail, String previousHashKey)
         {
 
@@ -97,7 +97,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>作成したハッシュキーを格納したString型の変数</returns>
-        internal String createHashKey(String userId, DateTime startTime, DateTime endingTime, String subject, 
+        internal String CreateHashKey(String userId, DateTime startTime, DateTime endingTime, String subject, 
             String detail)
         {
             //引数として渡された値をベースにハッシュ関数を生成
@@ -159,7 +159,7 @@ namespace MySchedule
         /// <param name="minLength">最小文字数</param>
         /// <param name="maxLength">最大文字数</param>
         /// <returns>メッセージを格納したString型の変数</returns>
-        internal static String doCheck(this String s, String valueType, int minLength, int maxLength)
+        internal static String DoCheck(this String s, String valueType, int minLength, int maxLength)
         {
 
             //戻すメッセージを初期化
@@ -193,7 +193,7 @@ namespace MySchedule
         /// <param name="valueType">値の種類(そのメッセージに表示される)</param>
         /// <param name="maxLength"></param>
         /// <returns>メッセージを格納したString型の変数</returns>
-        internal static String doCheck2(this String s, String valueType, int maxLength)
+        internal static String DoCheck2(this String s, String valueType, int maxLength)
         {
 
             //結果を初期化
@@ -220,7 +220,7 @@ namespace MySchedule
         /// <param name="valueType">値の種類(そのメッセージに表示される)</param>
         /// <param name="maxLength"最大文字数></param>
         /// <returns>メッセージを格納したString型の変数</returns>
-        internal static String doCheck3(this String s, String valueType, int maxLength)
+        internal static String DoCheck3(this String s, String valueType, int maxLength)
         {
             String result = "";
 
@@ -238,7 +238,7 @@ namespace MySchedule
         /// <param name="password">パスワード</param>
         /// <param name="reComfirmationPassword">再確認用パスワード</param>
         /// <returns>メッセージを格納したString型の変数</returns>
-        internal static String valueCompare(this String s, String reComfirmationPassword,
+        internal static String ValueCompare(this String s, String reComfirmationPassword,
             String passwordType1, String passwordType2)
         {
 

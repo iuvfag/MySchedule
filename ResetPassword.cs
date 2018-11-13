@@ -35,13 +35,13 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             //このフォームを閉じる
             this.Close();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             //入力欄の値をそれぞれフィールド変数に格納
             String currentPassword = textBox1.Text;
@@ -49,12 +49,12 @@ namespace MySchedule
             String reConfirmationNewPassword = textBox3.Text;
 
             //入力内容の正誤チェック
-            String currentPasswordCheck = currentPassword.doCheck("現在のパスワード", 5, 15);
-            String newPasswordCheck = newPassword.doCheck("新しいパスワード", 5, 15);
-            String reConfirmarionNewPasswordCheck = reConfirmationNewPassword.doCheck("新しいパスワード(再確認用)", 5, 15);
+            String currentPasswordCheck = currentPassword.DoCheck("現在のパスワード", 5, 15);
+            String newPasswordCheck = newPassword.DoCheck("新しいパスワード", 5, 15);
+            String reConfirmarionNewPasswordCheck = reConfirmationNewPassword.DoCheck("新しいパスワード(再確認用)", 5, 15);
             
             //新しいパスワードと再確認用パスワードが等しいか調べる
-            String passwordCompare = newPassword.valueCompare(reConfirmationNewPassword,
+            String passwordCompare = newPassword.ValueCompare(reConfirmationNewPassword,
                 "新しいパスワード", "新しいパスワード(再確認用)");
 
             //すべてのチェックに問題がなければ次の処理へ
@@ -64,24 +64,24 @@ namespace MySchedule
                 //コモンユーティリティの呼び出し
                 CommonUtility cu = new CommonUtility();
                 //ログインIDをハッシュ関数化
-                String userIdHash = cu.createHashKey(userId);
+                String userIdHash = cu.CreateHashKey(userId);
                 //現在のパスワードをハッシュ関数化
-                currentPassword = cu.createHashKey(currentPassword);
+                currentPassword = cu.CreateHashKey(currentPassword);
                 //ログインIDのハッシュ関数と現在のパスワードのハッシュ関数を連結してさらにハッシュ関数化
-                currentPassword = cu.createHashKey(userIdHash, currentPassword);
+                currentPassword = cu.CreateHashKey(userIdHash, currentPassword);
 
                 //新しいパスワードをハッシュ関数化
-                newPassword = cu.createHashKey(newPassword);
+                newPassword = cu.CreateHashKey(newPassword);
                 //ログインIDのハッシュ関数と新しいパスワードのハッシュ関数を連結してさらにハッシュ関数化
-                newPassword = cu.createHashKey(userIdHash, newPassword);
+                newPassword = cu.CreateHashKey(userIdHash, newPassword);
 
                 UserInfoDAO uiDAO = new UserInfoDAO();
 
                 //ログインIDとパスワードをもとに、まず該当するユーザーがいるかどうか調べる
-                if (uiDAO.isExistsUser(userId, currentPassword))
+                if (uiDAO.IsExistsUser(userId, currentPassword))
                 {
                     //新しいパスワードを設定するメソッドの呼び出し、更新件数を格納したresultを受け取る
-                    int result = uiDAO.resetPassword(userId, currentPassword, newPassword);
+                    int result = uiDAO.ResetPassword(userId, currentPassword, newPassword);
 
                     //更新件数が1件以上なら
                     if (result > 0)

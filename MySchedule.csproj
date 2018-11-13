@@ -102,6 +102,12 @@
     <Compile Include="ScheduleCalender.Designer.cs">
       <DependentUpon>ScheduleCalender.cs</DependentUpon>
     </Compile>
+    <Compile Include="ScheduleChoise.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScheduleChoise.Designer.cs">
+      <DependentUpon>ScheduleChoise.cs</DependentUpon>
+    </Compile>
     <Compile Include="ScheduleDetail.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -156,6 +162,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ScheduleCalender.resx">
       <DependentUpon>ScheduleCalender.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScheduleChoise.resx">
+      <DependentUpon>ScheduleChoise.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ScheduleDetail.resx">
       <DependentUpon>ScheduleDetail.cs</DependentUpon>

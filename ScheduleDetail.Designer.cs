@@ -148,7 +148,7 @@
             this.button1.TabIndex = 9;
             this.button1.Text = "戻る";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // button2
             // 
@@ -158,7 +158,7 @@
             this.button2.TabIndex = 10;
             this.button2.Text = "削除";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // button3
             // 
@@ -168,7 +168,7 @@
             this.button3.TabIndex = 11;
             this.button3.Text = "修正";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.Button3_Click);
             // 
             // ScheduleDetail
             // 

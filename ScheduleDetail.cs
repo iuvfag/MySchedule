@@ -42,7 +42,7 @@ namespace MySchedule
                 ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
                 //スケジュールの詳細をDBから取得し、DTOクラスに格納
-                siDTO = siDAO.getScheduleDetail(scheduleId);
+                siDTO = siDAO.GetScheduleDetail(scheduleId);
 
                 ////このクラスのフィールドにDTOクラスの情報を格納する
                 subject = siDTO.subject;
@@ -60,7 +60,7 @@ namespace MySchedule
             //何らかの不具合が発生した場合
             catch (Exception)
             {
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
 
         }
@@ -70,7 +70,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             this.Close();
         }
@@ -80,7 +80,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合強制終了するためのtry-catch文
             try
@@ -94,10 +94,10 @@ namespace MySchedule
                 {
 
                     RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-                    rhDAO.registHistory(userId, scheduleId, "スケジュール削除", startTime, endingTime, subject, detail);
+                    rhDAO.RegistHistory(userId, scheduleId, "スケジュール削除", startTime, endingTime, subject, detail);
 
                     //Yesの場合はDAOの削除メソッドを呼び出し、resultに結果(削除件数)を代入
-                    int result = siDAO.deleteSchedule(scheduleId);
+                    int result = siDAO.DeleteSchedule(scheduleId);
 
                     //きちんと削除されたか(削除件数が1件でもあるか)を確認
                     //1件でも存在すれば
@@ -114,7 +114,7 @@ namespace MySchedule
                         //メッセージを表示する
                         MessageBox.Show("予定の削除に失敗しました", "問題が発生しました");
                         //該当する予定が存在するか確認する
-                        if (!(siDAO.isExistsSchedule(scheduleId)))      //存在しない場合
+                        if (!(siDAO.IsExistsSchedule(scheduleId)))      //存在しない場合
                         {
                             //エラーメッセージ表示
                             MessageBox.Show("該当の予定は既に存在しません。", "予定の存在が確認できませんでした");
@@ -128,7 +128,7 @@ namespace MySchedule
             catch (Exception)
             {
                 //例外処理としてErrorMessageクラスの呼び出し
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
         }
 
@@ -137,13 +137,13 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
                 //該当する予定が既に削除されていないかどうか確認
-                if (siDAO.isExistsSchedule(scheduleId))
+                if (siDAO.IsExistsSchedule(scheduleId))
                 {
                     //スケジュール修正フォームの呼び出し
                     ScheduleUpdate su = new ScheduleUpdate();
@@ -175,7 +175,7 @@ namespace MySchedule
             catch (Exception)
             {
                 //例外処理としてErrorMessageクラスの呼び出し
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
         }
 

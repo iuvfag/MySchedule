@@ -38,7 +38,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
-        internal int registHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
+        internal int RegistHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
             DateTime updateEndingTime, String subject, String detail)
         {
             CommonUtility cu = new CommonUtility();
@@ -46,10 +46,10 @@ namespace MySchedule
             int result = 0;
             cmd.Connection = con;
 
-            String previousHashKey = getPreviousHashKey(userId);
+            String previousHashKey = GetPreviousHashKey(userId);
 
             //テーブルに格納するハッシュキーを生成する
-            String key = cu.createHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, 
+            String key = cu.CreateHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, 
                 subject, detail,previousHashKey);
 
             //SQL文の作成
@@ -106,7 +106,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <returns>DBの値を格納したデータテーブル</returns>
-        internal DataTable getRegistHistoryData(String userId)
+        internal DataTable GetRegistHistoryData(String userId)
         {
             DataSet ds = new DataSet();         //データセットのインスタンス化
             DataTable dt = new DataTable();     //データテーブルのインスタンス化
@@ -151,7 +151,7 @@ namespace MySchedule
         /// ③前回のハッシュキー(最も新しい履歴IDのハッシュキー)を取得するためのメソッド
         /// </summary>
         /// <returns>前回のハッシュキーを格納したString型の変数</returns>
-        internal String getPreviousHashKey(String userId)
+        internal String GetPreviousHashKey(String userId)
         {
             //結果を初期化
             String result = "";
@@ -199,7 +199,7 @@ namespace MySchedule
         /// ④テーブルの全レコードを取得するメソッド(管理者用)
         /// </summary>
         /// <returns>DBの値を格納したデータテーブル</returns>
-        internal DataTable getAllRegistHistory()
+        internal DataTable GetAllRegistHistory()
         {
             //DataSet、DataTableの初期化
             DataSet ds = new DataSet();

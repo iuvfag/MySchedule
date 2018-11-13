@@ -25,8 +25,8 @@ namespace MySchedule
             RegistHistoryDAO rhDAO = new RegistHistoryDAO();                //RegistHistoryDAOのインスタンス化
 
             //それぞれのデータグリッドにDBから渡されたデータテーブルを格納
-            userInfoGrid.DataSource = uiDAO.getAllUserInfo();
-            updateHistoryInfoGrid.DataSource = rhDAO.getAllRegistHistory();
+            userInfoGrid.DataSource = uiDAO.GetAllUserInfo();
+            updateHistoryInfoGrid.DataSource = rhDAO.GetAllRegistHistory();
         }
     }
 }

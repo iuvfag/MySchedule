@@ -35,7 +35,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生に強制終了するためのtry-catch文
             try
@@ -46,7 +46,7 @@ namespace MySchedule
             catch (Exception ex)
             {
                 //例外処理としてErrorMessageクラスを呼び出す
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
 
         }
@@ -56,7 +56,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合に強制終了ためのtry-catch文
             try
@@ -69,10 +69,10 @@ namespace MySchedule
                 //InputCheckerのインスタンス化
 
                 //それぞれの値のチェック
-                String userIdCheck = userId.doCheck("ログインID", 1, 15);
-                String passwordCheck = password.doCheck("パスワード", 5, 15);
-                String reConfirmationPasswordCheck = reConfirmationPassword.doCheck("再確認用パスワード", 5, 15);
-                String passwordCompare = password.valueCompare(reConfirmationPassword,
+                String userIdCheck = userId.DoCheck("ログインID", 1, 15);
+                String passwordCheck = password.DoCheck("パスワード", 5, 15);
+                String reConfirmationPasswordCheck = reConfirmationPassword.DoCheck("再確認用パスワード", 5, 15);
+                String passwordCompare = password.ValueCompare(reConfirmationPassword,
                     "パスワード", "再確認用パスワード");
 
                 //値のチェックの結果何も戻り値がなければ次の処理へ
@@ -85,17 +85,17 @@ namespace MySchedule
                     CommonUtility cu = new CommonUtility();
 
                     //パスワード暗号化の準備、まず、ログインIDをハッシュ関数化
-                    String userIdHash = cu.createHashKey(userId);
+                    String userIdHash = cu.CreateHashKey(userId);
                     //パスワードをハッシュ関数化
-                    password = cu.createHashKey(password);
+                    password = cu.CreateHashKey(password);
                     //上記二つを連結してハッシュ関数化したものをパスワードとしてDBに保存する
-                    password = cu.createHashKey(userIdHash, password);
+                    password = cu.CreateHashKey(userIdHash, password);
 
                     //ログインIDが既に存在するか確認し、問題ないなら次の処理へ
-                    if (!(uiDAO.isExistsUser(userId)))
+                    if (!(uiDAO.IsExistsUser(userId)))
                     {
                         //ユーザー情報を登録し、登録件数を戻り値として受け取る
-                        int result = uiDAO.createUser(userId, password);
+                        int result = uiDAO.CreateUser(userId, password);
 
                         //登録件数が1件でもあれば
                         if (result > 0)
@@ -150,7 +150,7 @@ namespace MySchedule
             catch (Exception ex)
             {
                 //例外処理としてErrorMessageクラスの呼び出し
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
 
         }
@@ -172,7 +172,7 @@ namespace MySchedule
             catch (Exception)
             {
                 //例外処理としてErrorMessageクラスの呼び出し
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
 
         }

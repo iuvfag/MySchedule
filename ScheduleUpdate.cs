@@ -52,7 +52,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合強制終了するためのtry-catch文
             try
@@ -63,7 +63,7 @@ namespace MySchedule
             catch (Exception)
             {
                 //例外処理としてErrorMessageクラスの呼び出し
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
 
         }
@@ -73,7 +73,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合強制終了させるtry-catch文
             try
@@ -83,8 +83,8 @@ namespace MySchedule
                 detail = detailTextbox.Text;
 
                 //「件名」、「詳細」の入力チェック
-                String subjectCheck = subject.doCheck2("件名", 250);
-                String detailCheck = detail.doCheck3("詳細", 1000);
+                String subjectCheck = subject.DoCheck2("件名", 250);
+                String detailCheck = detail.DoCheck3("詳細", 1000);
 
                 //入力欄に問題がなければ次の処理へ
                 if (String.IsNullOrWhiteSpace(subjectCheck) && String.IsNullOrWhiteSpace(detailCheck))
@@ -109,7 +109,7 @@ namespace MySchedule
                         //DAOクラスのインスタンス化
                         ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
                         //スケジュールの更新を行い結果(更新数)をresultに格納
-                        int result = siDAO.updeteSchedule(userId, scheduleId, startTime, endingTime, subject, detail);
+                        int result = siDAO.UpdeteSchedule(userId, scheduleId, startTime, endingTime, subject, detail);
 
                         //更新されたスケジュールが1件でも存在すれば次の処理へ
                         if (result > 0)
@@ -118,7 +118,7 @@ namespace MySchedule
                             MessageBox.Show("スケジュール情報を修正しました", "更新完了");
 
                             RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-                            rhDAO.registHistory(userId, scheduleId, "スケジュール修正", startTime, endingTime, subject, detail);
+                            rhDAO.RegistHistory(userId, scheduleId, "スケジュール修正", startTime, endingTime, subject, detail);
 
                             this.Close();
                         }
@@ -154,7 +154,7 @@ namespace MySchedule
             catch (Exception)
             {
                 //例外処理としてErrorMessageクラスの呼び出し
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
 
         }

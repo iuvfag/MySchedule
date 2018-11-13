@@ -37,7 +37,7 @@ namespace MySchedule
         /// <param name="userId">ログインID</param>
         /// <param name="password">パスワード</param>
         /// <returns>ログインIDを格納したString型の変数</returns>
-        internal UserInfoDTO login(String userId, String password)
+        internal UserInfoDTO Login(String userId, String password)
         {
 
             //結果を初期化
@@ -88,7 +88,7 @@ namespace MySchedule
         /// <param name="userId">ログインID</param>
         /// <param name="password">パスワード</param>
         /// <returns>更新件数を格納したint型の変数</returns>
-        internal int createUser(String userId, String password)
+        internal int CreateUser(String userId, String password)
         {
 
             //結果を初期化
@@ -132,7 +132,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <returns>bool型の変数</returns>
-        internal bool isExistsUser(String userId)
+        internal bool IsExistsUser(String userId)
         {
 
             //結果を初期化
@@ -180,7 +180,7 @@ namespace MySchedule
         /// <param name="userId"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        internal bool isExistsUser(String userId, String password)
+        internal bool IsExistsUser(String userId, String password)
         {
             //結果を初期化
             bool result = false;
@@ -233,7 +233,7 @@ namespace MySchedule
         /// <param name="password">パスワード</param>
         /// <param name="newPassword">新しいパスワード</param>
         /// <returns></returns>
-        internal int resetPassword(String userId, String password, String newPassword)
+        internal int ResetPassword(String userId, String password, String newPassword)
         {
             //結果の初期化
             int result = 0;
@@ -280,7 +280,7 @@ namespace MySchedule
         /// ⑤テーブルの全レコードを取得するメソッド(管理者用)
         /// </summary>
         /// <returns>DBの値を格納したデータテーブル</returns>
-        internal DataTable getAllUserInfo()
+        internal DataTable GetAllUserInfo()
         {
             //DataSet、DataTableの初期化
             DataSet ds = new DataSet();

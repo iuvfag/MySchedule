@@ -46,7 +46,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("HG創英角ｺﾞｼｯｸUB", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label1.Font = new System.Drawing.Font("HG創英角ﾎﾟｯﾌﾟ体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label1.Location = new System.Drawing.Point(339, 21);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(125, 12);
@@ -61,7 +61,7 @@
             this.button1.TabIndex = 1;
             this.button1.Text = "予定登録";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // toDo
             // 
@@ -75,8 +75,8 @@
             this.toDo.RowTemplate.Height = 21;
             this.toDo.Size = new System.Drawing.Size(240, 359);
             this.toDo.TabIndex = 2;
-            this.toDo.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.toDo_CellDoubleClick);
-            this.toDo.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.toDo_CellMouseClick);
+            this.toDo.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ToDo_CellDoubleClick);
+            this.toDo.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.ToDo_CellMouseClick);
             // 
             // scheduleGrid
             // 
@@ -91,15 +91,15 @@
             this.scheduleGrid.RowTemplate.Height = 20;
             this.scheduleGrid.Size = new System.Drawing.Size(501, 593);
             this.scheduleGrid.TabIndex = 3;
-            this.scheduleGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.scheduleGrid_CellDoubleClick);
-            this.scheduleGrid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.scheduleGrid_CellMouseClick);
-            this.scheduleGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.scheduleGrid_MouseUp);
+            this.scheduleGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ScheduleGrid_CellDoubleClick);
+            this.scheduleGrid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.ScheduleGrid_CellMouseClick);
+            this.scheduleGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ScheduleGrid_MouseUp);
             // 
             // label2
             // 
             this.label2.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.label2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label2.Font = new System.Drawing.Font("HG創英角ｺﾞｼｯｸUB", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label2.Font = new System.Drawing.Font("HG創英角ﾎﾟｯﾌﾟ体", 24.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label2.Location = new System.Drawing.Point(12, 301);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(240, 35);
@@ -113,12 +113,12 @@
             this.monthCalendar1.MaxSelectionCount = 1;
             this.monthCalendar1.Name = "monthCalendar1";
             this.monthCalendar1.TabIndex = 5;
-            this.monthCalendar1.DateChanged += new System.Windows.Forms.DateRangeEventHandler(this.monthCalendar1_DateChanged);
+            this.monthCalendar1.DateChanged += new System.Windows.Forms.DateRangeEventHandler(this.MonthCalendar1_DateChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("HG創英角ｺﾞｼｯｸUB", 26F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label3.Font = new System.Drawing.Font("HG創英角ﾎﾟｯﾌﾟ体", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label3.Location = new System.Drawing.Point(270, 49);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(267, 35);
@@ -133,7 +133,7 @@
             this.button2.TabIndex = 7;
             this.button2.Text = "予定変更履歴";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // button3
             // 
@@ -143,7 +143,7 @@
             this.button3.TabIndex = 8;
             this.button3.Text = "パスワード再設定";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.Button3_Click);
             // 
             // button4
             // 
@@ -153,7 +153,7 @@
             this.button4.TabIndex = 9;
             this.button4.Text = "予定一覧";
             this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.button4.Click += new System.EventHandler(this.Button4_Click);
             // 
             // ScheduleCalender
             // 

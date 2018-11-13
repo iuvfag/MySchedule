@@ -16,8 +16,6 @@ namespace MySchedule
         public String subject { get; set; }
         public List<String> subjectList = new List<string>();
         public String detail { get; set; }
-
-        
-
+        public int scheduleCount { get; set; }
     }
 }

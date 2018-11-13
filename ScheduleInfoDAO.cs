@@ -44,7 +44,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
-        internal int registSchedule(String userId, DateTime startTime, DateTime endingTime, String subject,
+        internal int RegistSchedule(String userId, DateTime startTime, DateTime endingTime, String subject,
             String detail)
         {
 
@@ -55,7 +55,7 @@ namespace MySchedule
             cmd.Connection = con;
 
             //DBに登録するハッシュキーの作成
-            String key = cu.createHashKey(userId, startTime, endingTime, subject, detail);
+            String key = cu.CreateHashKey(userId, startTime, endingTime, subject, detail);
 
             //SQL文の作成
             cmd.CommandText = "INSERT INTO schedule_info (user_id, start_time, ending_time, subject, detail, " +
@@ -106,7 +106,7 @@ namespace MySchedule
         /// <param name="userId">ログインID</param>
         /// <param name="today">日付(検索したい日付)</param>
         /// <returns>DBの値を格納したデータテーブル</returns>
-        internal DataTable getTodo(String userId, String today)
+        internal DataTable GetTodo(String userId, String today)
         {
             //データベースの値をデータグリッドに格納するために、データセット・データテーブルもインスタンス化しておく
             DataSet ds = new DataSet();
@@ -155,7 +155,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="scheduleId">スケジュールID</param>
         /// <returns>値を格納したScheduleInfoDTOクラスのインスタンス</returns>
-        internal ScheduleInfoDTO getScheduleDetail(int scheduleId)
+        internal ScheduleInfoDTO GetScheduleDetail(int scheduleId)
         {
 
             //DTOをインスタンス化しておく
@@ -210,7 +210,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="scheduleId">該当するスケジュールを割り出すために使用</param>
         /// <returns>削除されたスケジュールの件数</returns>
-        internal int deleteSchedule(int scheduleId)
+        internal int DeleteSchedule(int scheduleId)
         {
             //結果を初期化
             int result = 0;
@@ -258,7 +258,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
-        internal int updeteSchedule(String userId, int scheduleId, DateTime startTime, DateTime endingTime,
+        internal int UpdeteSchedule(String userId, int scheduleId, DateTime startTime, DateTime endingTime,
             String subject, String detail)
         {
             CommonUtility cu = new CommonUtility();
@@ -267,7 +267,7 @@ namespace MySchedule
             int result = 0;
             cmd.Connection = con;
 
-            String key = cu.createHashKey(userId, startTime, endingTime, subject, detail);
+            String key = cu.CreateHashKey(userId, startTime, endingTime, subject, detail);
 
             //SQL文の作成
             cmd.CommandText = "UPDATE schedule_info SET start_time = @startTime, ending_time = @endingTime, " +
@@ -320,7 +320,7 @@ namespace MySchedule
         /// <param name="startTime">スケジュール委開始時間(SQL文の結合の都合で今回はString型)</param>
         /// <param name="endingTime">スケジュールの終了時刻(SQL文の接合の都合で今回はString型)</param>
         /// <returns>値を格納したScheduleInfoDTOクラスのインスタンス</returns>
-        internal ScheduleInfoDTO getWeeklySchedule(String userId, String startTime, String endingTime)
+        internal ScheduleInfoDTO GetWeeklySchedule(String userId, String startTime, String endingTime)
         {
             //結果を格納するDTOをインスタンス化しておく
             ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
@@ -328,10 +328,10 @@ namespace MySchedule
 
             //SQL文の作成。今回は複雑なので検索条件は後述
             cmd.CommandText = "SELECT subject, schedule_id FROM schedule_info WHERE user_id = @userId " +
-                "AND ( (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') " +        //①
-                "OR (start_time >= '" + startTime + "' AND ending_time <= '" + endingTime + "') " +         //②
-                "OR (start_time <= '" + startTime + "' AND ending_time >= '" + startTime + "') " +          //③
-                "OR (start_time <= '" + endingTime + "' AND ending_time >= '" + endingTime + "') )";          //④
+                "AND ( (start_time >= '" + startTime + "' AND start_time <= '" + endingTime + "') " +        //①
+                "OR (ending_time > '" + startTime + "' AND ending_time <= '" + endingTime + "') " +         //②
+                "OR (start_time < '" + startTime + "' AND ending_time > '" + startTime + "') " +          //③
+                "OR (start_time < '" + endingTime + "' AND ending_time > '" + endingTime + "') )";          //④
 
             /* 検索条件
              * 
@@ -367,6 +367,7 @@ namespace MySchedule
                         siDTO.subjectList.Add(reader.GetString(0));
                         siDTO.scheduleId = reader.GetInt32(1);
                         siDTO.scheduleIdList.Add(reader.GetInt32(1));
+                        siDTO.scheduleCount++;
                     }
                 }
             }
@@ -397,7 +398,7 @@ namespace MySchedule
         /// <param name="startTime">スケジュールの開始時刻</param>
         /// <param name="endingTime">スケジュールの終了時刻</param>
         /// <returns>int型の変数</returns>
-        internal bool isExistsSchedule(String userId, int scheduleId, String startTime, String endingTime)
+        internal bool IsExistsSchedule(String userId, int scheduleId, String startTime, String endingTime)
         {
             //結果を初期化
             bool result = false;
@@ -472,7 +473,7 @@ namespace MySchedule
         /// <param name="startTime">スケジュールの開始時刻</param>
         /// <param name="endingTime"スケジュールの終了時刻></param>
         /// <returns>int型の変数</returns>
-        internal bool isExistsSchedule(String userId, String startTime, String endingTime)
+        internal bool IsExistsSchedule(String userId, String startTime, String endingTime)
         {
             //結果を初期化
             bool result = false;
@@ -542,7 +543,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>スケジュールIDを格納したint型変数</returns>
-        internal int getScheduleInfomation(String userId, DateTime startTime,
+        internal int GetScheduleInfomation(String userId, DateTime startTime,
             DateTime endingTime, String subject, String detail)
         {
             //結果を初期化
@@ -606,7 +607,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <returns></returns>
-        internal DataTable getAllSchedule(String userId)
+        internal DataTable GetAllSchedule(String userId)
         {
             //データベースの値をデータグリッドに格納するために、データセット・データテーブルもインスタンス化しておく
             DataSet ds = new DataSet();
@@ -653,7 +654,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="scheduleId">スケジュールID</param>
         /// <returns>該当する予定が存在するかどうかのbool値</returns>
-        internal bool isExistsSchedule(int scheduleId)
+        internal bool IsExistsSchedule(int scheduleId)
         {
             //結果を宣言(デフォルトはfalse)
             bool result = false;
@@ -691,43 +692,6 @@ namespace MySchedule
             }
             //resultを戻す
             return result;
-        }
-
-
-        internal ScheduleInfoDTO getScheduleInfoFromScheduleId(int scheduleId)
-        {
-            ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
-            cmd.Connection = con;
-
-            cmd.CommandText = "SELECT subject, start_time, ending_time FROM schedule_info WHERE schedule_id = @scheduleId";
-
-            cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
-
-            con.Open();
-
-            try
-            {
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        siDTO.subject = reader.GetString(0);
-                        siDTO.startTime = reader.GetDateTime(1);
-                        siDTO.endingTime = reader.GetDateTime(2);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-                throw;
-            }
-            finally
-            {
-                con.Close();
-            }
-
-            return siDTO;
         }
 
     }

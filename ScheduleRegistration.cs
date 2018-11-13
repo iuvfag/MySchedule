@@ -48,7 +48,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             //このフォームを閉じる
             this.Close();
@@ -59,7 +59,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合強制終了するためのtry-catch文
             try
@@ -70,8 +70,8 @@ namespace MySchedule
                 String detail = detailTextBox.Text;
 
                 //「件名」と「詳細」の入力内容の確認
-                String subjectCheck = subject.doCheck2("件名", 250);
-                String detailCheck = detail.doCheck3("詳細", 1000);
+                String subjectCheck = subject.DoCheck2("件名", 250);
+                String detailCheck = detail.DoCheck3("詳細", 1000);
 
                 //「日付」、「開始時刻」、「終了時刻」をそれぞれ正しい形に変換して取得
                 String date = scheduleDatePicker.Value.ToString("yyyy/MM/dd");
@@ -94,16 +94,16 @@ namespace MySchedule
                     ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
                     //登録用メソッドを呼び出し、結果をresultに格納
-                    int result = siDAO.registSchedule(userId, startTime, endingTime, subject, detail);
+                    int result = siDAO.RegistSchedule(userId, startTime, endingTime, subject, detail);
                     //登録件数が1件以上あれば
                     if (result > 0)
                     {
                         //スケジュールIDを取得して
-                        int scheduleId = siDAO.getScheduleInfomation(userId, startTime, endingTime, subject, detail);
+                        int scheduleId = siDAO.GetScheduleInfomation(userId, startTime, endingTime, subject, detail);
 
                         //履歴登録メソッドを使用して変更履歴登録
                         RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-                        rhDAO.registHistory(userId, scheduleId, "スケジュール登録", startTime, endingTime,
+                        rhDAO.RegistHistory(userId, scheduleId, "スケジュール登録", startTime, endingTime,
                             subject, detail);
                         //メッセージを表示し、画面を閉じる
                         MessageBox.Show("スケジュールを登録しました！", "登録完了！");
@@ -136,7 +136,7 @@ namespace MySchedule
             catch (Exception)
             {
                 //例外処理としてErrorMessageクラスの呼び出し
-                ErrorMessage.errorMessage();
+                ErrorMessage.ApplicationClose();
             }
 
         }

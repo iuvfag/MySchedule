@@ -15,7 +15,7 @@ namespace MySchedule
         /// <summary>
         /// エラーメッセージの表示とアプリケーションの終了を行うメソッド
         /// </summary>
-        internal static void errorMessage()
+        internal static void ApplicationClose()
         {
             MessageBox.Show("アプリケーションを終了します", "予期せぬエラーが発生しました");
             Application.Exit();     //アプリケーションの終了のための文

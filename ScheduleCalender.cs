@@ -58,12 +58,12 @@ namespace MySchedule
             scheduleGrid.RowTemplate.Height = 30;
 
             //TODOの呼び出し
-            setToDo();
+            SetToDo();
 
             //週間スケジュールのひな型呼び出し
-            setCalenderGrid();
+            SetCalenderGrid();
 
-            setWeeklySchedule();
+            SetWeeklySchedule();
 
             //monthCalenderの選択件数を1件のみにしておく
             monthCalendar1.MaxSelectionCount = 1;
@@ -74,14 +74,14 @@ namespace MySchedule
         /// <summary>
         /// TODOの呼び出しに使用するメソッド
         /// </summary>
-        private void setToDo()
+        private void SetToDo()
         {
 
             //当日の日付を取得
             var today = DateTime.Today.ToShortDateString();
 
             //日付をもとにTODO作成
-            toDo.DataSource = siDAO.getTodo(userId, today);
+            toDo.DataSource = siDAO.GetTodo(userId, today);
 
             //TODOの表示設定
             toDo.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;　//ヘッダーの中央寄せ
@@ -92,7 +92,7 @@ namespace MySchedule
         /// <summary>
         /// 週間スケジュールのひな型作成用メソッド
         /// </summary>
-        private void setCalenderGrid()
+        private void SetCalenderGrid()
         {
             //行数の指定(表示用の7行+スケジュールIDを入れておく7行+ヘッダーの1行)
             scheduleGrid.ColumnCount = 15;
@@ -125,8 +125,8 @@ namespace MySchedule
 
             //当日の日付をもとに月曜日を取得、その日付をもとに1週間分の日付を取得
             var today = DateTime.Today;
-            var startDate = getSundayDate(today);
-            setCalenderDate(startDate);
+            var startDate = GetSundayDate(today);
+            SetCalenderDate(startDate);
 
             //週間スケジュールの書式設定
             scheduleGrid.Columns[0].Width = 40;     //時間表示のセルの幅設定
@@ -154,7 +154,7 @@ namespace MySchedule
         /// 渡された日付から1週間の日付をセルとリストに格納してくれるメソッド
         /// </summary>
         /// <param name="day"></param>
-        private void setCalenderDate(DateTime day)
+        private void SetCalenderDate(DateTime day)
         {
             //週間リストは初期化しておく
             weekList.Clear();
@@ -172,7 +172,7 @@ namespace MySchedule
         /// 週間スケジュールに予定を表示するためのメソッド(デフォルトで呼び出すメソッド)
         /// 該当する1週間の予定はすべて表示
         /// </summary>
-        private void setWeeklySchedule()
+        private void SetWeeklySchedule()
         {
             //DTOクラスのインスタンス化
             ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
@@ -194,7 +194,7 @@ namespace MySchedule
                     endingTime = $"{columnValue} {endingTime}";
 
                     //DTOクラスに該当する時間の予定とスケジュールIDを格納
-                    siDTO = siDAO.getWeeklySchedule(userId, startTime, endingTime);
+                    siDTO = siDAO.GetWeeklySchedule(userId, startTime, endingTime);
 
                     //セルに取得してきた予定を格納
                     scheduleGrid.Rows[n].Cells[i].Value = siDTO.subject;
@@ -202,13 +202,19 @@ namespace MySchedule
                     //7個右のセルにスケジュールIDを格納
                     scheduleGrid.Rows[n].Cells[i + 7].Value = siDTO.scheduleId;
 
-                    if (siDTO.subjectList.Count > 1)
+                    //グリッドの時刻(1時間)内にスケジュールの件数が1件より多く存在する場合
+                    if (siDTO.scheduleCount > 1)
                     {
+                        //セルの色はオレンジに
                         scheduleGrid[i, n].Style.BackColor = Color.Orange;
+                        //セルの値はスケジュールの件数を表示
+                        scheduleGrid.Rows[n].Cells[i].Value = $"{siDTO.scheduleCount}件";
                     }
-                    else
+                    //グリッドの時刻(1時間)内にスケジュールの件数が1件の場合
+                    else if(siDTO.scheduleCount == 1)
                     {
-                        scheduleGrid[i, n].Style.BackColor = Color.White;
+                        //セルの色はスカイブルーに
+                        scheduleGrid[i, n].Style.BackColor = Color.SkyBlue;
                     }
 
                 }
@@ -225,11 +231,11 @@ namespace MySchedule
         /// <param name="todoStartTime">TODOの選択開始時刻</param>
         /// <param name="todoEndingTime">TODOの選択終了時刻</param>
         /// <param name="subject">TODOの選択件名</param>
-        private void setWeeklySchedule(int scheduleId, String todoDate, DateTime todoStartTime,
+        private void SetWeeklySchedule(int scheduleId, String todoDate, DateTime todoStartTime,
             DateTime todoEndingTime, String subject)
         {
             scheduleGrid.ClearSelection();
-            setWeeklySchedule();
+            SetWeeklySchedule();
 
             //まず、1週間分for文を回す(1～7なのはグリッドの番地に合わせているため)
             for (int i = 1; i <= 7; i++)
@@ -260,8 +266,8 @@ namespace MySchedule
                          * 週間スケジュールに予定を表示する場合は
                          * 予定時刻とグリッドの時刻(特定の1時間)が以下の関係となる場合である
                          */
-                        //①予定の開始時刻と終了時刻がグリッドの時刻(特定の1時間内)に囲まれている場合
-                        if (todoStartTime <= scheduleGridStartTime && todoEndingTime >= scheduleGridEndingTime)
+                        //①グリッドの時刻(特定の1時間内)が予定の開始時刻と終了時刻に囲まれている場合
+                        if (todoStartTime <= scheduleGridStartTime && todoStartTime >= scheduleGridEndingTime)
                         {
                             //セルに件名を代入する
                             scheduleGrid.Rows[n].Cells[i].Value = subject;
@@ -269,8 +275,8 @@ namespace MySchedule
                             scheduleGrid.Rows[n].Cells[i + 7].Value = scheduleId;
                             scheduleGrid.Rows[n].Cells[i].Selected = true;
                         }
-                        //②予定の開始時刻と終了時刻がグリッドの時刻(特定の1時間内)に囲まれている場合
-                        else if (todoStartTime >= scheduleGridStartTime && todoEndingTime <= scheduleGridEndingTime)
+                        //②グリッドの時刻(特定の1時間内)が予定の開始時刻と終了時刻を囲んでいる場合
+                        else if (todoEndingTime > scheduleGridStartTime && todoEndingTime <= scheduleGridEndingTime)
                         {
                             //セルに件名を代入する
                             scheduleGrid.Rows[n].Cells[i].Value = subject;
@@ -278,8 +284,9 @@ namespace MySchedule
                             scheduleGrid.Rows[n].Cells[i + 7].Value = scheduleId;
                             scheduleGrid.Rows[n].Cells[i].Selected = true;
                         }
-                        //③予定の開始時刻がグリッドの時刻(特定の1時間内)に囲まれているもの
-                        else if (todoStartTime <= scheduleGridStartTime && todoEndingTime >= scheduleGridStartTime)
+                        //③グリッドの開始時刻が予定の開始時刻と終了時刻に囲まれているもの
+                        else
+                        if (todoStartTime < scheduleGridStartTime && todoEndingTime > scheduleGridStartTime)
                         {
                             //セルに件名を代入する
                             scheduleGrid.Rows[n].Cells[i].Value = subject;
@@ -288,7 +295,7 @@ namespace MySchedule
                             scheduleGrid.Rows[n].Cells[i].Selected = true;
                         }
                         //④予定の終了時刻がグリッドの時刻(特定の1時間内)に囲まれているもの
-                        else if (todoStartTime <= scheduleGridEndingTime && todoEndingTime >= scheduleGridEndingTime)
+                        else if (todoStartTime < scheduleGridEndingTime && todoEndingTime > scheduleGridEndingTime)
                         {
                             //セルに件名を代入する
                             scheduleGrid.Rows[n].Cells[i].Value = subject;
@@ -309,7 +316,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="day"></param>
         /// <returns></returns>
-        private DateTime getSundayDate(DateTime day)
+        private DateTime GetSundayDate(DateTime day)
         {
             //週における日曜日の日付(0)から、渡された日が週の何日目かを引く
             return day.AddDays(DayOfWeek.Sunday - day.DayOfWeek);
@@ -320,19 +327,19 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
+        private void MonthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
         {
             var selectedDate = monthCalendar1.SelectionStart;   //選択された日付の取得
-            var startDate = getSundayDate(selectedDate);        //選択された日付から、週の日曜を割り出す
+            var startDate = GetSundayDate(selectedDate);        //選択された日付から、週の日曜を割り出す
 
-            setCalenderDate(startDate);     //日付を週間スケジュールに格納していくメソッドの呼び出し
-            setWeeklySchedule();            //週間予定を表示する
+            SetCalenderDate(startDate);     //日付を週間スケジュールに格納していくメソッドの呼び出し
+            SetWeeklySchedule();            //週間予定を表示する
 
             //選択された日付をもとにTODOに予定を読み込ませる
-            toDo.DataSource = siDAO.getTodo(userId, selectedDate.ToShortDateString());
+            toDo.DataSource = siDAO.GetTodo(userId, selectedDate.ToShortDateString());
             label2.Text = $"{selectedDate}";
 
-            //ToDoの選択状態は解除しておく
+            //ToDoのセルの選択状態は解除しておく
             toDo.CurrentCell = null;
         }
 
@@ -341,12 +348,14 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             //予定登録画面を開く
-            ScheduleRegistration sr = new ScheduleRegistration();
-            sr.userId = userId;     //ログインIDを渡しておく
-            sr.defaultDate = monthCalendar1.SelectionStart;
+            ScheduleRegistration sr = new ScheduleRegistration()
+            {
+                userId = userId,     //ログインIDを渡しておく
+                defaultDate = monthCalendar1.SelectionStart
+            };
             sr.ShowDialog(this);
             sr.Dispose();
         }
@@ -361,9 +370,9 @@ namespace MySchedule
             //monthCalenderの日付を取得(前回選択された日付のまま)
             var day = monthCalendar1.SelectionStart;
             //日付をもとにTODO作成
-            toDo.DataSource = siDAO.getTodo(userId, day.ToShortDateString());
+            toDo.DataSource = siDAO.GetTodo(userId, day.ToShortDateString());
             //週間スケジュールを読み込みなおす
-            setWeeklySchedule();
+            SetWeeklySchedule();
         }
 
         /// <summary>
@@ -381,7 +390,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void toDo_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void ToDo_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             //ダブルクリックされたセルの場所を取得
             Point p = toDo.PointToClient(Cursor.Position);
@@ -395,9 +404,11 @@ namespace MySchedule
                 scheduleId = (int)toDo.Rows[hti.RowIndex].Cells[0].Value;
 
                 //詳細画面を開く
-                ScheduleDetail sd = new ScheduleDetail();
-                sd.userId = userId;           //ログインIDを渡す
-                sd.scheduleId = scheduleId;   //スケジュールIDを渡す
+                ScheduleDetail sd = new ScheduleDetail()
+                {
+                    userId = userId,           //ログインIDを渡す
+                    scheduleId = scheduleId   //スケジュールIDを渡す
+                };
                 sd.Show(this);
             }
 
@@ -409,22 +420,31 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void scheduleGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void ScheduleGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
 
             //クリックされたセルの場所を取得
             Point p = scheduleGrid.PointToClient(Cursor.Position);
-
             DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
 
-            //日付リストから今度は日付を取得
-            var selectedDate = weekList[hti.ColumnIndex - 1].ToShortDateString();
-
-            //押下されたセルが週の部分か確認(そうでなければnull)
-            if (selectedDate != null)
+            //押下されたセルのインデックスが0以上である場合(セルのヘッダーなどではない場合)は次の処理へ
+            if (hti.RowIndex > 0 && hti.ColumnIndex > 0)
             {
-                //週間スケジュールで押下された部分の日付をmonthCalenderの選択にも反映させる
-                monthCalendar1.SelectionStart = DateTime.Parse(selectedDate.ToString());
+                //日付リストから今度は日付を取得
+                var selectedDate = weekList[hti.ColumnIndex - 1].ToShortDateString();
+
+                //押下されたセルが週の部分か確認(そうでなければnull)
+                if (selectedDate != null)
+                {
+                    //週間スケジュールで押下された部分の日付をmonthCalenderの選択にも反映させる
+                    monthCalendar1.SelectionStart = DateTime.Parse(selectedDate.ToString());
+                }
+            }
+            //押下された場所がヘッダー等であった場合
+            else
+            {
+                //現在選択されているセルの選択を解除
+                scheduleGrid.CurrentCell = null;
             }
 
         }
@@ -436,7 +456,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void scheduleGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void ScheduleGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -449,31 +469,27 @@ namespace MySchedule
                     if (hti.RowIndex > 0)
                     {
                         //7つ右のスケジュールIDを格納しているセルを取得
-                        var selectedCell = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
+                        var selectedCellId = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
 
                         //セルの値がnullでも0でもなければ次の処理へ
-                        if (selectedCell != null && (int)selectedCell != 0)
+                        if (selectedCellId != null && (int)selectedCellId != 0)
                         {
+
                             //ログインIDとスケジュールIDを渡して詳細画面を開く
                             ScheduleDetail sd = new ScheduleDetail();
                             sd.userId = userId;           //ログインIDを渡す
-                            sd.scheduleId = (int)selectedCell;   //スケジュールIDを渡しておく
+                            sd.scheduleId = (int)selectedCellId;   //スケジュールIDを渡しておく
                             sd.ShowDialog(this);
                             sd.Dispose();
                         }
-                        else if (selectedCell == null && (int)selectedCell == 0)
+                        else if (selectedCellId == null && (int)selectedCellId == 0)
                         {
                             //セルの中身がnullの場合
                             return;
                         }
                         //セルの値が0(何も予定が入っていない)場合
-                        if ((int)selectedCell == 0)
+                        if ((int)selectedCellId == 0)
                         {
-                            //新規登録フォームを開く
-                            ScheduleRegistration sr = new ScheduleRegistration();
-                            //flgを立てておく(これをもとにどの画面から来たかを整理する)
-                            sr.flg = true;
-
                             //日付を日付リストから持ってくる
                             String defaultdate = weekList[hti.ColumnIndex - 1].ToShortDateString();
                             //時刻をスケジュールのセルのヘッダーから持ってくる
@@ -491,17 +507,24 @@ namespace MySchedule
                                 //1つ下のセルのヘッダーから取得
                                 ending = scheduleGrid.Rows[hti.RowIndex + 1].Cells[0].Value.ToString();
                             }
-                            sr.userId = userId;                             //ログインIDを渡す
-                            sr.defaultDate = DateTime.Parse(defaultdate);   //日付をDateTime変換して渡す
-                            sr.start = DateTime.Parse(start);               //開始時刻をDateTime変換して壊す
-                            sr.ending = DateTime.Parse(ending);             //終了時間をDateTime変換して渡す
-
+                            //新規登録フォームを開く
+                            ScheduleRegistration sr = new ScheduleRegistration()
+                            {
+                                //flgを立てておく(これをもとにどの画面から来たかを整理する)
+                                flg = true,
+                                userId = userId,                             //ログインIDを渡す
+                                defaultDate = DateTime.Parse(defaultdate),   //日付をDateTime変換して渡す
+                                start = DateTime.Parse(start),               //開始時刻をDateTime変換して壊す
+                                ending = DateTime.Parse(ending)             //終了時間をDateTime変換して渡す
+                            };
                             sr.ShowDialog(this);
                             sr.Dispose();
                         }
-                        else if (selectedCell == null)
+                        //セルの値がnullの場合(ヘッダーなどの場所を指定してしまった場合)
+                        else if (selectedCellId == null)
                         {
-                            //セルの中身がnullの場合
+                            //現在選択されているセルの選択解除
+                            scheduleGrid.CurrentCell = null;
                         }
                     }
                 }
@@ -518,11 +541,13 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             ////履歴確認画面を開く
-            //UpdateHistoryData uhd = new UpdateHistoryData();
-            //uhd.userId = userId;    //ログインIDを渡す
+            //UpdateHistoryData uhd = new UpdateHistoryData()
+            //{
+            //    userId = userId    //ログインIDを渡す
+            //};
             //uhd.ShowDialog(this);
             //uhd.Dispose();
         }
@@ -532,11 +557,13 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
             ////パスワード再設定画面を開く
-            //ResetPassword rp = new ResetPassword();
-            //rp.userId = userId;     //ログインIDを渡す
+            //ResetPassword rp = new ResetPassword()
+            //{
+            //    userId = userId     //ログインIDを渡す
+            //};
             //rp.ShowDialog(this);
             //rp.Dispose();
         }
@@ -546,11 +573,13 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button4_Click(object sender, EventArgs e)
+        private void Button4_Click(object sender, EventArgs e)
         {
             ////予定一覧画面を開く
-            //AllSchedules als = new AllSchedules();
-            //als.userId = userId;        //ログインIDを渡す
+            //AllSchedules als = new AllSchedules()
+            //{
+            //    userId = userId        //ログインIDを渡す
+            //};
             //als.ShowDialog(this);
             //als.Dispose();
         }
@@ -560,7 +589,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void scheduleGrid_MouseUp(object sender, MouseEventArgs e)
+        private void ScheduleGrid_MouseUp(object sender, MouseEventArgs e)
         {
             try
             {
@@ -579,9 +608,10 @@ namespace MySchedule
                         rowIndexList.Add(c.RowIndex);           //列のインデックスをリストに格納していく
                     }
 
-                    if (columnIndexList.Count > 1)
+                    if (columnIndexList.Count == 0 || rowIndexList.Count == 0)
                     {
-
+                        scheduleGrid.CurrentCell = null;
+                        return;
                     }
                     //それぞれのリストをソートしておく
                     rowIndexList.Sort();
@@ -592,6 +622,13 @@ namespace MySchedule
                     int firstIndex = rowIndexList[0];
                     //int型の変数「lastIndex」に列のインデックを格納したリストの最初の要素を格納(1番下の選択セル)
                     int lastIndex = rowIndexList[rowIndexList.Count - 1];
+
+                    if (firstIndex <= 0 || columnIndex <= 0)
+                    {
+                        scheduleGrid.CurrentCell = null;
+                        return;
+                    }
+
                     //日付リストから日付を取得
                     String date = weekList[columnIndex - 1].ToShortDateString();
                     //列インデックスをもとに選択範囲のセルの1番最初の時間を取得
@@ -600,18 +637,22 @@ namespace MySchedule
                     String endingTime = scheduleGrid.Rows[lastIndex + 1].Cells[0].Value.ToString();
 
                     //予定登録画面の呼び出し
-                    ScheduleRegistration sr = new ScheduleRegistration();
-                    sr.flg = true;                          //figを立てておく(これでどの画面から来たか認識する)
-                    sr.userId = userId;                     //ログインIDを渡す
-                    sr.defaultDate = DateTime.Parse(date);  //日付を渡す
-                    sr.start = DateTime.Parse(startTime);   //開始時刻を渡す
-                    sr.ending = DateTime.Parse(endingTime); //終了時刻を渡す
+                    ScheduleRegistration sr = new ScheduleRegistration()
+                    {
+                        flg = true,                          //figを立てておく(これでどの画面から来たか認識する)
+                        userId = userId,                     //ログインIDを渡す
+                        defaultDate = DateTime.Parse(date),  //日付を渡す
+                        start = DateTime.Parse(startTime),   //開始時刻を渡す
+                        ending = DateTime.Parse(endingTime) //終了時刻を渡す
+                    };
                     sr.ShowDialog(this);
                     sr.Dispose();
 
                 }
             }
-
+            catch (NullReferenceException ex){
+                throw;
+            }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
@@ -620,7 +661,12 @@ namespace MySchedule
 
         }
 
-        private void toDo_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        /// <summary>
+        /// TODOのセルがクリックされた場合の処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ToDo_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -652,7 +698,7 @@ namespace MySchedule
                     String subject = toDo.Rows[hti.RowIndex].Cells[3].Value.ToString();
 
                     //格納した情報をもとに週間スケジュールの予定表示メソッドを呼び出す
-                    setWeeklySchedule(scheduleId, todoDate, todoStartTime, todoEndingTime, subject);
+                    SetWeeklySchedule(scheduleId, todoDate, todoStartTime, todoEndingTime, subject);
 
                 }
             }
