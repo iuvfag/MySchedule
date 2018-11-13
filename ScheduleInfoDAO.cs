@@ -23,6 +23,7 @@ namespace MySchedule
          * ⑦既にその時間に予定が登録されているかチェックするメソッド(スケジュール修正用)
          * ⑧既にその時間に予定が登録されているかチェックするメソッド(新規登録用)
          * ⑨ログインIDをもとにすべての予定を取得し、データテーブルに格納するメソッド
+         * ⑩スケジュールIDをもとに該当する予定が存在するかを調べるメソッド
          */
 
         //DBへの接続の準備
@@ -43,16 +44,22 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
-        internal int registSchedule(String userId, DateTime startTime, DateTime endingTime, String subject, String detail)
+        internal int registSchedule(String userId, DateTime startTime, DateTime endingTime, String subject,
+            String detail)
         {
+
+            CommonUtility cu = new CommonUtility();
 
             //結果の初期化
             int result = 0;
             cmd.Connection = con;
 
+            //DBに登録するハッシュキーの作成
+            String key = cu.createHashKey(userId, startTime, endingTime, subject, detail);
+
             //SQL文の作成
-            cmd.CommandText = "INSERT INTO schedule_info (user_id, start_time, ending_time, subject, detail)" +
-                "VALUES(@userId, @startTime, @endingTime, @subject, @detail)";
+            cmd.CommandText = "INSERT INTO schedule_info (user_id, start_time, ending_time, subject, detail, " +
+                "schedule_key) VALUES(@userId, @startTime, @endingTime, @subject, @detail, @key)";
 
             //@部分への値の代入
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
@@ -60,6 +67,7 @@ namespace MySchedule
             cmd.Parameters.Add(new NpgsqlParameter("@endingTime", endingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
+            cmd.Parameters.Add(new NpgsqlParameter("@key", key));
 
             //接続
             con.Open();
@@ -86,6 +94,7 @@ namespace MySchedule
             cmd.Parameters.Remove("@endingTime");
             cmd.Parameters.Remove("@subject");
             cmd.Parameters.Remove("@detail");
+            cmd.Parameters.Remove("@key");
 
             //結果を戻す
             return result;
@@ -200,7 +209,7 @@ namespace MySchedule
         /// ④既存のスケジュールの削除を行うメソッド(戻り値は実行結果【件数】)
         /// </summary>
         /// <param name="scheduleId">該当するスケジュールを割り出すために使用</param>
-        /// <returns></returns>
+        /// <returns>削除されたスケジュールの件数</returns>
         internal int deleteSchedule(int scheduleId)
         {
             //結果を初期化
@@ -249,22 +258,27 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
-        internal int updeteSchedule(int scheduleId, DateTime startTime, DateTime endingTime, String subject,
-            String detail)
+        internal int updeteSchedule(String userId, int scheduleId, DateTime startTime, DateTime endingTime,
+            String subject, String detail)
         {
+            CommonUtility cu = new CommonUtility();
+
             //結果の初期化
             int result = 0;
             cmd.Connection = con;
 
+            String key = cu.createHashKey(userId, startTime, endingTime, subject, detail);
+
             //SQL文の作成
             cmd.CommandText = "UPDATE schedule_info SET start_time = @startTime, ending_time = @endingTime, " +
-                "subject = @subject, detail = @detail WHERE schedule_id = @scheduleId";
+                "subject = @subject, detail = @detail, schedule_key = @key WHERE schedule_id = @scheduleId";
 
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@startTime", startTime));
             cmd.Parameters.Add(new NpgsqlParameter("@endingTime", endingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
+            cmd.Parameters.Add(new NpgsqlParameter("@key", key));
             cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
 
             //接続開始
@@ -292,6 +306,7 @@ namespace MySchedule
             cmd.Parameters.Remove("@endingTime");
             cmd.Parameters.Remove("@subject");
             cmd.Parameters.Remove("@detail");
+            cmd.Parameters.Remove("@key");
             cmd.Parameters.Remove("@scheduleId");
 
             //結果を戻す
@@ -321,8 +336,8 @@ namespace MySchedule
             /* 検索条件
              * 
              * 引数として渡された開始時刻と終了時刻について
-             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでしまうもの
-             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
+             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
+             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでいるもの
              * ③その開始時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * ④その終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * 
@@ -349,7 +364,9 @@ namespace MySchedule
                     {
                         //DTOに値を格納していく
                         siDTO.subject = reader.GetString(0);
+                        siDTO.subjectList.Add(reader.GetString(0));
                         siDTO.scheduleId = reader.GetInt32(1);
+                        siDTO.scheduleIdList.Add(reader.GetInt32(1));
                     }
                 }
             }
@@ -402,8 +419,8 @@ namespace MySchedule
              * 以下の条件で検索
              * 
              * 引数として渡された開始時刻と終了時刻について
-             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでしまうもの
-             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
+             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
+             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでいるもの
              * ③その開始時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * ④その終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * 
@@ -473,8 +490,8 @@ namespace MySchedule
             /* 検索条件
              * 
              * 引数として渡された開始時刻と終了時刻について
-             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでしまうもの
-             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
+             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
+             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでいるもの
              * ③その開始時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * ④その終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * 
@@ -598,9 +615,10 @@ namespace MySchedule
             cmd.Connection = con;
 
             //SQL文の作成(データテーブルに格納するため、カラム名も変えておく)
-            String sql = "SELECT schedule_id, CAST(start_time as date)as 日付, CAST(start_time as time) as 開始時刻, " +
-                "CAST(ending_time as time) as 終了時刻, subject as 件名, detail as 詳細 " +
-                "FROM schedule_info WHERE user_id = '" + userId + "' ORDER BY CAST(start_time as date) ASC";
+            String sql = "SELECT schedule_id, CAST(start_time as date) as 日付, CAST(start_time as time) as 開始時刻, " +
+                "CAST(ending_time as time) as 終了時刻, subject as 件名, detail as 詳細, " +
+                "schedule_key as スケジュールキー FROM schedule_info WHERE user_id = '" + userId + "' " +
+                "ORDER BY CAST(start_time as date) ASC";
 
             //接続開始
             con.Open();
@@ -630,6 +648,87 @@ namespace MySchedule
             return dt;
         }
 
+        /// <summary>
+        /// ⑩スケジュールIDをもとに該当する予定が存在するかを調べるメソッド
+        /// </summary>
+        /// <param name="scheduleId">スケジュールID</param>
+        /// <returns>該当する予定が存在するかどうかのbool値</returns>
+        internal bool isExistsSchedule(int scheduleId)
+        {
+            //結果を宣言(デフォルトはfalse)
+            bool result = false;
+
+            cmd.Connection = con;
+
+            //SQL文の作成
+            cmd.CommandText = "SELECT * FROM schedule_info WHERE schedule_id = @scheduleId";
+            //SQL文の@部分に値を格納
+            cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
+            //接続開始
+            con.Open();
+            try
+            {
+                //リーダーの呼び出し
+                using (var reader = cmd.ExecuteReader())
+                {
+                    //リーダーが読み取ることができたら
+                    while (reader.Read())
+                    {
+                        result = true;      //resultにtrueを格納
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //例外処理
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                //最終的に接続は閉じておく
+                con.Close();
+            }
+            //resultを戻す
+            return result;
+        }
+
+
+        internal ScheduleInfoDTO getScheduleInfoFromScheduleId(int scheduleId)
+        {
+            ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
+            cmd.Connection = con;
+
+            cmd.CommandText = "SELECT subject, start_time, ending_time FROM schedule_info WHERE schedule_id = @scheduleId";
+
+            cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
+
+            con.Open();
+
+            try
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        siDTO.subject = reader.GetString(0);
+                        siDTO.startTime = reader.GetDateTime(1);
+                        siDTO.endingTime = reader.GetDateTime(2);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
+
+            return siDTO;
+        }
 
     }
 }

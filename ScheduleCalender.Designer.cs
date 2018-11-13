@@ -76,6 +76,7 @@
             this.toDo.Size = new System.Drawing.Size(240, 359);
             this.toDo.TabIndex = 2;
             this.toDo.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.toDo_CellDoubleClick);
+            this.toDo.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.toDo_CellMouseClick);
             // 
             // scheduleGrid
             // 
@@ -92,6 +93,7 @@
             this.scheduleGrid.TabIndex = 3;
             this.scheduleGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.scheduleGrid_CellDoubleClick);
             this.scheduleGrid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.scheduleGrid_CellMouseClick);
+            this.scheduleGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.scheduleGrid_MouseUp);
             // 
             // label2
             // 

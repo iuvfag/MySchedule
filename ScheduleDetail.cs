@@ -20,6 +20,8 @@ namespace MySchedule
         public DateTime endingTime { get; set; }
         public String detail { get; set; }
 
+        ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
+
         public ScheduleDetail()
         {
             InitializeComponent();
@@ -95,7 +97,6 @@ namespace MySchedule
                     rhDAO.registHistory(userId, scheduleId, "スケジュール削除", startTime, endingTime, subject, detail);
 
                     //Yesの場合はDAOの削除メソッドを呼び出し、resultに結果(削除件数)を代入
-                    ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
                     int result = siDAO.deleteSchedule(scheduleId);
 
                     //きちんと削除されたか(削除件数が1件でもあるか)を確認
@@ -104,14 +105,21 @@ namespace MySchedule
                     {
                         //メッセージを表示して、フォームを閉じる
                         MessageBox.Show("予定を削除しました", "削除完了");
+                        
                         this.Close();
                     }
                     //1件も削除できなければ
                     else
                     {
-                        //メッセージを表示して、フォームを閉じる
+                        //メッセージを表示する
                         MessageBox.Show("予定の削除に失敗しました", "問題が発生しました");
-                        this.Close();
+                        //該当する予定が存在するか確認する
+                        if (!(siDAO.isExistsSchedule(scheduleId)))      //存在しない場合
+                        {
+                            //エラーメッセージ表示
+                            MessageBox.Show("該当の予定は既に存在しません。", "予定の存在が確認できませんでした");
+                        }
+                        this.Close();   //いずれにしてもこの画面は閉じる
                     }
                 }
 
@@ -134,21 +142,34 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
-                //スケジュール修正フォームの呼び出し
-                ScheduleUpdate su = new ScheduleUpdate();
+                //該当する予定が既に削除されていないかどうか確認
+                if (siDAO.isExistsSchedule(scheduleId))
+                {
+                    //スケジュール修正フォームの呼び出し
+                    ScheduleUpdate su = new ScheduleUpdate();
 
-                //値を渡していく
-                su.userId = userId;
-                su.scheduleId = scheduleId;
-                su.subject = subject;
-                su.startTime = startTime;
-                su.endingTime = endingTime;
-                su.detail = detail;
+                    //値を渡していく
+                    su.userId = userId;
+                    su.scheduleId = scheduleId;
+                    su.subject = subject;
+                    su.startTime = startTime;
+                    su.endingTime = endingTime;
+                    su.detail = detail;
 
-                //フォームの表示
-                su.ShowDialog(this);
-                su.Dispose();
-                this.Close();
+                    //フォームの表示
+                    su.ShowDialog(this);
+                    su.Dispose();
+                    this.Close();
+                }
+                //該当する予定の存在が確認できなかった場合
+                else
+                {
+                    //エラーメッセージ表示
+                    MessageBox.Show("該当の予定は既に存在しません。", "予定の存在が確認できませんでした");
+                    this.Close();       //フォームも閉じる
+                }
+
+                
             }
             //何らかの不具合が発生した場合
             catch (Exception)
@@ -156,6 +177,11 @@ namespace MySchedule
                 //例外処理としてErrorMessageクラスの呼び出し
                 ErrorMessage.errorMessage();
             }
+        }
+
+        private void ScheduleDetail_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Dispose();
         }
     }
 }

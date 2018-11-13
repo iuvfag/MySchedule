@@ -191,6 +191,7 @@
             this.MaximizeBox = false;
             this.Name = "ScheduleDetail";
             this.Text = "予定確認画面";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScheduleDetail_FormClosed);
             this.Load += new System.EventHandler(this.ScheduleDetail_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

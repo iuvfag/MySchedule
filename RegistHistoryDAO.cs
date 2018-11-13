@@ -5,9 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Npgsql;
-using Newtonsoft.Json;
 using System.Data;
-using System.Security.Cryptography;
 
 
 namespace MySchedule
@@ -19,8 +17,7 @@ namespace MySchedule
         /// ①更新履歴登録用のメソッド
         /// ②更新履歴をログインIDごとに取得し、データテーブルに格納するメソッド
         /// ③前回のハッシュキー(最も新しい履歴IDのハッシュキー)を取得するためのメソッド
-        /// ④ハッシュキー生成のためのメソッド
-        /// ⑤テーブルの全レコードを取得するメソッド(管理者用)
+        /// ④テーブルの全レコードを取得するメソッド(管理者用)
         /// </summary>
 
         NpgsqlConnection con = new NpgsqlConnection(@"Server=localhost;
@@ -44,12 +41,16 @@ namespace MySchedule
         internal int registHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
             DateTime updateEndingTime, String subject, String detail)
         {
+            CommonUtility cu = new CommonUtility();
             //結果を初期化
             int result = 0;
             cmd.Connection = con;
 
+            String previousHashKey = getPreviousHashKey(userId);
+
             //テーブルに格納するハッシュキーを生成する
-            String key = getHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, subject, detail);
+            String key = cu.createHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, 
+                subject, detail,previousHashKey);
 
             //SQL文の作成
             cmd.CommandText = "INSERT INTO update_history (user_id, schedule_id, update_type, update_start_time, " +
@@ -193,46 +194,9 @@ namespace MySchedule
             return result;
         }
 
-        /// <summary>
-        /// ④ハッシュキー生成のためのメソッド
-        /// </summary>
-        /// <param name="userId">ログインID</param>
-        /// <param name="scheduleId">スケジュールID</param>
-        /// <param name="updateType">更新した内容</param>
-        /// <param name="updateStartTime">更新したスケジュールの開始時刻</param>
-        /// <param name="updateEndingTime">更新したスケジュールの終了時刻</param>
-        /// <param name="subject">件名</param>
-        /// <param name="detail">詳細</param>
-        /// <returns>作成したハッシュキーを格納したString型の変数</returns>
-        internal String getHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
-            DateTime updateEndingTime, String subject, String detail)
-        {
-            //前回のハッシュキーを取得
-            String previousHashKey = getPreviousHashKey(userId);
-
-            //引数として渡された値をベースにハッシュ関数を生成
-            //まず連結
-            String key = $"{userId}{scheduleId}{updateType}{updateStartTime}{updateEndingTime}{subject}{detail}" +
-                $"{previousHashKey}";
-
-            //のちに値を入れる配列
-            byte[] hash = null;
-            //連結した値をバイト変換する
-            var bytes = Encoding.Unicode.GetBytes(key);
-
-            //SHA256という形式でハッシュ関数を作る
-            using (var sha256 = new SHA256CryptoServiceProvider())
-            {
-                //バイト変換した値でハッシュ変換する
-                hash = sha256.ComputeHash(bytes);
-            }
-            //結果を戻す
-            String result = String.Join("", hash.Select(x => x.ToString("X")));
-            return result;
-        }
 
         /// <summary>
-        /// ⑤テーブルの全レコードを取得するメソッド(管理者用)
+        /// ④テーブルの全レコードを取得するメソッド(管理者用)
         /// </summary>
         /// <returns>DBの値を格納したデータテーブル</returns>
         internal DataTable getAllRegistHistory()

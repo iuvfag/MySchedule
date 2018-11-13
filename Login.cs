@@ -15,6 +15,7 @@ namespace MySchedule
     {
 
         public String userId { get; set; }
+        public String password { get; set; }
 
         public Login()
         {
@@ -45,18 +46,20 @@ namespace MySchedule
                 String password = textBox2.Text;
 
                 //入力内容をInputCheckerに渡し、入力内容をチェック
-                String userIdCheck = InputChecker.doCheck(userId, "ログインID", 1, 15);
-                String passwordCheck = InputChecker.doCheck(password, "パスワード", 5, 15);
+                String userIdCheck = userId.doCheck("ログインID", 1, 15);
+                String passwordCheck = password.doCheck("パスワード", 5, 15);
 
                 //入力内容に問題がなく何も帰ってこなかった場合は次の処理へ
                 if (string.IsNullOrWhiteSpace(userIdCheck) && String.IsNullOrWhiteSpace(passwordCheck))
                 {
+
+                    CommonUtility cu = new CommonUtility();
                     //パスワード暗号化の準備、まずログインIDをハッシュ関数化する
-                    String userIdHash = InputChecker.createHashKey(userId);
+                    String userIdHash = cu.createHashKey(userId);
                     //パスワードをハッシュ関数に変換する
-                    password = InputChecker.createHashKey(password);
+                    password = cu.createHashKey(password);
                     //上記2つの値を連結してハッシュ関数化したものをパスワードとして格納する
-                    password = InputChecker.createHashKey(userIdHash, password);
+                    password = cu.createHashKey(userIdHash, password);
 
                     //ログインIDとパスワードをログイン用メソッドに渡し、結果をUserInfoDTOに格納
                     UserInfoDTO uiDTO = new UserInfoDTO();
@@ -78,9 +81,6 @@ namespace MySchedule
                         }
                         else
                         {
-
-
-
                             //とれていたらスケジュールを呼び出し、ログインIDを渡す
                             ScheduleCalender sc = new ScheduleCalender();
                             sc.userId = uiDTO.userId;

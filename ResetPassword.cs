@@ -49,27 +49,31 @@ namespace MySchedule
             String reConfirmationNewPassword = textBox3.Text;
 
             //入力内容の正誤チェック
-            String currentPasswordCheck = InputChecker.doCheck(currentPassword, "現在のパスワード", 5, 15);
-            String newPasswordCheck = InputChecker.doCheck(newPassword, "新しいパスワード", 5, 15);
-            String reConfirmarionNewPasswordCheck = InputChecker.doCheck(reConfirmationNewPassword,
-                "新しいパスワード(再確認用)", 5, 15);
+            String currentPasswordCheck = currentPassword.doCheck("現在のパスワード", 5, 15);
+            String newPasswordCheck = newPassword.doCheck("新しいパスワード", 5, 15);
+            String reConfirmarionNewPasswordCheck = reConfirmationNewPassword.doCheck("新しいパスワード(再確認用)", 5, 15);
             
             //新しいパスワードと再確認用パスワードが等しいか調べる
-            String passwordCompare = InputChecker.passwordCompare(newPassword, reConfirmationNewPassword,
+            String passwordCompare = newPassword.valueCompare(reConfirmationNewPassword,
                 "新しいパスワード", "新しいパスワード(再確認用)");
 
             //すべてのチェックに問題がなければ次の処理へ
-            if (currentPasswordCheck == "" && newPasswordCheck == "" && reConfirmarionNewPasswordCheck == "" &&
-                passwordCompare == "")
+            if (String.IsNullOrWhiteSpace(currentPasswordCheck) && String.IsNullOrWhiteSpace(newPasswordCheck) && 
+                String.IsNullOrWhiteSpace(reConfirmarionNewPasswordCheck) && String.IsNullOrWhiteSpace(passwordCompare))
             {
-                String userIdHash = InputChecker.createHashKey(userId);
+                //コモンユーティリティの呼び出し
+                CommonUtility cu = new CommonUtility();
+                //ログインIDをハッシュ関数化
+                String userIdHash = cu.createHashKey(userId);
+                //現在のパスワードをハッシュ関数化
+                currentPassword = cu.createHashKey(currentPassword);
+                //ログインIDのハッシュ関数と現在のパスワードのハッシュ関数を連結してさらにハッシュ関数化
+                currentPassword = cu.createHashKey(userIdHash, currentPassword);
 
-                currentPassword = InputChecker.createHashKey(currentPassword);
-
-                currentPassword = InputChecker.createHashKey(userIdHash, currentPassword);
-
-                newPassword = InputChecker.createHashKey(newPassword);
-                newPassword = InputChecker.createHashKey(userIdHash, newPassword);
+                //新しいパスワードをハッシュ関数化
+                newPassword = cu.createHashKey(newPassword);
+                //ログインIDのハッシュ関数と新しいパスワードのハッシュ関数を連結してさらにハッシュ関数化
+                newPassword = cu.createHashKey(userIdHash, newPassword);
 
                 UserInfoDAO uiDAO = new UserInfoDAO();
 
@@ -103,25 +107,25 @@ namespace MySchedule
 
             }
             //パスワードが空欄、あるいは文字数違反の場合
-            if (currentPasswordCheck != "")
+            if (!(String.IsNullOrWhiteSpace(currentPasswordCheck)))
             {
                 //エラーメッセージ表示
                 MessageBox.Show(currentPasswordCheck, "入力内容を確認してください");
             }
             //新しいパスワードが空欄、あるいは文字数違反の場合
-            if (newPasswordCheck != "")
+            if (!(String.IsNullOrWhiteSpace(newPasswordCheck)))
             {
                 //エラーメッセージ表示
                 MessageBox.Show(newPasswordCheck, "入力内容を確認してください");
             }
             //新しいパスワード(再確認用)が空欄、あるいは文字列違反の場合
-            if (reConfirmarionNewPasswordCheck != "")
+            if (!(String.IsNullOrWhiteSpace(reConfirmarionNewPasswordCheck)))
             {
                 //エラーメッセージの表示
                 MessageBox.Show(reConfirmarionNewPasswordCheck, "入力内容を確認してください");
             }
-            //②綱パスワードが一致しない場合
-            if (passwordCompare != "")
+            //2つのパスワードが一致しない場合
+            if (!(String.IsNullOrWhiteSpace(passwordCompare)))
             {
                 //エラーメッセージ表示
                 MessageBox.Show(passwordCompare, "入力内容を確認してください");

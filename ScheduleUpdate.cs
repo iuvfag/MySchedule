@@ -81,17 +81,17 @@ namespace MySchedule
                 //「件名」、「詳細」を入力欄から取得してフィールドに格納
                 subject = subjectTextbox.Text;
                 detail = detailTextbox.Text;
-                
+
                 //「件名」、「詳細」の入力チェック
-                String subjectCheck = InputChecker.doCheck2(subject, "件名", 250);
-                String detailCheck = InputChecker.doCheck3(detail, "詳細", 1000);
+                String subjectCheck = subject.doCheck2("件名", 250);
+                String detailCheck = detail.doCheck3("詳細", 1000);
 
                 //入力欄に問題がなければ次の処理へ
                 if (String.IsNullOrWhiteSpace(subjectCheck) && String.IsNullOrWhiteSpace(detailCheck))
                 {
                     //日付には開始時刻の日付部分を切り出して格納
                     String date = scheduleDatePicker.Value.ToShortDateString();
-                    //開始時刻と終了時刻は四国部分を切り出して格納
+                    //開始時刻と終了時刻は時刻部分を切り出して格納
                     String st = startTimePicker.Value.ToString("HH:mm");
                     String et = endingTimePicker.Value.ToString("HH:mm");
 
@@ -108,38 +108,27 @@ namespace MySchedule
                     {
                         //DAOクラスのインスタンス化
                         ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
+                        //スケジュールの更新を行い結果(更新数)をresultに格納
+                        int result = siDAO.updeteSchedule(userId, scheduleId, startTime, endingTime, subject, detail);
 
-                        ////既に同時刻に登録されているスケジュールがないか調べる(現在修正しているスケジュールは除く)
-                        if (!(siDAO.isExistsSchedule(userId, scheduleId, st, et)))
+                        //更新されたスケジュールが1件でも存在すれば次の処理へ
+                        if (result > 0)
                         {
-                            //スケジュールの更新を行い結果(更新数)をresultに格納
-                            int result = siDAO.updeteSchedule(scheduleId, startTime, endingTime, subject, detail);
+                            //メッセージ表示
+                            MessageBox.Show("スケジュール情報を修正しました", "更新完了");
 
-                            //更新されたスケジュールが1件でも存在すれば次の処理へ
-                            if (result > 0)
-                            {
-                                //メッセージ表示
-                                MessageBox.Show("スケジュール情報を修正しました", "更新完了");
+                            RegistHistoryDAO rhDAO = new RegistHistoryDAO();
+                            rhDAO.registHistory(userId, scheduleId, "スケジュール修正", startTime, endingTime, subject, detail);
 
-                                RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-                                rhDAO.registHistory(userId, scheduleId,  "スケジュール修正", startTime, endingTime, subject, detail);
-
-                                this.Close();
-                            }
-                            //更新できなかった場合
-                            else
-                            {
-                                //メッセージ表示
-                                MessageBox.Show("スケジュールの更新に失敗しました", "問題が発生しました");
-                            }
+                            this.Close();
                         }
-                        //重複しているスケジュールが存在している場合
+                        //更新できなかった場合
                         else
                         {
-                            //重複しているスケジュールがあればメッセージ表示
-                            MessageBox.Show("その時間には既に別の予定が登録されています！", "予定が重複しています！！");
+                            //メッセージ表示
+                            MessageBox.Show("スケジュールの更新に失敗しました", "問題が発生しました");
+                            this.Close();
                         }
-
 
                     }
                     //開始時刻と終了時刻が前後している場合

@@ -69,80 +69,80 @@ namespace MySchedule
                 //InputCheckerのインスタンス化
 
                 //それぞれの値のチェック
-                String userIdCheck = InputChecker.doCheck(userId, "ログインID", 1, 15);
-                String passwordCheck = InputChecker.doCheck(password, "パスワード", 5, 15);
-                String reConfirmationPasswordCheck = InputChecker.doCheck(reConfirmationPassword, 
-                    "再確認用パスワード", 5, 15);
-                String passwordCompare = InputChecker.passwordCompare(password, reConfirmationPassword, 
-                    "パスワード", "パスワード(再確認用)");
+                String userIdCheck = userId.doCheck("ログインID", 1, 15);
+                String passwordCheck = password.doCheck("パスワード", 5, 15);
+                String reConfirmationPasswordCheck = reConfirmationPassword.doCheck("再確認用パスワード", 5, 15);
+                String passwordCompare = password.valueCompare(reConfirmationPassword,
+                    "パスワード", "再確認用パスワード");
 
                 //値のチェックの結果何も戻り値がなければ次の処理へ
-                if (userIdCheck == "" && passwordCheck == "" && reConfirmationPasswordCheck == "")
+                if (String.IsNullOrWhiteSpace(userIdCheck) && String.IsNullOrWhiteSpace(passwordCheck) &&
+                    String.IsNullOrWhiteSpace(reConfirmationPasswordCheck) &&
+                    String.IsNullOrWhiteSpace(passwordCompare))
                 {
-                    //入力された2つのパスワードが一致するなら次の処理へ
-                    if (passwordCompare == "")
+
+                    UserInfoDAO uiDAO = new UserInfoDAO();
+                    CommonUtility cu = new CommonUtility();
+
+                    //パスワード暗号化の準備、まず、ログインIDをハッシュ関数化
+                    String userIdHash = cu.createHashKey(userId);
+                    //パスワードをハッシュ関数化
+                    password = cu.createHashKey(password);
+                    //上記二つを連結してハッシュ関数化したものをパスワードとしてDBに保存する
+                    password = cu.createHashKey(userIdHash, password);
+
+                    //ログインIDが既に存在するか確認し、問題ないなら次の処理へ
+                    if (!(uiDAO.isExistsUser(userId)))
                     {
-                        UserInfoDAO uiDAO = new UserInfoDAO();
+                        //ユーザー情報を登録し、登録件数を戻り値として受け取る
+                        int result = uiDAO.createUser(userId, password);
 
-                        //パスワード暗号化の準備、まず、ログインIDをハッシュ関数化
-                        String userIdHash = InputChecker.createHashKey(userId);
-                        //パスワードをハッシュ関数化
-                        password = InputChecker.createHashKey(password);
-                        //上記二つを連結してハッシュ関数化したものをパスワードとしてDBに保存する
-                        password = InputChecker.createHashKey(userIdHash, password);
-
-                        //ログインIDが既に存在するか確認し、問題ないなら次の処理へ
-                        if (!(uiDAO.isExistsUser(userId)))
+                        //登録件数が1件でもあれば
+                        if (result > 0)
                         {
-                            //ユーザー情報を登録し、登録件数を戻り値として受け取る
-                            int result = uiDAO.createUser(userId, password);
-
-                            //登録件数が1件でもあれば
-                            if (result > 0)
-                            {
-                                //メッセージを表示
-                                MessageBox.Show("MyScheduleを活用しましょう", "ユーザー登録完了！");
-                                this.Close();
-                            }
-                            else
-                            {
-                                MessageBox.Show("登録が行えませんでした");
-                            }
+                            //メッセージを表示
+                            MessageBox.Show("MyScheduleを活用しましょう", "ユーザー登録完了！");
+                            this.Close();
                         }
-                        //ログインIDが既に使用されている場合
                         else
                         {
-                            //メッセージ表示
-                            MessageBox.Show("別のログインIDを使用してください", "ログインIDが既に使用されています");
+                            MessageBox.Show("登録が行えませんでした");
                         }
                     }
-                    //2つのパスワードが一致しない場合
+                    //ログインIDが既に使用されている場合
                     else
                     {
-                        //パスワード比較結果の戻り値(メッセージ)表示
-                        MessageBox.Show(passwordCompare, "パスワードが正しく入力されていません");
+                        //メッセージ表示
+                        MessageBox.Show("別のログインIDを使用してください", "ログインIDが既に使用されています");
                     }
+
                 }
                 /* 値のチェックに問題があった場合、原因(戻り値があるかどうか)によって行う処理を分岐させる */
                 else
                 {
-                    //ログインID入力に問題があった場合
-                    if (userIdCheck != "")      //ログインIDチェックの戻り値が空欄でない場合
+                    //ログインID入力に問題があった場合(ログインIDチェックの戻り値が空欄でない場合)
+                    if (!(String.IsNullOrWhiteSpace(userIdCheck)))
                     {
                         //ログインIDチェックの戻り値(エラーメッセージ)を表示
                         MessageBox.Show(userIdCheck, "入力内容を確認してください");
                     }
-                    //パスワードの入力内容に問題があった場合
-                    if (passwordCheck != "")        //パスワードチェックの戻り値が空欄でない場合
+                    //パスワードの入力内容に問題があった場合(パスワードチェックの戻り値が空欄でない場合)
+                    if (!(String.IsNullOrWhiteSpace(passwordCheck)))
                     {
                         //パスワードチェックの戻り値を表示
                         MessageBox.Show(passwordCheck, "入力内容を確認してください");
                     }
-                    //再確認パスワードに問題があった場合
-                    if (reConfirmationPasswordCheck != "")      //再確認用パスワードチェックの戻り値が空欄でない場合
+                    //再確認パスワードに問題があった場合(再確認用パスワードチェックの戻り値が空欄でない場合)
+                    if (!(String.IsNullOrWhiteSpace(reConfirmationPasswordCheck)))
                     {
                         //再確認用パスワードチェックの戻り値を表示
                         MessageBox.Show(reConfirmationPasswordCheck, "入力内容を確認してください");
+                    }
+                    //パスワードと再確認用パスワードが一致しない場合
+                    if (!(String.IsNullOrWhiteSpace(passwordCompare)))
+                    {
+                        //パスワード比較の戻り値を表示
+                        MessageBox.Show(passwordCompare, "入力内容を確認してください");
                     }
                 }
             }

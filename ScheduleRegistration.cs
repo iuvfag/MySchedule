@@ -17,7 +17,7 @@ namespace MySchedule
         public String userId { get; set; }
         public DateTime defaultDate { get; set; }
         public bool flg { get; set; }
-        public DateTime start{ get; set; }
+        public DateTime start { get; set; }
         public DateTime ending { get; set; }
 
         public ScheduleRegistration()
@@ -70,8 +70,8 @@ namespace MySchedule
                 String detail = detailTextBox.Text;
 
                 //「件名」と「詳細」の入力内容の確認
-                String subjectCheck = InputChecker.doCheck2(subject, "件名", 250);
-                String detailCheck = InputChecker.doCheck3(detail, "詳細", 1000);
+                String subjectCheck = subject.doCheck2("件名", 250);
+                String detailCheck = detail.doCheck3("詳細", 1000);
 
                 //「日付」、「開始時刻」、「終了時刻」をそれぞれ正しい形に変換して取得
                 String date = scheduleDatePicker.Value.ToString("yyyy/MM/dd");
@@ -87,57 +87,46 @@ namespace MySchedule
                 DateTime endingTime = DateTime.Parse(et);
 
                 //入力内容が正しく、開始時刻と終了時刻が前後していなければ
-                if (subjectCheck == "" && detailCheck == "" && startTime <= endingTime)
+                if (String.IsNullOrWhiteSpace(subjectCheck) && String.IsNullOrWhiteSpace(detailCheck) &&
+                    startTime <= endingTime)
                 {
                     //DAOクラスのインスタンス化
                     ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
-                    //重複しているスケジュールがあるか確認
-                    if (!(siDAO.isExistsSchedule(userId, st, et)))
+                    //登録用メソッドを呼び出し、結果をresultに格納
+                    int result = siDAO.registSchedule(userId, startTime, endingTime, subject, detail);
+                    //登録件数が1件以上あれば
+                    if (result > 0)
                     {
+                        //スケジュールIDを取得して
+                        int scheduleId = siDAO.getScheduleInfomation(userId, startTime, endingTime, subject, detail);
 
-
-                        //登録用メソッドを呼び出し、結果をresultに格納
-                        int result = siDAO.registSchedule(userId, startTime, endingTime, subject, detail);
-                        //登録件数が1件以上あれば
-                        if (result > 0)
-                        {
-                            //スケジュールIDを取得して
-                            int scheduleId = siDAO.getScheduleInfomation(userId, startTime, endingTime, subject, detail);
-
-                            //履歴登録メソッドを使用して変更履歴登録
-                            RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-                            rhDAO.registHistory(userId, scheduleId, "スケジュール登録", startTime, endingTime,
-                                subject, detail);
-                            //メッセージを表示し、画面を閉じる
-                            MessageBox.Show("スケジュールを登録しました！", "登録完了！");
-                            this.Close();
-                        }
-                        else
-                        {
-                            //何らかの理由で失敗した場合はメッセージ表示
-                            MessageBox.Show("スケジュールの登録に失敗しました");
-                        }
+                        //履歴登録メソッドを使用して変更履歴登録
+                        RegistHistoryDAO rhDAO = new RegistHistoryDAO();
+                        rhDAO.registHistory(userId, scheduleId, "スケジュール登録", startTime, endingTime,
+                            subject, detail);
+                        //メッセージを表示し、画面を閉じる
+                        MessageBox.Show("スケジュールを登録しました！", "登録完了！");
+                        this.Close();
                     }
                     else
                     {
-                        //重複しているスケジュールがあればメッセージ表示
-                        MessageBox.Show("その時間には既に別の予定が登録されています！", "予定が重複しています！！");
+                        //何らかの理由で失敗した場合はメッセージ表示
+                        MessageBox.Show("スケジュールの登録に失敗しました");
                     }
                 }
-
                 //入力内容が正しくない場合の分岐
-                if (subjectCheck != "")
+                if (!(String.IsNullOrWhiteSpace(subjectCheck)))
                 {
                     //「件名」の入力内容が正しくない場合
                     MessageBox.Show(subjectCheck, "入力内容を確認してください");
                 }
-                if (detailCheck != "")
+                if (!(String.IsNullOrWhiteSpace(detailCheck)))
                 {
                     //「詳細」の入力内容が正しくない場合
                     MessageBox.Show(detailCheck, "入力内容を確認してください");
                 }
-                if(startTime > endingTime)
+                if (startTime > endingTime)
                 {
                     MessageBox.Show("終了時刻が開始時刻よりも前に指定されています！！", "日付を確認してください！！");
                 }
