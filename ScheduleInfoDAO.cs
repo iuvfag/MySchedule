@@ -20,8 +20,8 @@ namespace MySchedule
          * ④既存のスケジュールの削除メソッド
          * ⑤スケジュール修正用のメソッド
          * ⑥週間スケジュールに表示する情報、スケジュールIDを取得するメソッド
-         * ⑦既にその時間に予定が登録されているかチェックするメソッド(スケジュール修正用)
-         * ⑧既にその時間に予定が登録されているかチェックするメソッド(新規登録用)
+         * ⑦その1時間に登録されている予定の情報を取得するメソッド(スケジュールが重複している場合に使用)
+         * ⑧既にその時間に予定が登録されているかチェックするメソッド(新規登録用)【未使用】
          * ⑨ログインIDをもとにすべての予定を取得し、データテーブルに格納するメソッド
          * ⑩スケジュールIDをもとに該当する予定が存在するかを調べるメソッド
          */
@@ -390,57 +390,36 @@ namespace MySchedule
         }
 
         /// <summary>
-        /// ⑦既にその時間に予定が登録されているかチェックするメソッド(スケジュール修正用)
+        /// ⑦その1時間に登録されている予定の情報を取得するメソッド(スケジュールが重複している場合に使用)
         /// </summary>
         /// <param name="userId">ログインID</param>
         /// <param name="startTime">スケジュールの開始時刻</param>
         /// <param name="endingTime">スケジュールの終了時刻</param>
         /// <returns>int型の変数</returns>
-        internal bool IsExistsSchedule(String userId, int scheduleId, String startTime, String endingTime)
+        internal DataTable getDuplicatedScheduleInfo(String userId, String startTime, String endingTime)
         {
-            //結果を初期化
-            bool result = false;
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
             cmd.Connection = con;
 
             //SQL文の作成。今回は複雑なので検索条件は後述
-            cmd.CommandText = "SELECT * FROM schedule_info WHERE user_id = @userId AND schedule_id != @scheduleId " +
-                "AND ( (start_time >= '" + startTime + "' AND start_time <= '" + endingTime + "') " +        //①
-                "OR (ending_time > '" + startTime + "' AND ending_time <= '" + endingTime + "') " +         //②
-                "OR (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') )";          //③
-            //SQL文の@部分に値を格納
-            cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
-            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
+            String sql = "SELECT schedule_id, CAST(start_time as date) as 日付, CAST(start_time as time) as 開始時刻, " +
+                "CAST(ending_time as time) as 終了時刻, subject as 件名, detail as 詳細 FROM schedule_info " +
+                "WHERE user_id = '" + userId + "' " +
+                "AND ( (start_time >= '" + startTime + "' AND start_time <= '" + endingTime + "') " +        
+                "OR (ending_time > '" + startTime + "' AND ending_time <= '" + endingTime + "') " +         
+                "OR (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') )";          
 
-            /* 検索条件
-             * 
-             * ユーザーIDは一致するがスケジュールIDは一致しないもので(そうしないと同じスケジュールの時間修正も不可になる)
-             * 以下の条件で検索
-             * 
-             * 引数として渡された開始時刻と終了時刻(グリッドに表示する1時間分)について
-             * ①グリッドの開始時刻と終了時刻が既存のスケジュールの開始時刻を囲んでいるもの
-             * ②グリッドの開始時刻と終了時刻が既存のスケジュールの終了時刻を囲んでいるもの
-             * ③グリッドの開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
-             * 
-             * を検索
-             * 
-             * 今回は検索条件が多いため括弧()の位置には気を付ける
-             */
 
             //接続開始
             con.Open();
 
             try
             {
-                //リーダーの呼び出し
-                using (var reader = cmd.ExecuteReader())
-                {
-                    //リーダーが読み取ることが可能なら
-                    while (reader.Read() == true)
-                    {
-                        //resultに1を代入
-                        result = true;
-                    }
-                }
+                NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
+                ds.Reset();
+                da.Fill(ds);
+                dt = ds.Tables[0];
             }
             catch (Exception ex)
             {
@@ -454,12 +433,8 @@ namespace MySchedule
                 con.Close();
             }
 
-            //パラメーターの値はremoveしておく
-            cmd.Parameters.Remove("@scheduleId");
-            cmd.Parameters.Remove("@userId");
-
             //結果を戻す
-            return result;
+            return dt;
         }
 
         /// <summary>
