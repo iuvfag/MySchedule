@@ -82,12 +82,15 @@
             // 
             this.scheduleGrid.AllowUserToAddRows = false;
             this.scheduleGrid.AllowUserToDeleteRows = false;
+            this.scheduleGrid.AllowUserToResizeColumns = false;
+            this.scheduleGrid.AllowUserToResizeRows = false;
             this.scheduleGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.scheduleGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.scheduleGrid.Location = new System.Drawing.Point(271, 105);
             this.scheduleGrid.Name = "scheduleGrid";
             this.scheduleGrid.ReadOnly = true;
             this.scheduleGrid.RowHeadersVisible = false;
+            this.scheduleGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.scheduleGrid.RowTemplate.Height = 20;
             this.scheduleGrid.Size = new System.Drawing.Size(501, 593);
             this.scheduleGrid.TabIndex = 3;

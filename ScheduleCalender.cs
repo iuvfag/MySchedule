@@ -174,6 +174,8 @@ namespace MySchedule
         /// </summary>
         private void SetWeeklySchedule()
         {
+            scheduleGrid.DefaultCellStyle.BackColor = Color.White; 
+
             //DTOクラスのインスタンス化
             ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
             //まず、1週間分for文を回す(1～7なのはグリッドの番地に合わせているため)
@@ -215,6 +217,12 @@ namespace MySchedule
                     {
                         //セルの色はスカイブルーに
                         scheduleGrid[i, n].Style.BackColor = Color.SkyBlue;
+                    }
+                    //何も予定がなければ
+                    else
+                    {
+                        //デフォルトで白に戻しておく
+                        scheduleGrid[i, n].Style.BackColor = Color.White;
                     }
 
                 }
@@ -266,8 +274,8 @@ namespace MySchedule
                          * 週間スケジュールに予定を表示する場合は
                          * 予定時刻とグリッドの時刻(特定の1時間)が以下の関係となる場合である
                          */
-                        //①グリッドの時刻(特定の1時間内)が予定の開始時刻と終了時刻に囲まれている場合
-                        if (todoStartTime <= scheduleGridStartTime && todoStartTime >= scheduleGridEndingTime)
+                        //①グリッドの時刻(特定の1時間内)が予定の開始時刻を囲んでいる場合
+                        if (todoStartTime >= scheduleGridStartTime && todoStartTime <= scheduleGridEndingTime)
                         {
                             //セルに件名を代入する
                             scheduleGrid.Rows[n].Cells[i].Value = subject;
@@ -275,7 +283,7 @@ namespace MySchedule
                             scheduleGrid.Rows[n].Cells[i + 7].Value = scheduleId;
                             scheduleGrid.Rows[n].Cells[i].Selected = true;
                         }
-                        //②グリッドの時刻(特定の1時間内)が予定の開始時刻と終了時刻を囲んでいる場合
+                        //②グリッドの時刻(特定の1時間内)が予定の終了時刻を囲んでいる場合
                         else if (todoEndingTime > scheduleGridStartTime && todoEndingTime <= scheduleGridEndingTime)
                         {
                             //セルに件名を代入する
@@ -284,9 +292,8 @@ namespace MySchedule
                             scheduleGrid.Rows[n].Cells[i + 7].Value = scheduleId;
                             scheduleGrid.Rows[n].Cells[i].Selected = true;
                         }
-                        //③グリッドの開始時刻が予定の開始時刻と終了時刻に囲まれているもの
-                        else
-                        if (todoStartTime < scheduleGridStartTime && todoEndingTime > scheduleGridStartTime)
+                        //③グリッドの開始時刻と終了時刻が予定の開始時刻と終了時刻に囲まれているもの
+                        else if (todoStartTime <= scheduleGridStartTime && todoEndingTime >= scheduleGridEndingTime)
                         {
                             //セルに件名を代入する
                             scheduleGrid.Rows[n].Cells[i].Value = subject;
@@ -294,15 +301,7 @@ namespace MySchedule
                             scheduleGrid.Rows[n].Cells[i + 7].Value = scheduleId;
                             scheduleGrid.Rows[n].Cells[i].Selected = true;
                         }
-                        //④予定の終了時刻がグリッドの時刻(特定の1時間内)に囲まれているもの
-                        else if (todoStartTime < scheduleGridEndingTime && todoEndingTime > scheduleGridEndingTime)
-                        {
-                            //セルに件名を代入する
-                            scheduleGrid.Rows[n].Cells[i].Value = subject;
-                            //7個右のセルにスケジュールIDも格納しておく
-                            scheduleGrid.Rows[n].Cells[i + 7].Value = scheduleId;
-                            scheduleGrid.Rows[n].Cells[i].Selected = true;
-                        }
+
 
                     }
 

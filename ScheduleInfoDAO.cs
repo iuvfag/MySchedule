@@ -330,18 +330,16 @@ namespace MySchedule
             cmd.CommandText = "SELECT subject, schedule_id FROM schedule_info WHERE user_id = @userId " +
                 "AND ( (start_time >= '" + startTime + "' AND start_time <= '" + endingTime + "') " +        //①
                 "OR (ending_time > '" + startTime + "' AND ending_time <= '" + endingTime + "') " +         //②
-                "OR (start_time < '" + startTime + "' AND ending_time > '" + startTime + "') " +          //③
-                "OR (start_time < '" + endingTime + "' AND ending_time > '" + endingTime + "') )";          //④
+                "OR (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') )";          //③
 
             /* 検索条件
              * 
-             * 引数として渡された開始時刻と終了時刻について
-             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
-             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでいるもの
-             * ③その開始時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
-             * ④その終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
+             * 引数として渡された開始時刻と終了時刻(グリッドに表示する1時間分)について
+             * ①グリッドの開始時刻と終了時刻が既存のスケジュールの開始時刻を囲んでいるもの
+             * ②グリッドの開始時刻と終了時刻が既存のスケジュールの終了時刻を囲んでいるもの
+             * ③グリッドの開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * 
-             * を確認する
+             * を検索する
              * 
              * 今回引数として渡すのは週間スケジュール(データグリッド)の開始時刻と終了時刻
              * (つまり、24時間のうち特定の1時間)
@@ -406,10 +404,9 @@ namespace MySchedule
 
             //SQL文の作成。今回は複雑なので検索条件は後述
             cmd.CommandText = "SELECT * FROM schedule_info WHERE user_id = @userId AND schedule_id != @scheduleId " +
-                "AND ( (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') " +    //①
-                "OR (start_time >= '" + startTime + "' AND ending_time <= '" + endingTime + "') " +     //②
-                "OR (start_time <= '" + startTime + "' AND ending_time >= '" + startTime + "' ) " +     //③
-                "OR (start_time <= '" + endingTime + "' AND ending_time >= '" + endingTime + "') )";      //④
+                "AND ( (start_time >= '" + startTime + "' AND start_time <= '" + endingTime + "') " +        //①
+                "OR (ending_time > '" + startTime + "' AND ending_time <= '" + endingTime + "') " +         //②
+                "OR (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') )";          //③
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
@@ -419,11 +416,10 @@ namespace MySchedule
              * ユーザーIDは一致するがスケジュールIDは一致しないもので(そうしないと同じスケジュールの時間修正も不可になる)
              * 以下の条件で検索
              * 
-             * 引数として渡された開始時刻と終了時刻について
-             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
-             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでいるもの
-             * ③その開始時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
-             * ④その終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
+             * 引数として渡された開始時刻と終了時刻(グリッドに表示する1時間分)について
+             * ①グリッドの開始時刻と終了時刻が既存のスケジュールの開始時刻を囲んでいるもの
+             * ②グリッドの開始時刻と終了時刻が既存のスケジュールの終了時刻を囲んでいるもの
+             * ③グリッドの開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * 
              * を検索
              * 
@@ -481,20 +477,18 @@ namespace MySchedule
 
             //SQL文の作成。今回は複雑なので検索条件は後述
             cmd.CommandText = "SELECT * FROM schedule_info WHERE user_id = @userId " +
-                "AND ((start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') " +    //①
-                "OR (start_time >= '" + startTime + "' AND ending_time <= '" + endingTime + "') " +     //②
-                "OR (start_time <= '" + startTime + "' AND ending_time >= '" + startTime + "' ) " +     //③
-                "OR (start_time <= '" + endingTime + "' AND ending_time >= '" + endingTime + "'))";      //④
+                "AND ( (start_time >= '" + startTime + "' AND start_time <= '" + endingTime + "') " +        //①
+                "OR (ending_time > '" + startTime + "' AND ending_time <= '" + endingTime + "') " +         //②
+                "OR (start_time <= '" + startTime + "' AND ending_time >= '" + endingTime + "') )";          //③
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
 
             /* 検索条件
              * 
-             * 引数として渡された開始時刻と終了時刻について
-             * ①その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻に囲まれているもの
-             * ②その開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻を囲んでいるもの
-             * ③その開始時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
-             * ④その終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
+             * 引数として渡された開始時刻と終了時刻(グリッドに表示する1時間分)について
+             * ①グリッドの開始時刻と終了時刻が既存のスケジュールの開始時刻を囲んでいるもの
+             * ②グリッドの開始時刻と終了時刻が既存のスケジュールの終了時刻を囲んでいるもの
+             * ③グリッドの開始時刻と終了時刻が既存のスケジュールの開始時刻と終了時刻の間にあるもの
              * 
              * を検索
              */
