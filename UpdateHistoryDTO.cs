@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MySchedule
 {
-    class RegistHistoryDTO
+    class UpdateHistoryDTO
     {
         public String user_id { get; set; }
         public String updateType { get; set; }

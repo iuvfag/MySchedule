@@ -14,6 +14,40 @@ namespace MySchedule
     /// </summary>
     internal class CommonUtility
     {
+        /// <summary>
+        /// ハッシュキーを渡すと特定のハッシュキーを作るNonceを求めるメソッド
+        /// </summary>
+        /// <param name="hash">ハッシュキー</param>
+        /// <returns></returns>
+        internal int GetNonce(String hash)
+        {
+            //ナンスを入れる変数を初期化しておく
+            int nonce = 0;
+
+            //CheckNonceメソッドを呼び出し、結果がfalseの間は回し続けるwhile文を作る
+            while (!(CheckNonce(hash, nonce)))
+            {
+                //その間Nonceは増やし続ける
+                nonce++;
+            }
+            //while文を抜けることができたらNonceを結果として戻す
+            return nonce;
+        }
+
+        /// <summary>
+        /// 渡された値とNonceをハッシュ変換したものが特定の値になるかどうかboolで返すメソッド
+        /// </summary>
+        /// <param name="hash">渡す値</param>
+        /// <param name="nonce">Nonce</param>
+        /// <returns></returns>
+        internal bool CheckNonce(String hash, int nonce)
+        {
+            //変数fにGetHashCodeメソッドの結果を格納
+            //今回はハッシュ値の条件として値が「0」で始まるものを探す
+            var f = CreateHashKey($"{hash}{nonce}").StartsWith("0");
+            //fを結果として戻す
+            return f;
+        }
 
         /// <summary>
         /// 渡された値をもとにSHA256のハッシュ関数を作るメソッド
@@ -52,6 +86,7 @@ namespace MySchedule
             return result;
         }
 
+
         /// <summary>
         /// データベース登録用のハッシュキー生成のためのメソッド(編集履歴テーブル用)
         /// </summary>
@@ -64,13 +99,13 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>作成したハッシュキーを格納したString型の変数</returns>
         internal String CreateHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
-            DateTime updateEndingTime, String subject, String detail, String previousHashKey)
+            DateTime updateEndingTime, String subject, String detail, DateTime updateTime, String previousHashKey)
         {
 
             //引数として渡された値をベースにハッシュ関数を生成
             //まず連結
             String key = $"{userId}{scheduleId}{updateType}{updateStartTime}{updateEndingTime}{subject}{detail}" +
-                $"{previousHashKey}";
+                $"{updateTime}{previousHashKey}";
 
             //のちに値を入れる配列
             byte[] hash = null;
@@ -97,7 +132,7 @@ namespace MySchedule
         /// <param name="subject">件名</param>
         /// <param name="detail">詳細</param>
         /// <returns>作成したハッシュキーを格納したString型の変数</returns>
-        internal String CreateHashKey(String userId, DateTime startTime, DateTime endingTime, String subject, 
+        internal String CreateHashKey(String userId, DateTime startTime, DateTime endingTime, String subject,
             String detail)
         {
             //引数として渡された値をベースにハッシュ関数を生成

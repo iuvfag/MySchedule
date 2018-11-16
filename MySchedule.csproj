@@ -88,8 +88,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegistHistoryDAO.cs" />
-    <Compile Include="RegistHistoryDTO.cs" />
+    <Compile Include="UpdateHistoryDAO.cs" />
+    <Compile Include="UpdateHistoryDTO.cs" />
+    <Compile Include="NonceInfoDAO.cs" />
     <Compile Include="ResetPassword.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -191,6 +192,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="sql\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

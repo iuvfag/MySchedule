@@ -80,7 +80,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button2_Click(object sender, EventArgs e)
+        private async void Button2_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合強制終了するためのtry-catch文
             try
@@ -93,9 +93,6 @@ namespace MySchedule
                 if (dr == DialogResult.Yes)
                 {
 
-                    RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-                    rhDAO.RegistHistory(userId, scheduleId, "スケジュール削除", startTime, endingTime, subject, detail);
-
                     //Yesの場合はDAOの削除メソッドを呼び出し、resultに結果(削除件数)を代入
                     int result = siDAO.DeleteSchedule(scheduleId);
 
@@ -103,6 +100,23 @@ namespace MySchedule
                     //1件でも存在すれば
                     if (result > 0)
                     {
+                        //処理に時間がかかるため、マルチスレッド処理を行う
+                        var task = Task.Run(() => {
+
+                            //履歴登録用のメソッドに変更履歴を登録
+                            UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
+                            int nonce = uhDAO.RegistHistory(userId, scheduleId, "スケジュール削除", startTime, 
+                                endingTime, subject, detail);
+
+                            int historyId = uhDAO.GetHistoryId();
+
+                            NonceInfoDAO niDAO = new NonceInfoDAO();
+                            niDAO.RegistNonce(userId, historyId, scheduleId, nonce);
+
+                        });
+
+                        await task;
+
                         //メッセージを表示して、フォームを閉じる
                         MessageBox.Show("予定を削除しました", "削除完了");
                         

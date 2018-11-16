@@ -17,6 +17,7 @@ namespace MySchedule
 
         public String userId { get; set; }
         DataTable dt = new DataTable();
+        NonceInfoDAO niDAO = new NonceInfoDAO(); 
 
         public UpdateHistoryData()
         {
@@ -26,8 +27,8 @@ namespace MySchedule
         private void UpdateHistoryData_Load(object sender, EventArgs e)
         {
             //表示する編集履歴をDBから取得
-            RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-            dt = rhDAO.GetRegistHistoryData(userId);
+            UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
+            dt = uhDAO.GetRegistHistoryData(userId);
             //データテーブルとデータグリッドをつなげる
             dataGridView1.DataSource = dt;
 
@@ -115,6 +116,7 @@ namespace MySchedule
                 MessageBox.Show("不正な入力があった履歴は赤色に変化します", "履歴の照合を行います");
 
                 //何度もボタン押下される場合を想定してフィールドを初期化しておく
+                int historyId = 0;
                 String updateType = "";
                 int scheduleId = 0;
 
@@ -124,27 +126,36 @@ namespace MySchedule
 
                 String subject = "";
                 String detail = "";
+                String ut = "";
                 String key = "";
 
                 String previousHashKey = "";
 
                 String checkKey = "";
 
+                int nonce = 0;
+
                 //データグリッドの行数だけfor文を回す
                 for (int i = 0; i < dataGridView1.RowCount; i++)
                 {
                     //DBのそれぞれの値をフィールドに格納していく
+                    historyId = (int)dataGridView1.Rows[i].Cells[0].Value;          //履歴ID
+
                     updateType = dataGridView1.Rows[i].Cells[1].Value.ToString();   //更新内容
                     scheduleId = (int)dataGridView1.Rows[i].Cells[2].Value;         //スケジュールID
 
-                    ust = dataGridView1.Rows[i].Cells[3].Value.ToString();          //更新したスケジュールの開始時刻(String型)
-                    uet = dataGridView1.Rows[i].Cells[4].Value.ToString();          //更新したスケジュールの終了時刻(String型)
+                    ust = dataGridView1.Rows[i].Cells[3].Value.ToString();          //スケジュールの開始時刻(String型)
+                    uet = dataGridView1.Rows[i].Cells[4].Value.ToString();          //スケジュールの終了時刻(String型)
 
-                    DateTime updateStartTime = DateTime.Parse(ust);                 //更新したスケジュールの開始時刻(DateTime型)
-                    DateTime updateEndingTime = DateTime.Parse(uet);                //更新したスケジュールの終了時刻(DateTime型)
+                    DateTime updateStartTime = DateTime.Parse(ust);                 //スケジュールの開始時刻(DateTime型)
+                    DateTime updateEndingTime = DateTime.Parse(uet);                //スケジュールの終了時刻(DateTime型)
                     subject = dataGridView1.Rows[i].Cells[5].Value.ToString();      //件名
                     detail = dataGridView1.Rows[i].Cells[6].Value.ToString();       //詳細
-                    key = dataGridView1.Rows[i].Cells[7].Value.ToString();          //ハッシュキー
+
+                    ut = dataGridView1.Rows[i].Cells[7].Value.ToString();
+                    DateTime updateTime = DateTime.Parse(ut);
+
+                    key = dataGridView1.Rows[i].Cells[8].Value.ToString();          //ハッシュキー
 
                     //そのユーザーで1番最初に登録された予定は1番目に来ている
                     if (i == 0)
@@ -157,10 +168,12 @@ namespace MySchedule
                         //それ以外の予定に関しては前回のハッシュキーを指定
                         previousHashKey = checkKey;
                     }
+
+                    nonce = niDAO.GetNonce(historyId);
                     
                     //データグリッドの値をもとにハッシュキーを作成
                     checkKey = CreateHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, subject,
-                        detail, previousHashKey);
+                        detail, updateTime, previousHashKey, nonce);
                     //現在表示されているものと比較
                     if (key != checkKey)
                     {
@@ -195,14 +208,15 @@ namespace MySchedule
         /// <param name="previousHashKey">前回のハッシュキー</param>
         /// <returns></returns>
         private String CreateHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
-            DateTime updateEndingTime, String subject, String detail, String previousHashKey)
+            DateTime updateEndingTime, String subject, String detail, DateTime updateTime, String previousHashKey, 
+            int nonce)
         {
             //結果を初期化しておく
             String result = "";
 
             //情報を連結
             String key = $"{userId}{scheduleId}{updateType}{updateStartTime}{updateEndingTime}{subject}{detail}" +
-                    $"{previousHashKey}";
+                    $"{updateTime}{previousHashKey}{nonce}";
             //後に値を入れる配列
             byte[] hash = null;
             //連結した値をバイト変換する

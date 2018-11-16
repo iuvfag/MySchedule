@@ -73,7 +73,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button2_Click(object sender, EventArgs e)
+        private async void Button2_Click(object sender, EventArgs e)
         {
             //何らかの不具合が発生した場合強制終了させるtry-catch文
             try
@@ -117,8 +117,21 @@ namespace MySchedule
                             //メッセージ表示
                             MessageBox.Show("スケジュール情報を修正しました", "更新完了");
 
-                            RegistHistoryDAO rhDAO = new RegistHistoryDAO();
-                            rhDAO.RegistHistory(userId, scheduleId, "スケジュール修正", startTime, endingTime, subject, detail);
+                            //処理に時間がかかるため、マルチスレッド処理を行う
+                            var task = Task.Run(() => {
+                                //履歴登録用のメソッドを呼び出し、変更内容を登録
+                                UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
+                                int nonce = uhDAO.RegistHistory(userId, scheduleId, "スケジュール修正", startTime, endingTime, subject, detail);
+
+                                int historyId = uhDAO.GetHistoryId();
+
+                                NonceInfoDAO niDAO = new NonceInfoDAO();
+                                niDAO.RegistNonce(userId, historyId, scheduleId, nonce);
+
+                            });
+
+                            await task;
+
 
                             this.Close();
                         }

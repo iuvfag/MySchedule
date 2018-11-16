@@ -372,7 +372,7 @@ namespace MySchedule
         /// <summary>
         /// 渡された日付から1週間の日付をセルとリストに格納してくれるメソッド
         /// </summary>
-        /// <param name="day"></param>
+        /// <param name="day">日付(DateTime型の変数)</param>
         private void SetCalenderDate(DateTime day)
         {
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文

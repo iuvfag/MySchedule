@@ -22,11 +22,11 @@ namespace MySchedule
         {
             //データグリッドにDBの値を格納
             UserInfoDAO uiDAO = new UserInfoDAO();                          //UserInfoDAOのインスタンス化
-            RegistHistoryDAO rhDAO = new RegistHistoryDAO();                //RegistHistoryDAOのインスタンス化
+            UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();                //RegistHistoryDAOのインスタンス化
 
             //それぞれのデータグリッドにDBから渡されたデータテーブルを格納
             userInfoGrid.DataSource = uiDAO.GetAllUserInfo();
-            updateHistoryInfoGrid.DataSource = rhDAO.GetAllRegistHistory();
+            updateHistoryInfoGrid.DataSource = uhDAO.GetAllRegistHistory();
         }
     }
 }
