@@ -45,17 +45,12 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
         internal int RegistSchedule(String userId, DateTime startTime, DateTime endingTime, String subject,
-            String detail)
+            String detail, String hashKey)
         {
-
-            CommonUtility cu = new CommonUtility();
 
             //結果の初期化
             int result = 0;
             cmd.Connection = con;
-
-            //DBに登録するハッシュキーの作成
-            String key = cu.CreateHashKey(userId, startTime, endingTime, subject, detail);
 
             //SQL文の作成
             cmd.CommandText = "INSERT INTO schedule_info (user_id, start_time, ending_time, subject, detail, " +
@@ -67,7 +62,7 @@ namespace MySchedule
             cmd.Parameters.Add(new NpgsqlParameter("@endingTime", endingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
-            cmd.Parameters.Add(new NpgsqlParameter("@key", key));
+            cmd.Parameters.Add(new NpgsqlParameter("@key", hashKey));
 
             //接続
             con.Open();
@@ -163,7 +158,7 @@ namespace MySchedule
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "SELECT schedule_id, start_time, ending_time, subject, detail FROM " +
+            cmd.CommandText = "SELECT user_id, schedule_id, start_time, ending_time, subject, detail FROM " +
                 "schedule_info WHERE schedule_id = @scheduleId";
             cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
 
@@ -178,11 +173,12 @@ namespace MySchedule
                     while (reader.Read() == true)
                     {
                         //DTOにリーダーがゲットしてきた値を格納(それぞれデータ型は合わせる)
-                        siDTO.scheduleId = reader.GetInt32(0);
-                        siDTO.startTime = reader.GetDateTime(1);
-                        siDTO.endingTime = reader.GetDateTime(2);
-                        siDTO.subject = reader.GetString(3);
-                        siDTO.detail = reader.GetString(4);
+                        siDTO.userId = reader.GetString(0);
+                        siDTO.scheduleId = reader.GetInt32(1);
+                        siDTO.startTime = reader.GetDateTime(2);
+                        siDTO.endingTime = reader.GetDateTime(3);
+                        siDTO.subject = reader.GetString(4);
+                        siDTO.detail = reader.GetString(5);
                     }
                 }
             }
@@ -259,15 +255,12 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
         internal int UpdeteSchedule(String userId, int scheduleId, DateTime startTime, DateTime endingTime,
-            String subject, String detail)
+            String subject, String detail, String hashKey)
         {
-            CommonUtility cu = new CommonUtility();
 
             //結果の初期化
             int result = 0;
             cmd.Connection = con;
-
-            String key = cu.CreateHashKey(userId, startTime, endingTime, subject, detail);
 
             //SQL文の作成
             cmd.CommandText = "UPDATE schedule_info SET start_time = @startTime, ending_time = @endingTime, " +
@@ -278,7 +271,7 @@ namespace MySchedule
             cmd.Parameters.Add(new NpgsqlParameter("@endingTime", endingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
-            cmd.Parameters.Add(new NpgsqlParameter("@key", key));
+            cmd.Parameters.Add(new NpgsqlParameter("@key", hashKey));
             cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
 
             //接続開始

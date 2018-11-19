@@ -53,13 +53,13 @@ namespace MySchedule
                 if (string.IsNullOrWhiteSpace(userIdCheck) && String.IsNullOrWhiteSpace(passwordCheck))
                 {
 
-                    CommonUtility cu = new CommonUtility();
+                    BlockChain bc = new BlockChain();
                     //パスワード暗号化の準備、まずログインIDをハッシュ関数化する
-                    String userIdHash = cu.CreateHashKey(userId);
+                    String userIdHash = bc.CreateHashKey(userId);
                     //パスワードをハッシュ関数に変換する
-                    password = cu.CreateHashKey(password);
+                    password = bc.CreateHashKey(password);
                     //上記2つの値を連結してハッシュ関数化したものをパスワードとして格納する
-                    password = cu.CreateHashKey(userIdHash, password);
+                    password = bc.CreateHashKey($"{userIdHash}{password}");
 
                     //ログインIDとパスワードをログイン用メソッドに渡し、結果をUserInfoDTOに格納
                     UserInfoDTO uiDTO = new UserInfoDTO();

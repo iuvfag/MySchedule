@@ -25,7 +25,6 @@ namespace MySchedule
 
         //必要なクラスのインスタンス化
         UserInfoDTO uiDTO = new UserInfoDTO();
-        ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
         ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
         //データテーブルもインスタンス化しておく
@@ -226,15 +225,21 @@ namespace MySchedule
                 //押下されたセルがヘッダー部分ではないことを確認
                 if (hti.RowIndex > -1 && hti.ColumnIndex > -1)
                 {
+                    //値の受け渡しのため、ScheduleInfoDTOクラスのインスタンスを生成
+                    ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
                     //スケジュールID(見えない部分に格納されている)を取得
                     scheduleId = (int)toDo.Rows[hti.RowIndex].Cells[0].Value;
 
+                    //渡す値をそれぞれDTOに格納する
+                    siDTO.userId = userId;
+                    siDTO.scheduleId = scheduleId;
                     //詳細画面を開く
                     ScheduleDetail sd = new ScheduleDetail()
                     {
-                        userId = userId,           //ログインIDを渡す
-                        scheduleId = scheduleId   //スケジュールIDを渡す
+                        //DTOクラスを渡す
+                        siDTO = siDTO
                     };
+                    
                     sd.Show(this);
                 }
             }
@@ -668,8 +673,21 @@ namespace MySchedule
                     String date = weekList[columnIndex - 1].ToShortDateString();
                     //列インデックスをもとに選択範囲のセルの1番最初の時間を取得
                     String startTime = scheduleGrid.Rows[firstIndex].Cells[0].Value.ToString();
-                    //列インデックスをもとに選択範囲のセルの1番下の時間を取得(ただし表示時刻に1足しておく)
-                    String endingTime = scheduleGrid.Rows[lastIndex + 1].Cells[0].Value.ToString();
+                    //1番最後の時間は24時以上にならないように処理を分岐させる
+                    String endingTime;
+                    //セルのインデックスが24なら
+                    if (lastIndex == 24)
+                    {
+                        //時間は「23:59」に固定
+                        endingTime = "23:59";
+                    }
+                    //そうでなければ
+                    else
+                    {
+                        //列インデックスをもとに選択範囲のセルの1番下の時間を取得(ただし表示時刻に1足しておく)
+
+                        endingTime = scheduleGrid.Rows[lastIndex + 1].Cells[0].Value.ToString();
+                    }
 
                     //予定登録画面の呼び出し
                     ScheduleRegistration sr = new ScheduleRegistration()
@@ -705,15 +723,20 @@ namespace MySchedule
             try
             {
 
-                //ダブルクリックされた場所の取得
-                Point p = scheduleGrid.PointToClient(Cursor.Position);
-                DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
-                if (hti.ColumnIndex > 0)
+                ////ダブルクリックされた場所の取得
+                //Point p = scheduleGrid.PointToClient(Cursor.Position);
+                //DataGridView.HitTestInfo hti = scheduleGrid.HitTest(p.X, p.Y);
+
+                //変数eよりクリックされたセルのインデックスを取得
+                int columnIndex = e.ColumnIndex;
+                int rowIndex = e.RowIndex;
+
+                if (columnIndex > 0)
                 {
-                    if (hti.RowIndex > 0)
+                    if (rowIndex > 0)
                     {
                         //7つ右のスケジュールIDを格納しているセルを取得
-                        var selectedCellId = scheduleGrid.Rows[hti.RowIndex].Cells[hti.ColumnIndex + 7].Value;
+                        var selectedCellId = scheduleGrid.Rows[rowIndex].Cells[columnIndex + 7].Value;
 
                         //予定が重複している場合(セルの値が-1の場合)
                         if ((int)selectedCellId == -1)
@@ -721,11 +744,11 @@ namespace MySchedule
                             //メッセージ表示
                             MessageBox.Show("詳細を知りたい予定を選択してください", "同時刻に複数の予定が存在します");
                             //日付リストから日付を取得
-                            String date = weekList[hti.ColumnIndex - 1].ToShortDateString();
+                            String date = weekList[columnIndex - 1].ToShortDateString();
                             //セルの値から開始時刻取得
-                            String startTime = scheduleGrid.Rows[hti.RowIndex].Cells[0].Value.ToString();
+                            String startTime = scheduleGrid.Rows[rowIndex].Cells[0].Value.ToString();
                             //終了時刻を指定
-                            String endingTime = $"{hti.RowIndex - 1}:59";
+                            String endingTime = $"{rowIndex - 1}:59";
                             //開始時刻、終了時刻それぞれを日付と連結
                             startTime = $"{date} {startTime}";
                             endingTime = $"{date} {endingTime}";
@@ -742,11 +765,14 @@ namespace MySchedule
                         //セルの値がnullでも0でもなければ次の処理へ
                         else if (selectedCellId != null && (int)selectedCellId != 0)
                         {
-
+                            ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
+                            siDTO.userId = userId;
+                            siDTO.scheduleId = (int)selectedCellId;
                             //ログインIDとスケジュールIDを渡して詳細画面を開く
-                            ScheduleDetail sd = new ScheduleDetail();
-                            sd.userId = userId;           //ログインIDを渡す
-                            sd.scheduleId = (int)selectedCellId;   //スケジュールIDを渡しておく
+                            ScheduleDetail sd = new ScheduleDetail()
+                            {
+                                siDTO = siDTO
+                            };
                             sd.ShowDialog(this);
                             sd.Dispose();
                         }
@@ -760,9 +786,9 @@ namespace MySchedule
                         if ((int)selectedCellId == 0)
                         {
                             //日付を日付リストから持ってくる
-                            String defaultdate = weekList[hti.ColumnIndex - 1].ToShortDateString();
+                            String defaultdate = weekList[columnIndex - 1].ToShortDateString();
                             //時刻をスケジュールのセルのヘッダーから持ってくる
-                            String start = scheduleGrid.Rows[hti.RowIndex].Cells[0].Value.ToString();
+                            String start = scheduleGrid.Rows[rowIndex].Cells[0].Value.ToString();
                             String ending;
                             //もし最後のセルなら
                             if (start == "23:00")
@@ -774,7 +800,7 @@ namespace MySchedule
                             else
                             {
                                 //1つ下のセルのヘッダーから取得
-                                ending = scheduleGrid.Rows[hti.RowIndex + 1].Cells[0].Value.ToString();
+                                ending = scheduleGrid.Rows[rowIndex + 1].Cells[0].Value.ToString();
                             }
                             //新規登録フォームを開く
                             ScheduleRegistration sr = new ScheduleRegistration()

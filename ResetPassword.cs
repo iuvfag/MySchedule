@@ -62,18 +62,18 @@ namespace MySchedule
                 String.IsNullOrWhiteSpace(reConfirmarionNewPasswordCheck) && String.IsNullOrWhiteSpace(passwordCompare))
             {
                 //コモンユーティリティの呼び出し
-                CommonUtility cu = new CommonUtility();
+                BlockChain bc = new BlockChain();
                 //ログインIDをハッシュ関数化
-                String userIdHash = cu.CreateHashKey(userId);
+                String userIdHash = bc.CreateHashKey(userId);
                 //現在のパスワードをハッシュ関数化
-                currentPassword = cu.CreateHashKey(currentPassword);
+                currentPassword = bc.CreateHashKey(currentPassword);
                 //ログインIDのハッシュ関数と現在のパスワードのハッシュ関数を連結してさらにハッシュ関数化
-                currentPassword = cu.CreateHashKey(userIdHash, currentPassword);
+                currentPassword = bc.CreateHashKey($"{userIdHash}{currentPassword}");
 
                 //新しいパスワードをハッシュ関数化
-                newPassword = cu.CreateHashKey(newPassword);
+                newPassword = bc.CreateHashKey(newPassword);
                 //ログインIDのハッシュ関数と新しいパスワードのハッシュ関数を連結してさらにハッシュ関数化
-                newPassword = cu.CreateHashKey(userIdHash, newPassword);
+                newPassword = bc.CreateHashKey($"{userIdHash}{newPassword}");
 
                 UserInfoDAO uiDAO = new UserInfoDAO();
 

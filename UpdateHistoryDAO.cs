@@ -39,28 +39,16 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
         internal int RegistHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
-            DateTime updateEndingTime, String subject, String detail)
+            DateTime updateEndingTime, String subject, String detail,DateTime updateTime, String hashKey)
         {
-            CommonUtility cu = new CommonUtility();
             //結果を初期化
             int result = 0;
             cmd.Connection = con;
 
-            String previousHashKey = GetPreviousHashKey(userId);
-            DateTime updateTime = DateTime.Now;
-
-            //テーブルに格納するハッシュキーを生成する
-            String key = cu.CreateHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime,
-                subject, detail, updateTime, previousHashKey);
-
-            int nonce = cu.GetNonce(key);
-
-            key = cu.CreateHashKey(key, nonce.ToString());
-
             //SQL文の作成
             cmd.CommandText = "INSERT INTO update_history (user_id, schedule_id, update_type, update_start_time, " +
-                "update_ending_time, subject, detail, key, update_time) VALUES (@userId, @scheduleId, @updateType, " +
-                "@updateStartTime, @updateEndingTime, @subject, @detail, @key, now())";
+                "update_ending_time, subject, detail, update_time, key) VALUES (@userId, @scheduleId, @updateType, " +
+                "@updateStartTime, @updateEndingTime, @subject, @detail, @updateTime, @key)";
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
             cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
@@ -69,7 +57,8 @@ namespace MySchedule
             cmd.Parameters.Add(new NpgsqlParameter("@updateEndingTime", updateEndingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
-            cmd.Parameters.Add(new NpgsqlParameter("@key", key));
+            cmd.Parameters.Add(new NpgsqlParameter("@key", hashKey));
+            cmd.Parameters.Add(new NpgsqlParameter("@updateTime", updateTime));
 
             //接続開始
             con.Open();
@@ -78,10 +67,7 @@ namespace MySchedule
             {
                 //登録結果をresultに格納
                 result = cmd.ExecuteNonQuery();
-                if (result > 0)
-                {
-                    result = nonce;
-                }
+
             }
             catch (Exception ex)
             {
@@ -104,6 +90,7 @@ namespace MySchedule
             cmd.Parameters.Remove("@subject");
             cmd.Parameters.Remove("@detail");
             cmd.Parameters.Remove("@key");
+            cmd.Parameters.Remove("@updateTime");
 
             //結果を戻す
             return result;
@@ -249,35 +236,53 @@ namespace MySchedule
             return dt;
         }
 
-        internal int GetHistoryId()
+        /// <summary>
+        /// 最新の履歴IDを取得するためのメソッド
+        /// </summary>
+        /// <returns></returns>
+        internal int GetHistoryId(String userId)
         {
+            //結果を初期化
             int result = 0;
             cmd.Connection = con;
 
-            cmd.CommandText = "SELECT history_id FROM update_history WHERE history_id = " +
-                "(SELECT MAX(history_id) FROM update_history)";
+            //SQL文の作成
+            cmd.CommandText = "SELECT history_id FROM update_history WHERE user_id = @userId AND " +
+                "history_id =  (SELECT MAX(history_id) FROM update_history)";
 
+            //SQL文の@部分に値を格納
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
+
+            //接続開始
             con.Open();
 
             try
             {
+                //リーダーの呼び出し
                 using (var reader = cmd.ExecuteReader())
                 {
+                    //リーダーが読み取っている間は
                     while (reader.Read())
                     {
+                        //取得した履歴IDをresultに格納
                         result = reader.GetInt32(0);
                     }
                 }
             }
             catch (Exception ex)
             {
+                //例外処理
                 MessageBox.Show(ex.ToString());
                 throw;
             }
             finally
             {
+                //最終的に接続は閉じておく
                 con.Close();
             }
+            //パラメーターの値はremoveしておく
+            cmd.Parameters.Remove("@userId");
+            //結果を戻す
             return result;
         }
 

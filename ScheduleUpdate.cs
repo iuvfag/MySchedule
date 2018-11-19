@@ -13,12 +13,7 @@ namespace MySchedule
     public partial class ScheduleUpdate : Form
     {
         //親フォームとの情報のやり取りに使用
-        public String userId { get; set; }
-        public int scheduleId { get; set; }
-        public String subject { get; set; }
-        public DateTime startTime { get; set; }
-        public DateTime endingTime { get; set; }
-        public String detail { get; set; }
+        internal ScheduleInfoDTO siDTO { get; set; }
 
 
 
@@ -36,15 +31,15 @@ namespace MySchedule
         {
             //詳細画面から受け取った値をそのまま表示していく
             //予定日時(開始時刻の日付部分だけに変換して表示)
-            scheduleDatePicker.Value = DateTime.Parse(startTime.ToShortDateString());
+            scheduleDatePicker.Value = DateTime.Parse(siDTO.startTime.ToShortDateString());
             //開始時刻
-            startTimePicker.Value = startTime;
+            startTimePicker.Value = siDTO.startTime;
             //終了時刻
-            endingTimePicker.Value = endingTime;
+            endingTimePicker.Value = siDTO.endingTime;
             //件名
-            subjectTextbox.Text = subject;
+            subjectTextbox.Text = siDTO.subject;
             //詳細
-            detailTextbox.Text = detail;
+            detailTextbox.Text = siDTO.detail;
         }
 
         /// <summary>
@@ -79,12 +74,12 @@ namespace MySchedule
             try
             {
                 //「件名」、「詳細」を入力欄から取得してフィールドに格納
-                subject = subjectTextbox.Text;
-                detail = detailTextbox.Text;
+                siDTO.subject = subjectTextbox.Text;
+                siDTO.detail = detailTextbox.Text;
 
                 //「件名」、「詳細」の入力チェック
-                String subjectCheck = subject.DoCheck2("件名", 250);
-                String detailCheck = detail.DoCheck3("詳細", 1000);
+                String subjectCheck = siDTO.subject.DoCheck2("件名", 250);
+                String detailCheck = siDTO.detail.DoCheck3("詳細", 1000);
 
                 //入力欄に問題がなければ次の処理へ
                 if (String.IsNullOrWhiteSpace(subjectCheck) && String.IsNullOrWhiteSpace(detailCheck))
@@ -100,16 +95,17 @@ namespace MySchedule
                     et = $"{date} {et}";
 
                     //このクラスのフィールドに格納しておく
-                    this.startTime = DateTime.Parse(st);
-                    this.endingTime = DateTime.Parse(et);
+                    siDTO.startTime = DateTime.Parse(st);
+                    siDTO.endingTime = DateTime.Parse(et);
 
                     //先ほど連結した時刻で開始時刻と終了時刻が前後していないかどうか調べる
-                    if (startTime <= endingTime)
+                    if (siDTO.startTime <= siDTO.endingTime)
                     {
                         //DAOクラスのインスタンス化
                         ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
                         //スケジュールの更新を行い結果(更新数)をresultに格納
-                        int result = siDAO.UpdeteSchedule(userId, scheduleId, startTime, endingTime, subject, detail);
+                        int result = siDAO.UpdeteSchedule(siDTO.userId, siDTO.scheduleId, siDTO.startTime, 
+                            siDTO.endingTime, siDTO.subject, siDTO.detail,"");
 
                         //更新されたスケジュールが1件でも存在すれば次の処理へ
                         if (result > 0)
@@ -118,15 +114,40 @@ namespace MySchedule
                             MessageBox.Show("スケジュール情報を修正しました", "更新完了");
 
                             //処理に時間がかかるため、マルチスレッド処理を行う
-                            var task = Task.Run(() => {
-                                //履歴登録用のメソッドを呼び出し、変更内容を登録
+                            var task = Task.Run(() =>
+                            {
+                                //BlockChainクラスをインスタンス化
+                                BlockChain bc = new BlockChain();
+                                //UpdateHistoryDTOクラスに値を格納し、インスタンス化
+                                UpdateHistoryDTO uhDTO = new UpdateHistoryDTO()
+                                {
+                                    userId = siDTO.userId,
+                                    scheduleId = siDTO.scheduleId,
+                                    updateType = "スケジュール更新",
+                                    updateStartTime = siDTO.startTime,
+                                    updateEndingTime = siDTO.endingTime,
+                                    subject = siDTO.subject,
+                                    detail = siDTO.detail,
+                                    updateTime = DateTime.Now
+                                };
+                                //UpdateHistoryDAOクラスをインスタンス化
                                 UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
-                                int nonce = uhDAO.RegistHistory(userId, scheduleId, "スケジュール修正", startTime, endingTime, subject, detail);
 
-                                int historyId = uhDAO.GetHistoryId();
+                                //DAOクラスを使って前回のハッシュキーを取得し、DTOクラスに格納
+                                uhDTO.previousHashKey = uhDAO.GetPreviousHashKey(siDTO.userId);
+                                //BlockChainクラスのBlockメソッド
+                                uhDTO = bc.Block(uhDTO);
+                                //履歴登録用のメソッドを呼び出し、変更内容を登録
+                                uhDAO.RegistHistory(uhDTO.userId, uhDTO.scheduleId, uhDTO.updateType,
+                                    uhDTO.updateStartTime, uhDTO.updateEndingTime, uhDTO.subject, uhDTO.detail, 
+                                    uhDTO.updateTime, uhDTO.hashKey);
 
+                                //登録した履歴の履歴IDを取得
+                                int historyId = uhDAO.GetHistoryId(siDTO.userId);
+
+                                //今回使用したNonceをDBに登録しておく
                                 NonceInfoDAO niDAO = new NonceInfoDAO();
-                                niDAO.RegistNonce(userId, historyId, scheduleId, nonce);
+                                niDAO.RegistNonce(siDTO.userId, historyId, siDTO.scheduleId, uhDTO.nonce);
 
                             });
 

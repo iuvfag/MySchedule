@@ -13,12 +13,8 @@ namespace MySchedule
     public partial class ScheduleDetail : Form
     {
         //週間スケジュール画面から受け取る情報
-        public String userId { get; set; }
-        public int scheduleId { get; set; }
-        public String subject { get; set; }
-        public DateTime startTime { get; set; }
-        public DateTime endingTime { get; set; }
-        public String detail { get; set; }
+
+        internal ScheduleInfoDTO siDTO { get; set; }
 
         ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
@@ -37,25 +33,18 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
-                //DAO、DTOクラスのインスタンス化
-                ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
-                ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
                 //スケジュールの詳細をDBから取得し、DTOクラスに格納
-                siDTO = siDAO.GetScheduleDetail(scheduleId);
+                siDTO = siDAO.GetScheduleDetail(siDTO.scheduleId);
 
-                ////このクラスのフィールドにDTOクラスの情報を格納する
-                subject = siDTO.subject;
-                startTime = siDTO.startTime;
-                endingTime = siDTO.endingTime;
-                detail = siDTO.detail;
+
 
                 //取得した情報を、対応するTextBoxに格納していく
-                subjectTextBox.Text = subject;
-                dateTextBox.Text = startTime.ToShortDateString();
-                startTimeTextbox.Text = startTime.ToShortTimeString();
-                endingTimeTextBox.Text = endingTime.ToShortTimeString();
-                detailTextBox.Text = detail;
+                subjectTextBox.Text = siDTO.subject;
+                dateTextBox.Text = siDTO.startTime.ToShortDateString();
+                startTimeTextbox.Text = siDTO.startTime.ToShortTimeString();
+                endingTimeTextBox.Text = siDTO.endingTime.ToShortTimeString();
+                detailTextBox.Text = siDTO.detail;
             }
             //何らかの不具合が発生した場合
             catch (Exception)
@@ -94,24 +83,46 @@ namespace MySchedule
                 {
 
                     //Yesの場合はDAOの削除メソッドを呼び出し、resultに結果(削除件数)を代入
-                    int result = siDAO.DeleteSchedule(scheduleId);
+                    int result = siDAO.DeleteSchedule(siDTO.scheduleId);
 
                     //きちんと削除されたか(削除件数が1件でもあるか)を確認
                     //1件でも存在すれば
                     if (result > 0)
                     {
                         //処理に時間がかかるため、マルチスレッド処理を行う
-                        var task = Task.Run(() => {
+                        var task = Task.Run(() =>
+                        {
+
+                            BlockChain bc = new BlockChain();
+                            UpdateHistoryDTO uhDTO = new UpdateHistoryDTO()
+                            {
+                                userId = siDTO.userId,
+                                scheduleId = siDTO.scheduleId,
+                                updateType = "スケジュール削除",
+                                updateStartTime = siDTO.startTime,
+                                updateEndingTime = siDTO.endingTime,
+                                subject = siDTO.subject,
+                                detail = siDTO.detail,
+                                updateTime = DateTime.Now
+                            };
+
+                            UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
+
+                            uhDTO.previousHashKey = uhDAO.GetPreviousHashKey(siDTO.userId);
+
+                            uhDTO = bc.Block(uhDTO);
 
                             //履歴登録用のメソッドに変更履歴を登録
-                            UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
-                            int nonce = uhDAO.RegistHistory(userId, scheduleId, "スケジュール削除", startTime, 
-                                endingTime, subject, detail);
+                            uhDAO.RegistHistory(uhDTO.userId, uhDTO.scheduleId, uhDTO.updateType,
+                                uhDTO.updateStartTime, uhDTO.updateEndingTime, uhDTO.subject,
+                                uhDTO.detail, uhDTO.updateTime, uhDTO.hashKey);
 
-                            int historyId = uhDAO.GetHistoryId();
+                            //登録した履歴の履歴IDを取得し、int型の変数に格納
+                            int historyId = uhDAO.GetHistoryId(siDTO.userId);
 
+                            //今回使用したNonceをDBに登録しておく
                             NonceInfoDAO niDAO = new NonceInfoDAO();
-                            niDAO.RegistNonce(userId, historyId, scheduleId, nonce);
+                            niDAO.RegistNonce(siDTO.userId, historyId, siDTO.scheduleId, uhDTO.nonce);
 
                         });
 
@@ -119,7 +130,7 @@ namespace MySchedule
 
                         //メッセージを表示して、フォームを閉じる
                         MessageBox.Show("予定を削除しました", "削除完了");
-                        
+
                         this.Close();
                     }
                     //1件も削除できなければ
@@ -128,7 +139,7 @@ namespace MySchedule
                         //メッセージを表示する
                         MessageBox.Show("予定の削除に失敗しました", "問題が発生しました");
                         //該当する予定が存在するか確認する
-                        if (!(siDAO.IsExistsSchedule(scheduleId)))      //存在しない場合
+                        if (!(siDAO.IsExistsSchedule(siDTO.scheduleId)))      //存在しない場合
                         {
                             //エラーメッセージ表示
                             MessageBox.Show("該当の予定は既に存在しません。", "予定の存在が確認できませんでした");
@@ -157,18 +168,13 @@ namespace MySchedule
             try
             {
                 //該当する予定が既に削除されていないかどうか確認
-                if (siDAO.IsExistsSchedule(scheduleId))
+                if (siDAO.IsExistsSchedule(siDTO.scheduleId))
                 {
                     //スケジュール修正フォームの呼び出し
-                    ScheduleUpdate su = new ScheduleUpdate();
-
-                    //値を渡していく
-                    su.userId = userId;
-                    su.scheduleId = scheduleId;
-                    su.subject = subject;
-                    su.startTime = startTime;
-                    su.endingTime = endingTime;
-                    su.detail = detail;
+                    ScheduleUpdate su = new ScheduleUpdate()
+                    {
+                        siDTO = siDTO
+                    };
 
                     //フォームの表示
                     su.ShowDialog(this);
@@ -183,7 +189,7 @@ namespace MySchedule
                     this.Close();       //フォームも閉じる
                 }
 
-                
+
             }
             //何らかの不具合が発生した場合
             catch (Exception)

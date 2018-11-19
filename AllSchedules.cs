@@ -61,8 +61,8 @@ namespace MySchedule
                 {
                     //スケジュール詳細画面を開く
                     ScheduleDetail sd = new ScheduleDetail();
-                    sd.userId = userId;             //ログインIDを渡す
-                    sd.scheduleId = scheduleId;     //スケジュールIDを渡す
+                    //sd.userId = userId;             //ログインIDを渡す
+                    //sd.scheduleId = scheduleId;     //スケジュールIDを渡す
 
                     sd.ShowDialog(this);
                     sd.Dispose();

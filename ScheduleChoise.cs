@@ -54,9 +54,9 @@ namespace MySchedule
                 int scheduleId = (int)dataGridView1.Rows[hti.RowIndex].Cells[0].Value;
                 //ログインIDとスケジュールIDを渡して詳細画面を開く
                 ScheduleDetail sd = new ScheduleDetail();
-                sd.userId = userId;           //ログインIDを渡す
-                sd.scheduleId = scheduleId;   //スケジュールIDを渡しておく
-                sd.ShowDialog(this);
+                //sd.userId = userId;           //ログインIDを渡す
+                //sd.scheduleId = scheduleId;   //スケジュールIDを渡しておく
+                //sd.ShowDialog(this);
                 sd.Dispose();
             }
         }

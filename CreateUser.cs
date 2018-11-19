@@ -82,14 +82,14 @@ namespace MySchedule
                 {
 
                     UserInfoDAO uiDAO = new UserInfoDAO();
-                    CommonUtility cu = new CommonUtility();
+                    BlockChain bc = new BlockChain();
 
                     //パスワード暗号化の準備、まず、ログインIDをハッシュ関数化
-                    String userIdHash = cu.CreateHashKey(userId);
+                    String userIdHash = bc.CreateHashKey(userId);
                     //パスワードをハッシュ関数化
-                    password = cu.CreateHashKey(password);
+                    password = bc.CreateHashKey(password);
                     //上記二つを連結してハッシュ関数化したものをパスワードとしてDBに保存する
-                    password = cu.CreateHashKey(userIdHash, password);
+                    password = bc.CreateHashKey($"{userIdHash}{password}");
 
                     //ログインIDが既に存在するか確認し、問題ないなら次の処理へ
                     if (!(uiDAO.IsExistsUser(userId)))

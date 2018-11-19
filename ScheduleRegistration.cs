@@ -19,6 +19,7 @@ namespace MySchedule
         public bool flg { get; set; }
         public DateTime start { get; set; }
         public DateTime ending { get; set; }
+        internal ScheduleInfoDTO siDTO { get; set; }
 
         public ScheduleRegistration()
         {
@@ -94,7 +95,7 @@ namespace MySchedule
                     ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
                     //登録用メソッドを呼び出し、結果をresultに格納
-                    int result = siDAO.RegistSchedule(userId, startTime, endingTime, subject, detail);
+                    int result = siDAO.RegistSchedule(userId, startTime, endingTime, subject, detail, "");
                     //登録件数が1件以上あれば
                     if (result > 0)
                     {
@@ -102,17 +103,40 @@ namespace MySchedule
                         int scheduleId = siDAO.GetScheduleInfomation(userId, startTime, endingTime, subject, detail);
 
                         //処理に時間がかかるため、マルチスレッド処理を行う
-                        var task =  Task.Run(() => {
-
-                            //履歴登録メソッドを使用して変更履歴登録
+                        var task = Task.Run(() =>
+                        {
+                            //BlockChainクラスをインスタンス化
+                            BlockChain bc = new BlockChain();
+                            //UpdateHistoryDTOクラスに値を格納してインスタンス化
+                            UpdateHistoryDTO uhDTO = new UpdateHistoryDTO()
+                            {
+                                userId = userId,
+                                scheduleId = scheduleId,
+                                updateType = "スケジュール登録",
+                                updateStartTime = startTime,
+                                updateEndingTime = endingTime,
+                                subject = subject,
+                                detail = detail,
+                                updateTime = DateTime.Now
+                            };
+                            //UpdateHistoryDAOクラスのインスタンス化
                             UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
-                            int nonce = uhDAO.RegistHistory(userId, scheduleId, "スケジュール登録", startTime, endingTime,
-                                subject, detail);
 
-                            int historyId = uhDAO.GetHistoryId();
+                            //DAOクラスを使って前回のハッシュキーを取得し、DTOクラスに格納
+                            uhDTO.previousHashKey = uhDAO.GetPreviousHashKey(userId);
+                            //BlockChainクラスのBlockメソッドを呼び出しハッシュキーとNonceを取得、DTOに格納
+                            uhDTO = bc.Block(uhDTO);
+                            //履歴登録メソッドを使用して変更履歴登録
+                            uhDAO.RegistHistory(uhDTO.userId, uhDTO.scheduleId, uhDTO.updateType,
+                                uhDTO.updateStartTime, uhDTO.updateEndingTime, uhDTO.subject, uhDTO.detail,
+                                uhDTO.updateTime, uhDTO.hashKey);
 
+                            //登録した履歴の履歴IDを取得
+                            int historyId = uhDAO.GetHistoryId(userId);
+
+                            //今回使用したNonceをDBに登録しておく
                             NonceInfoDAO niDAO = new NonceInfoDAO();
-                            niDAO.RegistNonce(userId, historyId, scheduleId, nonce);
+                            niDAO.RegistNonce(userId, historyId, scheduleId, uhDTO.nonce);
 
                         });
 
