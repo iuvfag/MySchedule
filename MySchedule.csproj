@@ -91,7 +91,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UpdateHistoryDAO.cs" />
     <Compile Include="UpdateHistoryDTO.cs" />
-    <Compile Include="NonceInfoDAO.cs" />
     <Compile Include="ResetPassword.cs">
       <SubType>Form</SubType>
     </Compile>

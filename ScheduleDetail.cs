@@ -105,24 +105,17 @@ namespace MySchedule
                                 detail = siDTO.detail,
                                 updateTime = DateTime.Now
                             };
-
+                            //UpdateHistoryDAOクラスをインスタンス化
                             UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
-
+                            //DAOクラスを使って前回のハッシュキーを取得してDTOクラスに格納
                             uhDTO.previousHashKey = uhDAO.GetPreviousHashKey(siDTO.userId);
-
+                            //BlockChainクラスのblockメソッド
                             uhDTO = bc.Block(uhDTO);
 
-                            //履歴登録用のメソッドに変更履歴を登録
+                            //履歴登録用のメソッドに情報を登録
                             uhDAO.RegistHistory(uhDTO.userId, uhDTO.scheduleId, uhDTO.updateType,
                                 uhDTO.updateStartTime, uhDTO.updateEndingTime, uhDTO.subject,
-                                uhDTO.detail, uhDTO.updateTime, uhDTO.hashKey);
-
-                            //登録した履歴の履歴IDを取得し、int型の変数に格納
-                            int historyId = uhDAO.GetHistoryId(siDTO.userId);
-
-                            //今回使用したNonceをDBに登録しておく
-                            NonceInfoDAO niDAO = new NonceInfoDAO();
-                            niDAO.RegistNonce(siDTO.userId, historyId, siDTO.scheduleId, uhDTO.nonce);
+                                uhDTO.detail, uhDTO.updateTime, uhDTO.nonce, uhDTO.hashKey);
 
                         });
 

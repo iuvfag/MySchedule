@@ -17,7 +17,6 @@ namespace MySchedule
 
         public String userId { get; set; }
         DataTable dt = new DataTable();
-        NonceInfoDAO niDAO = new NonceInfoDAO(); 
 
         public UpdateHistoryData()
         {
@@ -152,10 +151,12 @@ namespace MySchedule
                     subject = dataGridView1.Rows[i].Cells[5].Value.ToString();      //件名
                     detail = dataGridView1.Rows[i].Cells[6].Value.ToString();       //詳細
 
-                    ut = dataGridView1.Rows[i].Cells[7].Value.ToString();
-                    DateTime updateTime = DateTime.Parse(ut);
+                    ut = dataGridView1.Rows[i].Cells[7].Value.ToString();           //予定登録日時(String型)
+                    DateTime updateTime = DateTime.Parse(ut);                       //予定登録日時(DateTime型)
 
-                    key = dataGridView1.Rows[i].Cells[8].Value.ToString();          //ハッシュキー
+                    nonce = (int)dataGridView1.Rows[i].Cells[8].Value;              //ノンス
+
+                    key = dataGridView1.Rows[i].Cells[9].Value.ToString();          //ハッシュキー
 
                     //そのユーザーで1番最初に登録された予定は1番目に来ている
                     if (i == 0)
@@ -168,8 +169,6 @@ namespace MySchedule
                         //それ以外の予定に関しては前回のハッシュキーを指定
                         previousHashKey = checkKey;
                     }
-
-                    nonce = niDAO.GetNonce(historyId);
                     
                     //データグリッドの値をもとにハッシュキーを作成
                     checkKey = CreateHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, subject,

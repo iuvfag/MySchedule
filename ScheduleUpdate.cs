@@ -137,17 +137,10 @@ namespace MySchedule
                                 uhDTO.previousHashKey = uhDAO.GetPreviousHashKey(siDTO.userId);
                                 //BlockChainクラスのBlockメソッド
                                 uhDTO = bc.Block(uhDTO);
-                                //履歴登録用のメソッドを呼び出し、変更内容を登録
+                                //履歴登録用のメソッドを呼び出し、情報を登録
                                 uhDAO.RegistHistory(uhDTO.userId, uhDTO.scheduleId, uhDTO.updateType,
                                     uhDTO.updateStartTime, uhDTO.updateEndingTime, uhDTO.subject, uhDTO.detail, 
-                                    uhDTO.updateTime, uhDTO.hashKey);
-
-                                //登録した履歴の履歴IDを取得
-                                int historyId = uhDAO.GetHistoryId(siDTO.userId);
-
-                                //今回使用したNonceをDBに登録しておく
-                                NonceInfoDAO niDAO = new NonceInfoDAO();
-                                niDAO.RegistNonce(siDTO.userId, historyId, siDTO.scheduleId, uhDTO.nonce);
+                                    uhDTO.updateTime, uhDTO.nonce, uhDTO.hashKey);
 
                             });
 

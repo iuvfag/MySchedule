@@ -39,7 +39,7 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
         internal int RegistHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
-            DateTime updateEndingTime, String subject, String detail,DateTime updateTime, String hashKey)
+            DateTime updateEndingTime, String subject, String detail, DateTime updateTime, int nonce, String hashKey)
         {
             //結果を初期化
             int result = 0;
@@ -47,8 +47,8 @@ namespace MySchedule
 
             //SQL文の作成
             cmd.CommandText = "INSERT INTO update_history (user_id, schedule_id, update_type, update_start_time, " +
-                "update_ending_time, subject, detail, update_time, key) VALUES (@userId, @scheduleId, @updateType, " +
-                "@updateStartTime, @updateEndingTime, @subject, @detail, @updateTime, @key)";
+                "update_ending_time, subject, detail, update_time, nonce,  key) VALUES (@userId, @scheduleId, @updateType, " +
+                "@updateStartTime, @updateEndingTime, @subject, @detail, @updateTime, @nonce, @key)";
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
             cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
@@ -57,8 +57,9 @@ namespace MySchedule
             cmd.Parameters.Add(new NpgsqlParameter("@updateEndingTime", updateEndingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
-            cmd.Parameters.Add(new NpgsqlParameter("@key", hashKey));
             cmd.Parameters.Add(new NpgsqlParameter("@updateTime", updateTime));
+            cmd.Parameters.Add(new NpgsqlParameter("@nonce", nonce));
+            cmd.Parameters.Add(new NpgsqlParameter("@key", hashKey));
 
             //接続開始
             con.Open();
@@ -89,8 +90,9 @@ namespace MySchedule
             cmd.Parameters.Remove("@updateEndingTime");
             cmd.Parameters.Remove("@subject");
             cmd.Parameters.Remove("@detail");
-            cmd.Parameters.Remove("@key");
             cmd.Parameters.Remove("@updateTime");
+            cmd.Parameters.Remove("@nonce");
+            cmd.Parameters.Remove("@key");
 
             //結果を戻す
             return result;
@@ -111,7 +113,7 @@ namespace MySchedule
             //SQL文の作成
             String sql = "SELECT history_id as 履歴ID, update_type as 変更内容, schedule_id as スケジュールID, " +
                 "update_start_time as 予定開始時刻, update_ending_time as 予定終了時刻, subject as 予定, " +
-                " detail as 詳細, update_time as 履歴登録日時, key as キー FROM update_history " +
+                " detail as 詳細, update_time as 履歴登録日時, nonce as ノンス, key as キー FROM update_history " +
                 "WHERE user_id = '" + userId + "' ORDER BY history_id";
 
             //接続
@@ -204,9 +206,10 @@ namespace MySchedule
             cmd.Connection = con;
 
             //SQL文の作成
-            String sql = "SELECT history_id as 履歴ID, user_id as ログインID, update_type as 変更内容, " +
-                "schedule_id as スケジュールID, update_start_time as 予定開始時刻, update_ending_time as 予定終了時刻, " +
-                "subject as 予定, detail as 詳細, update_time as 履歴登録日時, key as キー FROM update_history";
+            String sql = "SELECT history_id as 履歴ID, update_type as 変更内容, schedule_id as スケジュールID, " +
+                "update_start_time as 予定開始時刻, update_ending_time as 予定終了時刻, subject as 予定, " +
+                "detail as 詳細, update_time as 履歴登録日時, nonce as ノンス, key as キー " +
+                "FROM update_history";
 
             //接続開始
             con.Open();

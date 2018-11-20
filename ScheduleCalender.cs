@@ -871,13 +871,13 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
-                ////履歴確認画面を開く
-                //UpdateHistoryData uhd = new UpdateHistoryData()
-                //{
-                //    userId = userId    //ログインIDを渡す
-                //};
-                //uhd.ShowDialog(this);
-                //uhd.Dispose();
+                //履歴確認画面を開く
+                UpdateHistoryData uhd = new UpdateHistoryData()
+                {
+                    userId = userId    //ログインIDを渡す
+                };
+                uhd.ShowDialog(this);
+                uhd.Dispose();
 
             }
             //何らかの不具合が発生した場合
@@ -898,13 +898,13 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
-                ////パスワード再設定画面を開く
-                //ResetPassword rp = new ResetPassword()
-                //{
-                //    userId = userId     //ログインIDを渡す
-                //};
-                //rp.ShowDialog(this);
-                //rp.Dispose();
+                //パスワード再設定画面を開く
+                ResetPassword rp = new ResetPassword()
+                {
+                    userId = userId     //ログインIDを渡す
+                };
+                rp.ShowDialog(this);
+                rp.Dispose();
 
             }
             //何らかの不具合が発生した場合
@@ -925,13 +925,13 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
-                ////予定一覧画面を開く
-                //AllSchedules als = new AllSchedules()
-                //{
-                //    userId = userId        //ログインIDを渡す
-                //};
-                //als.ShowDialog(this);
-                //als.Dispose();
+                //予定一覧画面を開く
+                AllSchedules als = new AllSchedules()
+                {
+                    userId = userId        //ログインIDを渡す
+                };
+                als.ShowDialog(this);
+                als.Dispose();
 
             }
             //何らかの不具合が発生した場合
