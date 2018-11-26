@@ -133,14 +133,12 @@ namespace MySchedule
                                 //UpdateHistoryDAOクラスをインスタンス化
                                 UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
 
-                                //DAOクラスを使って前回のハッシュキーを取得し、DTOクラスに格納
-                                uhDTO.previousHashKey = uhDAO.GetPreviousHashKey(siDTO.userId);
                                 //BlockChainクラスのBlockメソッド
-                                uhDTO = bc.Block(uhDTO);
+                                //uhDTO = bc.Block(uhDTO);
                                 //履歴登録用のメソッドを呼び出し、情報を登録
                                 uhDAO.RegistHistory(uhDTO.userId, uhDTO.scheduleId, uhDTO.updateType,
                                     uhDTO.updateStartTime, uhDTO.updateEndingTime, uhDTO.subject, uhDTO.detail, 
-                                    uhDTO.updateTime, uhDTO.nonce, uhDTO.hashKey);
+                                    uhDTO.updateTime);
 
                             });
 

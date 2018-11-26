@@ -8,6 +8,7 @@ namespace MySchedule
 {
     class UpdateHistoryDTO
     {
+        public int historyId { get; set; }
         public String userId { get; set; }
         public int scheduleId { get; set; }
         public String updateType { get; set; }

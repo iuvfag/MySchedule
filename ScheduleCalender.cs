@@ -217,6 +217,10 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
+                UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
+                List<UpdateHistoryDTO> uhDTOList = new List<UpdateHistoryDTO>();
+                uhDTOList = uhDAO.getAllInfoWhichHasNoNonce(userId);
+
                 //ダブルクリックされたセルの場所を取得
                 Point p = toDo.PointToClient(Cursor.Position);
                 DataGridView.HitTestInfo hti = toDo.HitTest(p.X, p.Y);

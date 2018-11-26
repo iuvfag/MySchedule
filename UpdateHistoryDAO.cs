@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Transactions;
 using Npgsql;
 using System.Data;
 
@@ -39,7 +40,7 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
         internal int RegistHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
-            DateTime updateEndingTime, String subject, String detail, DateTime updateTime, int nonce, String hashKey)
+            DateTime updateEndingTime, String subject, String detail, DateTime updateTime)
         {
             //結果を初期化
             int result = 0;
@@ -47,19 +48,17 @@ namespace MySchedule
 
             //SQL文の作成
             cmd.CommandText = "INSERT INTO update_history (user_id, schedule_id, update_type, update_start_time, " +
-                "update_ending_time, subject, detail, update_time, nonce,  key) VALUES (@userId, @scheduleId, @updateType, " +
-                "@updateStartTime, @updateEndingTime, @subject, @detail, @updateTime, @nonce, @key)";
+                "update_ending_time, subject, detail, update_time) VALUES (@userId, @scheduleId, @updateType, " +
+                "@updateStartTime, @updateEndingTime, @subject, @detail, @updateTime)";
             //SQL文の@部分に値を格納
-            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
-            cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
-            cmd.Parameters.Add(new NpgsqlParameter("@updateType", updateType));
-            cmd.Parameters.Add(new NpgsqlParameter("@updateStartTime", updateStartTime));
-            cmd.Parameters.Add(new NpgsqlParameter("@updateEndingTime", updateEndingTime));
-            cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
-            cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
-            cmd.Parameters.Add(new NpgsqlParameter("@updateTime", updateTime));
-            cmd.Parameters.Add(new NpgsqlParameter("@nonce", nonce));
-            cmd.Parameters.Add(new NpgsqlParameter("@key", hashKey));
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));                         //ログインID
+            cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));                 //スケジュールID
+            cmd.Parameters.Add(new NpgsqlParameter("@updateType", updateType));                 //変更内容
+            cmd.Parameters.Add(new NpgsqlParameter("@updateStartTime", updateStartTime));       //予定開始時刻
+            cmd.Parameters.Add(new NpgsqlParameter("@updateEndingTime", updateEndingTime));     //予定終了時刻
+            cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));                       //件名
+            cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));                         //詳細
+            cmd.Parameters.Add(new NpgsqlParameter("@updateTime", updateTime));                 //履歴登録日時
 
             //接続開始
             con.Open();
@@ -91,8 +90,6 @@ namespace MySchedule
             cmd.Parameters.Remove("@subject");
             cmd.Parameters.Remove("@detail");
             cmd.Parameters.Remove("@updateTime");
-            cmd.Parameters.Remove("@nonce");
-            cmd.Parameters.Remove("@key");
 
             //結果を戻す
             return result;
@@ -149,17 +146,17 @@ namespace MySchedule
         /// ③前回のハッシュキー(最も新しい履歴IDのハッシュキー)を取得するためのメソッド
         /// </summary>
         /// <returns>前回のハッシュキーを格納したString型の変数</returns>
-        internal String GetPreviousHashKey(String userId)
+        internal String GetPreviousHashKey(String userId, int historyId)
         {
             //結果を初期化
             String result = "";
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "SELECT key FROM update_history WHERE user_id = @userId AND history_id = " +
-                "(SELECT MAX(history_id) FROM update_history)";
+            cmd.CommandText = "SELECT key FROM update_history WHERE user_id = @userId AND history_id = @historyId";
 
-            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));     //ログインID
+            cmd.Parameters.Add(new NpgsqlParameter("@historyId", historyId));
 
             //接続開始
             con.Open();
@@ -188,6 +185,9 @@ namespace MySchedule
                 //最終的に接続は閉じておく
                 con.Close();
             }
+            //パラメーターの値はRemoveしておく
+            cmd.Parameters.Remove("@userId");
+            cmd.Parameters.Remove("@historyId");
             //結果を戻す
             return result;
         }
@@ -254,7 +254,7 @@ namespace MySchedule
                 "history_id =  (SELECT MAX(history_id) FROM update_history)";
 
             //SQL文の@部分に値を格納
-            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));     //ログインID
 
             //接続開始
             con.Open();
@@ -285,6 +285,128 @@ namespace MySchedule
             }
             //パラメーターの値はremoveしておく
             cmd.Parameters.Remove("@userId");
+            //結果を戻す
+            return result;
+        }
+
+        /// <summary>
+        /// 編集履歴テーブルからNonceの値が空欄なものの全情報をを取得しDTOを格納したListを戻すメソッド
+        /// </summary>
+        /// <param name="userId">ユーザーID</param>
+        /// <returns>情報を格納したDTOを格納したList</returns>
+        internal List<UpdateHistoryDTO> getAllInfoWhichHasNoNonce(String userId)
+        {
+            //結果を格納するDTOクラスとListをインスタンス化しておく
+            List<UpdateHistoryDTO> uhDTOList = new List<UpdateHistoryDTO>();
+            cmd.Connection = con;
+
+            //SQL文の作成
+            cmd.CommandText = "SELECT * FROM update_history WHERE user_id = @userId AND nonce IS null " +
+                "ORDER BY history_id ASC";
+            cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));     //ログインID
+
+            //接続開始
+            con.Open();
+
+            try
+            {
+                //リーダーの呼び出し
+                using (var reader = cmd.ExecuteReader())
+                {
+                    //リーダーが読み取っている間は
+                    while (reader.Read())
+                    {
+                        UpdateHistoryDTO uhDTO = new UpdateHistoryDTO();
+
+                        //まず、取得した情報を該当のDTOのパラメーターに格納していく
+                        uhDTO.historyId = reader.GetInt32(0);
+                        uhDTO.userId = userId;
+                        uhDTO.updateType = reader.GetString(2);
+                        uhDTO.scheduleId = reader.GetInt32(3);
+                        uhDTO.updateStartTime = reader.GetDateTime(4);
+                        uhDTO.updateEndingTime = reader.GetDateTime(5);
+                        uhDTO.subject = reader.GetString(6);
+                        uhDTO.detail = reader.GetString(7);
+                        uhDTO.updateTime = reader.GetDateTime(8);
+                        //情報を格納したDTOをListに格納
+                        uhDTOList.Add(uhDTO);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //例外処理
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                //最終的に接続は閉じておく
+                con.Close();
+            }
+            //パラメーターの値はRemoveしておく
+            cmd.Parameters.Remove("@userId");
+            //結果を戻す
+            return uhDTOList;
+        }
+
+
+        /// <summary>
+        /// 引数として渡された履歴IDをもとにNonceとハッシュキーを編集履歴テーブルに登録するメソッド
+        /// </summary>
+        /// <param name="historyIdList">履歴IDを格納したリスト</param>
+        /// <param name="nonceList">Nonceを格納したリスト</param>
+        /// <param name="hashKeyList">ハッシュキーを格納したリスト</param>
+        /// <returns></returns>
+        internal int UpdateNonce(List<int> historyIdList, List<int> nonceList, List<String> hashKeyList) 
+        {
+            //結果を初期化
+            int result = 0;
+            cmd.Connection = con;
+
+            //SQL文の作成(今回はSQL文内でfor文を使用)
+            cmd.CommandText = "DROP FUNCTION IF EXISTS update_nonce(integer[], integer[], text[]);" +
+                "CREATE OR REPLACE FUNCTION update_nonce(historyIdList integer[], nonceList integer[], " +
+                    "hashKeyList text[])" +
+                "RETURNS VOID AS $$ " +
+                    "BEGIN " +
+                        "FOR i IN 1 .. array_length(historyIdList, 1) LOOP " +
+                            "UPDATE update_history SET nonce = nonceList[i], key = hashKeyList[i] " +
+                            "WHERE history_id = historyIdList[i]; " +
+                        "END LOOP;" +
+                    "END;" +
+                "$$ LANGUAGE plpgsql;" +
+                "SELECT update_nonce(@historyIdList, @nonceList, @hashKeyList);";
+
+            //SQL文の@部分に値を格納
+            cmd.Parameters.Add(new NpgsqlParameter("@historyIdList", historyIdList));
+            cmd.Parameters.Add(new NpgsqlParameter("@nonceList", nonceList));
+            cmd.Parameters.Add(new NpgsqlParameter("@hashKeyList", hashKeyList));
+
+            //接続開始
+            con.Open();
+
+            try
+            {
+                //実行結果をresultに格納
+                result = cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                //例外処理
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            finally
+            {
+                //最終的に接続は閉じておく
+                con.Close();
+            }
+            //パラメーターの値はRemoveしておく
+            cmd.Parameters.Remove("@historyIdList");
+            cmd.Parameters.Remove("@nonceList");
+            cmd.Parameters.Remove("@hashKeyList");
+
             //結果を戻す
             return result;
         }

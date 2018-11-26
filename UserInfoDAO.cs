@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data;
+using System.Transactions;
 using Npgsql;
 
 namespace MySchedule
@@ -96,8 +97,8 @@ namespace MySchedule
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "INSERT INTO user_info (user_id, password, registration_date, status) " +
-                "VALUES (@userId, @password, now(), 0)";
+            cmd.CommandText = "INSERT INTO user_info (user_id, password, registration_date, update_date, status) " +
+                "VALUES (@userId, @password, now(), now(), 0)";
 
             //SQl文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
@@ -240,8 +241,8 @@ namespace MySchedule
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "UPDATE user_info SET password = @newPassword WHERE user_id = @userId AND " +
-                "password = @password";
+            cmd.CommandText = "UPDATE user_info SET password = @newPassword, update_date = now() " +
+                "WHERE user_id = @userId AND password = @password";
 
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userid", userId));

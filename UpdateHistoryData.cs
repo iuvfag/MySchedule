@@ -38,6 +38,7 @@ namespace MySchedule
             }
             label1.Text = $"{userId}さんの変更履歴";
             label1.TextAlign = ContentAlignment.MiddleCenter;
+
         }
 
         private void DataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -230,6 +231,61 @@ namespace MySchedule
             result = String.Join("", hash.Select(x => x.ToString("X")));
 
             return result;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
+            //UpdateHistoryDTO uhDTO = new UpdateHistoryDTO();
+            //List<UpdateHistoryDTO> uhDTOList = new List<UpdateHistoryDTO>();
+            //List<int> emptyNonceList = new List<int>();
+            //List<int> nonceList = new List<int>();
+            //List<String> hashKeyList = new List<String>();
+            //BlockChain bc = new BlockChain();
+            //uhDTOList = uhDAO.getAllInfoWhichHasNoNonce(userId);
+
+            //if (uhDTOList.Count >0)
+            //{
+            //    for (int i = 0; i < uhDTOList.Count; i++)
+            //    {
+            //        uhDTOList[i] = bc.Block(uhDTOList[i]);
+            //        emptyNonceList.Add(uhDTOList[i].historyId);
+            //        nonceList.Add(uhDTOList[i].nonce);
+            //        hashKeyList.Add(uhDTOList[i].hashKey);
+            //    }
+            //    uhDAO.UpdateNonce(emptyNonceList, nonceList, hashKeyList);
+
+            //    dt = uhDAO.GetRegistHistoryData(userId);
+            //    //データテーブルとデータグリッドをつなげる
+            //    dataGridView1.DataSource = dt;
+
+            //    //今後の作業にかかわるためソートを禁止しておく
+            //    foreach (DataGridViewColumn c in dataGridView1.Columns)
+            //    {
+            //        c.SortMode = DataGridViewColumnSortMode.NotSortable;
+            //    }
+            //}
+
+            NonceAndKeyCheck nkc = new NonceAndKeyCheck();
+            nkc.userId = userId;
+            nkc.Show(this);
+
+        }
+
+        private void UpdateHistoryData_Activated(object sender, EventArgs e)
+        {
+            //表示する編集履歴をDBから取得
+            UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
+            dt = uhDAO.GetRegistHistoryData(userId);
+            //データテーブルとデータグリッドをつなげる
+            dataGridView1.DataSource = dt;
+
+            //今後の作業にかかわるためソートを禁止しておく
+            foreach (DataGridViewColumn c in dataGridView1.Columns)
+            {
+                c.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+
         }
     }
 }
