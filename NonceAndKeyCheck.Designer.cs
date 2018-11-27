@@ -54,7 +54,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
+            this.button1.Text = "実行";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -72,9 +72,8 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(25, 61);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 12);
+            this.label1.Size = new System.Drawing.Size(0, 12);
             this.label1.TabIndex = 3;
-            this.label1.Text = "label1";
             // 
             // NonceAndKeyCheck
             // 
@@ -85,8 +84,10 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.progressBar1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "NonceAndKeyCheck";
-            this.Text = "NonceAndKeyCheck";
+            this.Text = "ブロックチェーン化";
+            this.Load += new System.EventHandler(this.NonceAndKeyCheck_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

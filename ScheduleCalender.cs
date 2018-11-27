@@ -243,7 +243,7 @@ namespace MySchedule
                         //DTOクラスを渡す
                         siDTO = siDTO
                     };
-                    
+
                     sd.Show(this);
                 }
             }
@@ -476,7 +476,7 @@ namespace MySchedule
                 //例外処理としてErrorMessageクラスを呼び出す
                 ErrorMessage.ApplicationClose();
             }
-           
+
         }
 
         /// <summary>
@@ -581,7 +581,7 @@ namespace MySchedule
             return day.AddDays(DayOfWeek.Sunday - day.DayOfWeek);
         }
 
-        
+
 
         /// <summary>
         /// 週間スケジュールが1度クリックされた場合の動作(TODOや左上のカレンダーの日付も連動させる)
@@ -946,8 +946,13 @@ namespace MySchedule
             }
         }
 
-        
-
-        
+        private void button5_Click(object sender, EventArgs e)
+        {
+            NonceAndKeyCheck nkc = new NonceAndKeyCheck()
+            {
+                userId = userId
+            };
+            nkc.Show(this);
+        }
     }
 }

@@ -316,18 +316,20 @@ namespace MySchedule
                     //リーダーが読み取っている間は
                     while (reader.Read())
                     {
-                        UpdateHistoryDTO uhDTO = new UpdateHistoryDTO();
+                        UpdateHistoryDTO uhDTO = new UpdateHistoryDTO()
+                        {
 
-                        //まず、取得した情報を該当のDTOのパラメーターに格納していく
-                        uhDTO.historyId = reader.GetInt32(0);
-                        uhDTO.userId = userId;
-                        uhDTO.updateType = reader.GetString(2);
-                        uhDTO.scheduleId = reader.GetInt32(3);
-                        uhDTO.updateStartTime = reader.GetDateTime(4);
-                        uhDTO.updateEndingTime = reader.GetDateTime(5);
-                        uhDTO.subject = reader.GetString(6);
-                        uhDTO.detail = reader.GetString(7);
-                        uhDTO.updateTime = reader.GetDateTime(8);
+                            //まず、取得した情報を該当のDTOのパラメーターに格納していく
+                            historyId = reader.GetInt32(0),
+                            userId = userId,
+                            updateType = reader.GetString(2),
+                            scheduleId = reader.GetInt32(3),
+                            updateStartTime = reader.GetDateTime(4),
+                            updateEndingTime = reader.GetDateTime(5),
+                            subject = reader.GetString(6),
+                            detail = reader.GetString(7),
+                            updateTime = reader.GetDateTime(8)
+                        };
                         //情報を格納したDTOをListに格納
                         uhDTOList.Add(uhDTO);
                     }
