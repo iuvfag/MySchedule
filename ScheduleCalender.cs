@@ -84,10 +84,10 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
-                //ログインIDに表示
+                //ログインIDを表示
                 label1.Text = $"{userId}さんのスケジュール帳";
                 var today = DateTime.Today.ToShortDateString();
-                label2.Text = $"{today}";
+                label2.Text = $"{today}";       //TODOの表示を今日の日付にする
 
                 scheduleGrid.RowTemplate.Height = 30;
 
@@ -96,7 +96,7 @@ namespace MySchedule
 
                 //週間スケジュールのひな型呼び出し
                 SetCalenderGrid();
-
+                //週間スケジュールに現在のDBの情報(登録されている予定)を反映
                 SetWeeklySchedule();
 
                 //monthCalenderの選択件数を1件のみにしておく
@@ -219,7 +219,7 @@ namespace MySchedule
             {
                 UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
                 List<UpdateHistoryDTO> uhDTOList = new List<UpdateHistoryDTO>();
-                uhDTOList = uhDAO.getAllInfoWhichHasNoNonce(userId);
+                uhDTOList = uhDAO.getAllInfoWhichHasNull(userId);
 
                 //ダブルクリックされたセルの場所を取得
                 Point p = toDo.PointToClient(Cursor.Position);

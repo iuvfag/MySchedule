@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MySchedule
 {
@@ -38,8 +39,9 @@ namespace MySchedule
             ///文字列の連結
             String key = $"{uhDTO.userId}{uhDTO.scheduleId}{uhDTO.updateType}{uhDTO.updateStartTime}" +
                 $"{uhDTO.updateEndingTime}{uhDTO.subject}{uhDTO.detail}{uhDTO.updateTime}{uhDTO.previousHashKey}";
+            var task = GetNonce(key);
             //GetNonceメソッドに連結した文字列を渡し、戻り値をint型の変数Nonceに格納
-            int nonce = GetNonce(key);
+            int nonce = task.Result;
             //Nonceをもとにもう一度ハッシュキーを生成しString型の変数hashKeyに格納
             String hashKey = CreateHashKey($"{key}{nonce}");
 
@@ -53,7 +55,8 @@ namespace MySchedule
         internal UpdateHistoryDTO Block(String data, String previousHashKey)
         {
             data = $"{data}{previousHashKey}";
-            int nonce = GetNonce(data);
+            var task = GetNonce(data);
+            int nonce = task.Result;
             String hashKey = CreateHashKey($"{data}{nonce}");
             UpdateHistoryDTO uhDTO = new UpdateHistoryDTO()
             {
@@ -65,32 +68,73 @@ namespace MySchedule
 
         /// <summary>
         /// ハッシュキーを渡すと特定のハッシュキーを作るNonceを求めるメソッド
+        /// 時間がかかるため、並列処理を行う
         /// </summary>
         /// <param name="hash">ハッシュキー</param>
-        /// <returns></returns>
-        internal int GetNonce(String hash)
+        /// <returns>Nonceなどを格納したTask<T>(値を返すことのできる非同期操作)</returns>
+        internal async Task<int> GetNonce(String hash)
         {
-            //ナンスを入れる変数を初期化しておく
+            //パラレルオプションのインスタンス化
+            ParallelOptions options = new ParallelOptions();
+            //キャンセルトークンを使用するためインスタンス化しておく
+            CancellationTokenSource cts = new CancellationTokenSource();
+            //最大スレッド数の設定
+            options.MaxDegreeOfParallelism = System.Environment.ProcessorCount;
+            //キャンセルトークンをパラレルにも適応させる
+            options.CancellationToken = cts.Token;
+            //ナンスの初期化
             int nonce = 0;
 
-            //CheckNonceメソッドを呼び出し、結果がfalseの間は回し続けるwhile文を作る
-            while (!(CheckNonce(hash, nonce)))
+            //処理中のタスクを待機させるためawaitを使用
+            await Task.Factory.StartNew(() =>
             {
-                //その間Nonceは増やし続ける
-                nonce++;
-            }
+                try
+                {
+                    //複数スレッドによる処理の実行
+                    Parallel.For(0, 100000, options, (i, state) =>
+                    {
+                        //CheckNonceの結果がfalseの間
+                        while (!(CheckNonce(hash, i)))
+                        {
+                            //iを増やし続ける
+                            i++;
+                            //どこかのスレッドで結果が出て、処理の必要がなくなった場合
+                            if (state.ShouldExitCurrentIteration)
+                            {
+                                //処理の終了
+                                return;
+                            }
+                            //CheckNonceがtrueになった場合
+                            if (CheckNonce(hash, i))
+                            {
+                                //iをNonceに格納
+                                nonce = i;
+                                //処理を停止するトークンを発行
+                                cts.Cancel();
+                            }
+
+                        }
+
+                    });
+                }
+                catch (OperationCanceledException)
+                {
+
+
+                }
+            });
+            //ナンスを入れる変数を初期化しておく
+
+            //CheckNonceメソッドを呼び出し、結果がfalseの間は回し続けるwhile文を作る
+
             //while文を抜けることができたらNonceを結果として戻す
             return nonce;
 
-            ////パラレルオプションのインスタンス化
             //ParallelOptions options = new ParallelOptions();
-            ////キャンセルトークンを使用するためインスタンス化しておく
             //CancellationTokenSource cts = new CancellationTokenSource();
             ////抑制制御のためのオブジェクトインスタンス化(複数のメソッドで同じ変数を並列処理する場合)
             //Object thisLock = new object();
-            ////最大スレッド数の設定
             //options.MaxDegreeOfParallelism = System.Environment.ProcessorCount;
-            ////キャンセルトークンをパラレルにも適応させる
             //options.CancellationToken = cts.Token;
 
             //以下が試験的に制作した処理など

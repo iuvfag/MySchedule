@@ -290,11 +290,11 @@ namespace MySchedule
         }
 
         /// <summary>
-        /// 編集履歴テーブルからNonceの値が空欄なものの全情報をを取得しDTOを格納したListを戻すメソッド
+        /// 編集履歴テーブルから空欄のカラムを持つものの全情報をを取得し、DTOを格納したListを戻すメソッド
         /// </summary>
         /// <param name="userId">ユーザーID</param>
         /// <returns>情報を格納したDTOを格納したList</returns>
-        internal List<UpdateHistoryDTO> getAllInfoWhichHasNoNonce(String userId)
+        internal List<UpdateHistoryDTO> getAllInfoWhichHasNull(String userId)
         {
             //結果を格納するDTOクラスとListをインスタンス化しておく
             List<UpdateHistoryDTO> uhDTOList = new List<UpdateHistoryDTO>();
@@ -302,7 +302,7 @@ namespace MySchedule
 
             //SQL文の作成
             cmd.CommandText = "SELECT * FROM update_history WHERE user_id = @userId AND nonce IS null " +
-                "ORDER BY history_id ASC";
+                "OR previous_key IS null OR key IS null ORDER BY history_id ASC";
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));     //ログインID
 
             //接続開始
@@ -354,36 +354,41 @@ namespace MySchedule
 
 
         /// <summary>
-        /// 引数として渡された履歴IDをもとにNonceとハッシュキーを編集履歴テーブルに登録するメソッド
+        /// 引数として渡された履歴IDをもとにNonceと前回のハッシュキー、
+        /// 今回のハッシュキーを編集履歴テーブルに登録するメソッド
         /// </summary>
         /// <param name="historyIdList">履歴IDを格納したリスト</param>
         /// <param name="nonceList">Nonceを格納したリスト</param>
         /// <param name="hashKeyList">ハッシュキーを格納したリスト</param>
-        /// <returns></returns>
-        internal int UpdateNonce(List<int> historyIdList, List<int> nonceList, List<String> hashKeyList) 
+        /// <param name="previousHashKeyList">前回のハッシュキーを格納したリスト</param>
+        /// <returns>実行件数</returns>
+        internal int UpdateNonce(List<int> historyIdList, List<int> nonceList, List<String> hashKeyList, 
+            List<String> previousHashKeyList) 
         {
             //結果を初期化
             int result = 0;
             cmd.Connection = con;
 
             //SQL文の作成(今回はSQL文内でfor文を使用)
-            cmd.CommandText = "DROP FUNCTION IF EXISTS update_nonce(integer[], integer[], text[]);" +
+            cmd.CommandText = "DROP FUNCTION IF EXISTS update_nonce(integer[], integer[], text[], text[]);" +
                 "CREATE OR REPLACE FUNCTION update_nonce(historyIdList integer[], nonceList integer[], " +
-                    "hashKeyList text[])" +
+                    "hashKeyList text[], previousHashKeyList text[])" +
                 "RETURNS VOID AS $$ " +
                     "BEGIN " +
                         "FOR i IN 1 .. array_length(historyIdList, 1) LOOP " +
-                            "UPDATE update_history SET nonce = nonceList[i], key = hashKeyList[i] " +
+                            "UPDATE update_history SET nonce = nonceList[i], key = hashKeyList[i], " +
+                            "previous_key = previousHashKeyList[i]" +
                             "WHERE history_id = historyIdList[i]; " +
                         "END LOOP;" +
                     "END;" +
                 "$$ LANGUAGE plpgsql;" +
-                "SELECT update_nonce(@historyIdList, @nonceList, @hashKeyList);";
+                "SELECT update_nonce(@historyIdList, @nonceList, @hashKeyList, @previousHashKeyList);";
 
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@historyIdList", historyIdList));
             cmd.Parameters.Add(new NpgsqlParameter("@nonceList", nonceList));
             cmd.Parameters.Add(new NpgsqlParameter("@hashKeyList", hashKeyList));
+            cmd.Parameters.Add(new NpgsqlParameter("@previousHashKeyList", previousHashKeyList));
 
             //接続開始
             con.Open();
@@ -408,6 +413,7 @@ namespace MySchedule
             cmd.Parameters.Remove("@historyIdList");
             cmd.Parameters.Remove("@nonceList");
             cmd.Parameters.Remove("@hashKeyList");
+            cmd.Parameters.Remove("@previousHashKeyList");
 
             //結果を戻す
             return result;

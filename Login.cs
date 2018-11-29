@@ -81,6 +81,10 @@ namespace MySchedule
                         }
                         else
                         {
+                            //ログインIDとパスワード入力欄は空に戻しておく
+                            textBox1.Text = "";
+                            textBox2.Text = "";
+
                             //とれていたらスケジュールを呼び出し、ログインIDを渡す
                             ScheduleCalender sc = new ScheduleCalender()
                             {
@@ -88,9 +92,6 @@ namespace MySchedule
                             };
                             sc.ShowDialog(this);
 
-                            //スケジュールを閉じた場合はログインIDとパスワード入力欄は空に戻しておく
-                            textBox1.Text = "";
-                            textBox2.Text = "";
                             sc.Dispose();
                             this.userId = "";
                         }

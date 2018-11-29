@@ -25,81 +25,12 @@ namespace MySchedule
 
         private void UpdateHistoryData_Load(object sender, EventArgs e)
         {
-            //表示する編集履歴をDBから取得
-            UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
-            dt = uhDAO.GetRegistHistoryData(userId);
-            //データテーブルとデータグリッドをつなげる
-            dataGridView1.DataSource = dt;
-
-            //今後の作業にかかわるためソートを禁止しておく
-            foreach (DataGridViewColumn c in dataGridView1.Columns)
-            {
-                c.SortMode = DataGridViewColumnSortMode.NotSortable;
-            }
-            label1.Text = $"{userId}さんの変更履歴";
-            label1.TextAlign = ContentAlignment.MiddleCenter;
-
+            PageUpdate();
         }
 
         private void DataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            //try
-            //{
-            //    Point p = dataGridView1.PointToClient(Cursor.Position);
 
-            //    DataGridView.HitTestInfo hti = dataGridView1.HitTest(p.X, p.Y);
-
-            //    if (hti.RowIndex >0 && hti.ColumnIndex > 0)
-            //    {
-                    
-
-            //        String updateType = dataGridView1.Rows[hti.RowIndex].Cells[1].Value.ToString();
-            //        int scheduleId = (int)dataGridView1.Rows[hti.RowIndex].Cells[2].Value;
-
-            //        String ust = dataGridView1.Rows[hti.RowIndex].Cells[3].Value.ToString();
-            //        String uet = dataGridView1.Rows[hti.RowIndex].Cells[4].Value.ToString();
-
-            //        DateTime updateStartTime = DateTime.Parse(ust);
-            //        DateTime updateEndingTime = DateTime.Parse(uet);
-            //        String subject = dataGridView1.Rows[hti.RowIndex].Cells[5].Value.ToString();
-            //        String detail = dataGridView1.Rows[hti.RowIndex].Cells[6].Value.ToString();
-            //        String key = dataGridView1.Rows[hti.RowIndex].Cells[7].Value.ToString();
-
-            //        String previousHashKey;
-
-            //        if (hti.RowIndex == 0)
-            //        {
-            //            previousHashKey = "";
-            //        }
-            //        else
-            //        {
-            //            previousHashKey = dataGridView1.Rows[hti.RowIndex - 1].Cells[7].Value.ToString();
-            //        }
-
-            //        String checkKey = "";
-
-            //        checkKey = createHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, subject,
-            //            detail, previousHashKey);
-
-            //        if (key == checkKey)
-            //        {
-            //            MessageBox.Show("履歴は正常です");
-            //        }
-            //        else
-            //        {
-            //            MessageBox.Show("履歴に不正な入力値が含まれています");
-            //        }
-            //    }
-            //    else
-            //    {
-
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.ToString());
-            //    throw;
-            //}
         }
 
         /// <summary>
@@ -113,7 +44,7 @@ namespace MySchedule
             try
             {
                 //まず、処理内容をメッセージで通知
-                MessageBox.Show("不正な入力があった履歴は赤色に変化します", "履歴の照合を行います");
+                MessageBox.Show("不正な入力があった履歴以降のセルは赤色に変化します", "履歴の照合を行います");
 
                 //何度もボタン押下される場合を想定してフィールドを初期化しておく
                 int historyId = 0;
@@ -155,6 +86,13 @@ namespace MySchedule
                     ut = dataGridView1.Rows[i].Cells[7].Value.ToString();           //予定登録日時(String型)
                     DateTime updateTime = DateTime.Parse(ut);                       //予定登録日時(DateTime型)
 
+                    if (dataGridView1.Rows[i].Cells[8].Value.ToString() == "" ||
+                        dataGridView1.Rows[i].Cells[9].Value.ToString() == "")
+                    {
+                        MessageBox.Show("先にブロックチェーンを作成してください", "データが不十分です");
+                        return;
+                    }
+
                     nonce = (int)dataGridView1.Rows[i].Cells[8].Value;              //ノンス
 
                     key = dataGridView1.Rows[i].Cells[9].Value.ToString();          //ハッシュキー
@@ -170,7 +108,7 @@ namespace MySchedule
                         //それ以外の予定に関しては前回のハッシュキーを指定
                         previousHashKey = checkKey;
                     }
-                    
+
                     //データグリッドの値をもとにハッシュキーを作成
                     checkKey = CreateHashKey(userId, scheduleId, updateType, updateStartTime, updateEndingTime, subject,
                         detail, updateTime, previousHashKey, nonce);
@@ -180,7 +118,7 @@ namespace MySchedule
                         //値が異なるようならその行の背景色を赤色にする
                         dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.Red;
                     }
-                    
+
                 }
 
                 //処理の終了をメッセージで表示
@@ -208,7 +146,7 @@ namespace MySchedule
         /// <param name="previousHashKey">前回のハッシュキー</param>
         /// <returns></returns>
         private String CreateHashKey(String userId, int scheduleId, String updateType, DateTime updateStartTime,
-            DateTime updateEndingTime, String subject, String detail, DateTime updateTime, String previousHashKey, 
+            DateTime updateEndingTime, String subject, String detail, DateTime updateTime, String previousHashKey,
             int nonce)
         {
             //結果を初期化しておく
@@ -266,13 +204,18 @@ namespace MySchedule
             //    }
             //}
 
-            NonceAndKeyCheck nkc = new NonceAndKeyCheck();
-            nkc.userId = userId;
+            NonceAndKeyCheck nkc = new NonceAndKeyCheck()
+            {
+                userId = userId
+            };
             nkc.Show(this);
 
         }
 
-        private void UpdateHistoryData_Activated(object sender, EventArgs e)
+
+        
+
+        private void PageUpdate()
         {
             //表示する編集履歴をDBから取得
             UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
@@ -286,6 +229,11 @@ namespace MySchedule
                 c.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
 
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            PageUpdate();
         }
     }
 }

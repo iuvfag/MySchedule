@@ -53,18 +53,21 @@ namespace MySchedule
             //一度クリックされるともう一度押せないようにしておく
             button1.Enabled = false;
             //UpdateHistoryDTO型のリストにナンスがnullになっている編集履歴の情報を取得
-            uhDTOList = uhDAO.getAllInfoWhichHasNoNonce(userId);
+            uhDTOList = uhDAO.getAllInfoWhichHasNull(userId);
 
             //リストの要素が一つでも存在する場合
             if (uhDTOList.Count > 0)
             {
                 //進捗バーの最大値はリストの要素数としておく
                 progressBar1.Maximum = uhDTOList.Count;
-                //バックグラウンド処理の開始
+                //BackGroundWorkerのProgressChengedイベントが発生するようにする
                 backgroundWorker1.WorkerReportsProgress = true;
+                //キャンセルできるようにする
+                backgroundWorker1.WorkerSupportsCancellation = true;
+                //バックグラウンド処理の開始
                 backgroundWorker1.RunWorkerAsync();
                 //ラベルに文字列を表示
-                label1.Text = "処理中(処理には時間がかかります)";
+                label1.Text = "処理中...(処理には時間がかかります)";
 
 
             }
@@ -90,6 +93,7 @@ namespace MySchedule
 
             List<int> emptyNonceList = new List<int>();       //ナンスが登録されていない編集履歴の履歴IDを格納するリスト
             List<int> nonceList = new List<int>();            //実際に登録するナンスを格納するリスト
+            List<String> previousHashKeyList = new List<string>();
             List<String> hashKeyList = new List<String>();    //ハッシュキーを格納するリスト
             BlockChain bc = new BlockChain();   //ブロックチェーンクラスのインスタンス化
 
@@ -99,6 +103,13 @@ namespace MySchedule
             //各インデックスの要素に対して順番に処理を行う
             for (int i = 0; i < uhDTOList.Count; i++)
             {
+                //処理がキャンセルされたかどうかを調べる
+                if (bgWorker.CancellationPending)
+                {
+                    //キャンセルされている場合は処理を中止
+                    e.Cancel = true;
+                    return;
+                }
                 maxLoops = uhDTOList.Count;
                 //まず、取得してきた履歴IDの中から最も若いIDかどうかで処理を分ける
                 //最も若いIDの場合
@@ -116,11 +127,12 @@ namespace MySchedule
                 uhDTOList[i] = bc.Block(uhDTOList[i]);      //リストの要素をそのままBlockメソッドに渡す
                 emptyNonceList.Add(uhDTOList[i].historyId); //履歴IDを履歴ID格納用リストに追加
                 nonceList.Add(uhDTOList[i].nonce);          //ナンスをナンス用リストに追加
+                previousHashKeyList.Add(uhDTOList[i].previousHashKey);
                 hashKeyList.Add(uhDTOList[i].hashKey);      //ハッシュキーをハッシュキー用リストに追加
                 bgWorker.ReportProgress(i);                 //バックグラウンド処理の進捗状況をfor文に合わせて更新
             }
             //ナンス、ハッシュキー登録用のメソッドにそれぞれのリストを渡す
-            uhDAO.UpdateNonce(emptyNonceList, nonceList, hashKeyList);
+            uhDAO.UpdateNonce(emptyNonceList, nonceList, hashKeyList, previousHashKeyList);
 
             e.Result = maxLoops;
 
@@ -151,6 +163,13 @@ namespace MySchedule
                 //エラー内容を表示
                 label1.Text = "エラー：" + e.Error.Message;
             }
+            //処理がキャンセルされた場合
+            else if (e.Cancelled)
+            {
+                //メッセージを表示してフォームを閉じる
+                MessageBox.Show("処理ををキャンセルしました", "処理中止");
+                this.Dispose();
+            }
             //エラーが発生しなかった場合
             else
             {
@@ -159,14 +178,43 @@ namespace MySchedule
                 //進捗バーの値を最大値まで更新
                 progressBar1.Value = progressBar1.Maximum;
                 //次の処理までの時間を少し開ける
-                Thread.Sleep(3000);
+                Thread.Sleep(1000);
                 //メッセージを表示してフォームを閉じる
                 MessageBox.Show("処理は正常に終了しました", "処理終了");
                 this.Dispose();
             }
 
-
         }
 
+        /// <summary>
+        /// フォームが閉じられる場合の処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NonceAndKeyCheck_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //バックグラウンド処理がまだ処理中かどうかをチェックする
+            //処理中の場合
+            if (backgroundWorker1.IsBusy)
+            {
+                //フォームが閉じられないようにする
+                e.Cancel = true;
+            }
+        }
+
+        /// <summary>
+        /// キャンセルボタンが押下された場合の処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //ボタンの操作を禁止しておく
+            button2.Enabled = false;
+            //ラベルの文字の更新
+            label1.Text = "処理を中止しています...(これには時間がかかることがあります)";
+            //キャンセルする
+            backgroundWorker1.CancelAsync();
+        }
     }
 }
