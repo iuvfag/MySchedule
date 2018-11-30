@@ -52,18 +52,24 @@ namespace MySchedule
             return uhDTO;
         }
 
-        internal UpdateHistoryDTO Block(String data, String previousHashKey)
+        internal ScheduleInfoDTO Block(ScheduleInfoDTO siDTO)
         {
-            data = $"{data}{previousHashKey}";
-            var task = GetNonce(data);
-            int nonce = task.Result;
-            String hashKey = CreateHashKey($"{data}{nonce}");
-            UpdateHistoryDTO uhDTO = new UpdateHistoryDTO()
+            //まず、引数をすべて連結
+            String key = $"{siDTO.userId}{siDTO.startTime}{siDTO.endingTime}{siDTO.subject}{siDTO.detail}";
+
+            //のちに値を入れる配列
+            byte[] hash = null;
+            //連結した値をバイト変換する
+            var bytes = Encoding.Unicode.GetBytes(key);
+            //SHA256という形式でハッシュ変換する
+            using (var sha256 = new SHA256CryptoServiceProvider())
             {
-                nonce = nonce,
-                hashKey = hashKey
-            };
-            return uhDTO;
+                //バイト変換した値でハッシュ変換する
+                hash = sha256.ComputeHash(bytes);
+            }
+            //結果を戻すs
+            siDTO.hashKey = String.Join("", hash.Select(x => x.ToString("X")));
+            return siDTO;
         }
 
         /// <summary>

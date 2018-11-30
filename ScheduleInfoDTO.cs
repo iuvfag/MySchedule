@@ -16,6 +16,7 @@ namespace MySchedule
         internal String subject;
         internal List<String> subjectList = new List<string>();
         internal String detail;
+        internal String hashKey;
         internal int scheduleCount;
     }
 }

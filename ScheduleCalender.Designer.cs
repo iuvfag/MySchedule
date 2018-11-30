@@ -170,9 +170,6 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // backgroundWorker1
-            // 
-            // 
             // ScheduleCalender
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);

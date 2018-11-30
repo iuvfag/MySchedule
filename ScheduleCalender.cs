@@ -946,11 +946,17 @@ namespace MySchedule
             }
         }
 
+        /// <summary>
+        /// 「ブロックチェーン化」ボタンが押された場合の動作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button5_Click(object sender, EventArgs e)
         {
+            //編集履歴のブロックチェーン化を行うフォームの呼び出し
             NonceAndKeyCheck nkc = new NonceAndKeyCheck()
             {
-                userId = userId
+                userId = userId     //ログインIDを渡す
             };
             nkc.Show(this);
         }

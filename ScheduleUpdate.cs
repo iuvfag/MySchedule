@@ -105,7 +105,7 @@ namespace MySchedule
                         ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
                         //スケジュールの更新を行い結果(更新数)をresultに格納
                         int result = siDAO.UpdeteSchedule(siDTO.userId, siDTO.scheduleId, siDTO.startTime, 
-                            siDTO.endingTime, siDTO.subject, siDTO.detail,"");
+                            siDTO.endingTime, siDTO.subject, siDTO.detail);
 
                         //更新されたスケジュールが1件でも存在すれば次の処理へ
                         if (result > 0)

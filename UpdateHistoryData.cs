@@ -25,6 +25,7 @@ namespace MySchedule
 
         private void UpdateHistoryData_Load(object sender, EventArgs e)
         {
+            label1.Text = $"予定登録・編集履歴一覧";
             PageUpdate();
         }
 

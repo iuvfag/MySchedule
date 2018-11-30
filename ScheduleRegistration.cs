@@ -95,7 +95,7 @@ namespace MySchedule
                     ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
 
                     //登録用メソッドを呼び出し、結果をresultに格納
-                    int result = siDAO.RegistSchedule(userId, startTime, endingTime, subject, detail, "");
+                    int result = siDAO.RegistSchedule(userId, startTime, endingTime, subject, detail);
                     //登録件数が1件以上あれば
                     if (result > 0)
                     {

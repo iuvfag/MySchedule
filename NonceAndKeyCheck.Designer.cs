@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NonceAndKeyCheck));
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.button1 = new System.Windows.Forms.Button();
@@ -86,6 +87,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.progressBar1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "NonceAndKeyCheck";
             this.Text = "ブロックチェーン化";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NonceAndKeyCheck_FormClosing);

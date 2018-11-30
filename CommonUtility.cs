@@ -61,7 +61,7 @@ namespace MySchedule
             String result = "";
 
             //入力可能文字列を指定する(半角英数、半角記号)
-            var rg = new Regex(@"[0-9a-zA-Z!-/:-@\[-\`\{-\~]+", RegexOptions.Compiled);
+            var rg = new Regex(@"^[ぁ-んァ-ヶ亜-熙]+?", RegexOptions.Compiled);
 
             //空欄チェック
             if (String.IsNullOrWhiteSpace(s))
@@ -74,7 +74,7 @@ namespace MySchedule
                 result = $"{valueType}は{minLength}文字以上、{maxLength}文字以下で入力してください";
             }
             //入力内容チェック
-            else if (!(rg.IsMatch(s)))
+            else if (rg.IsMatch(s))
             {
                 result = $"{valueType}は半角英数、半角記号で入力してください";
             }

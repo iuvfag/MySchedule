@@ -46,7 +46,7 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
         internal int RegistSchedule(String userId, DateTime startTime, DateTime endingTime, String subject,
-            String detail, String hashKey)
+            String detail)
         {
 
             //結果の初期化
@@ -54,8 +54,8 @@ namespace MySchedule
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "INSERT INTO schedule_info (user_id, start_time, ending_time, subject, detail, " +
-                "schedule_key) VALUES(@userId, @startTime, @endingTime, @subject, @detail, @key)";
+            cmd.CommandText = "INSERT INTO schedule_info (user_id, start_time, ending_time, subject, detail) " +
+                "VALUES(@userId, @startTime, @endingTime, @subject, @detail)";
 
             //@部分への値の代入
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
@@ -63,7 +63,6 @@ namespace MySchedule
             cmd.Parameters.Add(new NpgsqlParameter("@endingTime", endingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
-            cmd.Parameters.Add(new NpgsqlParameter("@key", hashKey));
 
             //接続
             con.Open();
@@ -90,7 +89,6 @@ namespace MySchedule
             cmd.Parameters.Remove("@endingTime");
             cmd.Parameters.Remove("@subject");
             cmd.Parameters.Remove("@detail");
-            cmd.Parameters.Remove("@key");
 
             //結果を戻す
             return result;
@@ -256,7 +254,7 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
         internal int UpdeteSchedule(String userId, int scheduleId, DateTime startTime, DateTime endingTime,
-            String subject, String detail, String hashKey)
+            String subject, String detail)
         {
 
             //結果の初期化
@@ -265,14 +263,13 @@ namespace MySchedule
 
             //SQL文の作成
             cmd.CommandText = "UPDATE schedule_info SET start_time = @startTime, ending_time = @endingTime, " +
-                "subject = @subject, detail = @detail, schedule_key = @key WHERE schedule_id = @scheduleId";
+                "subject = @subject, detail = @detail WHERE schedule_id = @scheduleId";
 
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@startTime", startTime));
             cmd.Parameters.Add(new NpgsqlParameter("@endingTime", endingTime));
             cmd.Parameters.Add(new NpgsqlParameter("@subject", subject));
             cmd.Parameters.Add(new NpgsqlParameter("@detail", detail));
-            cmd.Parameters.Add(new NpgsqlParameter("@key", hashKey));
             cmd.Parameters.Add(new NpgsqlParameter("@scheduleId", scheduleId));
 
             //接続開始
@@ -300,7 +297,6 @@ namespace MySchedule
             cmd.Parameters.Remove("@endingTime");
             cmd.Parameters.Remove("@subject");
             cmd.Parameters.Remove("@detail");
-            cmd.Parameters.Remove("@key");
             cmd.Parameters.Remove("@scheduleId");
 
             //結果を戻す
@@ -580,8 +576,8 @@ namespace MySchedule
 
             //SQL文の作成(データテーブルに格納するため、カラム名も変えておく)
             String sql = "SELECT schedule_id, CAST(start_time as date) as 日付, CAST(start_time as time) as 開始時刻, " +
-                "CAST(ending_time as time) as 終了時刻, subject as 件名, detail as 詳細, " +
-                "schedule_key as スケジュールキー FROM schedule_info WHERE user_id = '" + userId + "' " +
+                "CAST(ending_time as time) as 終了時刻, subject as 件名, detail as 詳細 " +
+                "FROM schedule_info WHERE user_id = '" + userId + "' " +
                 "ORDER BY CAST(start_time as date) ASC";
 
             //接続開始

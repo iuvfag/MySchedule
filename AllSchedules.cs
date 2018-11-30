@@ -47,23 +47,24 @@ namespace MySchedule
         /// <param name="e"></param>
         private void DataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            //クリックされたセルを調べる
-            Point p = dataGridView1.PointToClient(Cursor.Position);
-            DataGridView.HitTestInfo hti = dataGridView1.HitTest(p.X, p.Y);
-
+            ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
+            int rowIndex = e.RowIndex;
+            int columnIndex = e.ColumnIndex;
             //クリックされたセルのインデックスが不正でないことの確認
-            if (hti.RowIndex > -1 && hti.ColumnIndex > -1)
+            if (rowIndex > -1 && columnIndex > -1)
             {
                 //インデックス[0]番目のセルのスケジュールIDを取得し、変数に格納
-                int scheduleId = (int)dataGridView1.Rows[hti.RowIndex].Cells[0].Value;
+                int scheduleId = (int)dataGridView1.Rows[rowIndex].Cells[0].Value;
                 //クリックされたセルから取得されたスケジュールIDが正しいものであれば次の処理へ
                 if (scheduleId != 0 && scheduleId.ToString() != null)
                 {
+                    siDTO.userId = userId;
+                    siDTO.scheduleId = scheduleId;
                     //スケジュール詳細画面を開く
-                    ScheduleDetail sd = new ScheduleDetail();
-                    //sd.userId = userId;             //ログインIDを渡す
-                    //sd.scheduleId = scheduleId;     //スケジュールIDを渡す
-
+                    ScheduleDetail sd = new ScheduleDetail()
+                    {
+                        siDTO = siDTO     //DTOを渡す
+                    };
                     sd.ShowDialog(this);
                     sd.Dispose();
                 }
