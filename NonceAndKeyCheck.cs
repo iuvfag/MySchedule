@@ -39,6 +39,7 @@ namespace MySchedule
             progressBar1.Maximum = 1;       //バーの最大値(仮に1としておく)
             progressBar1.Value = 0;         //バーの値
 
+            button2.Enabled = false;
         }
 
         //ボタン1押下時の動作
@@ -68,6 +69,8 @@ namespace MySchedule
                 backgroundWorker1.RunWorkerAsync();
                 //ラベルに文字列を表示
                 label1.Text = "処理中...(処理には時間がかかります)";
+                //キャンセルボタンを有効化しておく
+                button2.Enabled = true;
 
 
             }
@@ -103,14 +106,19 @@ namespace MySchedule
             //各インデックスの要素に対して順番に処理を行う
             for (int i = 0; i < uhDTOList.Count; i++)
             {
+                maxLoops = uhDTOList.Count;
+
                 //処理がキャンセルされたかどうかを調べる
                 if (bgWorker.CancellationPending)
                 {
                     //キャンセルされている場合は処理を中止
                     e.Cancel = true;
+                    if (maxLoops == 1)
+                    {
+
+                    }
                     return;
                 }
-                maxLoops = uhDTOList.Count;
                 //まず、取得してきた履歴IDの中から最も若いIDかどうかで処理を分ける
                 //最も若いIDの場合
                 if (i == 0)
@@ -167,7 +175,7 @@ namespace MySchedule
             else if (e.Cancelled)
             {
                 //メッセージを表示してフォームを閉じる
-                MessageBox.Show("処理ををキャンセルしました", "処理中止");
+                MessageBox.Show("処理をキャンセルしました", "処理中止");
                 this.Dispose();
             }
             //エラーが発生しなかった場合
@@ -209,12 +217,21 @@ namespace MySchedule
         /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
-            //ボタンの操作を禁止しておく
-            button2.Enabled = false;
-            //ラベルの文字の更新
-            label1.Text = "処理を中止しています...(これには時間がかかることがあります)";
-            //キャンセルする
-            backgroundWorker1.CancelAsync();
+            //既にバックグラウンド処理が実行中であれば
+            if (backgroundWorker1.IsBusy)
+            {
+                //ボタンの操作を禁止しておく
+                button2.Enabled = false;
+                //ラベルの文字の更新
+                label1.Text = "処理を中止しています...(これには時間がかかることがあります)";
+                //キャンセルする
+                backgroundWorker1.CancelAsync();
+            }
+            //実行中でなければ何もしない
+            else
+            {
+                return;
+            }
         }
     }
 }

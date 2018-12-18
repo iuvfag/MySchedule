@@ -207,7 +207,7 @@ namespace MySchedule
 
             //SQL文の作成
             String sql = "SELECT history_id as 履歴ID, update_type as 変更内容, schedule_id as スケジュールID, " +
-                "update_start_time as 予定開始時刻, update_ending_time as 予定終了時刻, subject as 予定, " +
+                "update_start_time as 予定開始時刻, update_ending_time as 予定終了時刻, subject as 件名, " +
                 "detail as 詳細, update_time as 履歴登録日時, nonce as ノンス, key as キー " +
                 "FROM update_history";
 

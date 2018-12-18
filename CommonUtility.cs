@@ -60,8 +60,8 @@ namespace MySchedule
             //戻すメッセージを初期化
             String result = "";
 
-            //入力可能文字列を指定する(半角英数、半角記号)
-            var rg = new Regex(@"^[ぁ-んァ-ヶ亜-熙]+?", RegexOptions.Compiled);
+            //入力可能文字列(半角英数、半角記号)以外のものを格納
+            var rg = new Regex(@"[^0-9a-zA-Z!-~]+", RegexOptions.Compiled);
 
             //空欄チェック
             if (String.IsNullOrWhiteSpace(s))

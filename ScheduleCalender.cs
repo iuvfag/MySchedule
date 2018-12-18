@@ -61,6 +61,7 @@ namespace MySchedule
          * 
          */
 
+#region 〇フォームに対する処理
 
         /// <summary>
         /// フォームが最初に表示された時の動作
@@ -148,6 +149,10 @@ namespace MySchedule
 
         }
 
+        #endregion
+
+#region 〇monthCalenderに関する処理
+
         /// <summary>
         /// MonthCalenderの日付が変更された場合の動作
         /// </summary>
@@ -179,6 +184,10 @@ namespace MySchedule
                 ErrorMessage.ApplicationClose();
             }
         }
+
+        #endregion
+
+#region 〇TODOに関する処理
 
         /// <summary>
         /// TODOの呼び出しに使用するメソッド
@@ -305,6 +314,10 @@ namespace MySchedule
                 MessageBox.Show(ex.ToString());
             }
         }
+
+        #endregion
+
+#region 〇週間スケジュールに関する処理
 
         /// <summary>
         /// 週間スケジュールのひな型作成用メソッド
@@ -837,6 +850,10 @@ namespace MySchedule
 
         }
 
+#endregion
+
+        #region 〇ボタン操作に関する処理
+
         /// <summary>
         /// 「予定登録」ボタンが押された場合の動作
         /// </summary>
@@ -961,4 +978,6 @@ namespace MySchedule
             nkc.Show(this);
         }
     }
+
+#endregion
 }

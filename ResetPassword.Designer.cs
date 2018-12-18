@@ -132,7 +132,7 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(275, 12);
             this.label5.TabIndex = 9;
-            this.label5.Text = "※必須　半角英数、半角記号　1文字以上15文字以下";
+            this.label5.Text = "※必須　半角英数、半角記号　5文字以上15文字以下";
             // 
             // label6
             // 
@@ -142,7 +142,7 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(275, 12);
             this.label6.TabIndex = 10;
-            this.label6.Text = "※必須　半角英数、半角記号　1文字以上15文字以下";
+            this.label6.Text = "※必須　半角英数、半角記号　5文字以上15文字以下";
             // 
             // label7
             // 
@@ -152,7 +152,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(275, 12);
             this.label7.TabIndex = 11;
-            this.label7.Text = "※必須　半角英数、半角記号　1文字以上15文字以下";
+            this.label7.Text = "※必須　半角英数、半角記号　5文字以上15文字以下";
             // 
             // ResetPassword
             // 
