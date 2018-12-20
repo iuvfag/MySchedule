@@ -294,7 +294,7 @@ namespace MySchedule
         /// </summary>
         /// <param name="userId">ユーザーID</param>
         /// <returns>情報を格納したDTOを格納したList</returns>
-        internal List<UpdateHistoryDTO> getAllInfoWhichHasNull(String userId)
+        internal List<UpdateHistoryDTO> GetAllInfoWhichHasNull(String userId)
         {
             //結果を格納するDTOクラスとListをインスタンス化しておく
             List<UpdateHistoryDTO> uhDTOList = new List<UpdateHistoryDTO>();

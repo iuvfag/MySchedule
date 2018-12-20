@@ -54,7 +54,7 @@ namespace MySchedule
             //一度クリックされるともう一度押せないようにしておく
             button1.Enabled = false;
             //UpdateHistoryDTO型のリストにナンスがnullになっている編集履歴の情報を取得
-            uhDTOList = uhDAO.getAllInfoWhichHasNull(userId);
+            uhDTOList = uhDAO.GetAllInfoWhichHasNull(userId);
 
             //リストの要素が一つでも存在する場合
             if (uhDTOList.Count > 0)

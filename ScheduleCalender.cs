@@ -228,7 +228,7 @@ namespace MySchedule
             {
                 UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
                 List<UpdateHistoryDTO> uhDTOList = new List<UpdateHistoryDTO>();
-                uhDTOList = uhDAO.getAllInfoWhichHasNull(userId);
+                uhDTOList = uhDAO.GetAllInfoWhichHasNull(userId);
 
                 //ダブルクリックされたセルの場所を取得
                 Point p = toDo.PointToClient(Cursor.Position);
