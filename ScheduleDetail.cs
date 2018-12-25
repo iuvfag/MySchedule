@@ -37,8 +37,6 @@ namespace MySchedule
                 //スケジュールの詳細をDBから取得し、DTOクラスに格納
                 siDTO = siDAO.GetScheduleDetail(siDTO.scheduleId);
 
-
-
                 //取得した情報を、対応するTextBoxに格納していく
                 subjectTextBox.Text = siDTO.subject;
                 dateTextBox.Text = siDTO.startTime.ToShortDateString();

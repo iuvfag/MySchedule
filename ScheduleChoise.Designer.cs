@@ -61,7 +61,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "ScheduleChoise";
-            this.Text = "ScheduleChoise";
+            this.Text = "予定を選択してください";
             this.Load += new System.EventHandler(this.ScheduleChoise_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);

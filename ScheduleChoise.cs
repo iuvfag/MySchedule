@@ -50,13 +50,16 @@ namespace MySchedule
             //クリックされた場所がヘッダー等でないことを確認
             if (hti.RowIndex > -1 && hti.ColumnIndex > -1)
             {
-                //セルの最初の列(隠れているが、スケジュールIDが格納されている)の値を取得
-                int scheduleId = (int)dataGridView1.Rows[hti.RowIndex].Cells[0].Value;
+                ScheduleInfoDTO siDTO = new ScheduleInfoDTO();
+                siDTO.userId = userId;           //ログインIDを格納
+                //セルの最初の列(隠れているが、スケジュールIDが格納されている)の値を取得し、DTOに格納
+                siDTO.scheduleId = (int)dataGridView1.Rows[hti.RowIndex].Cells[0].Value;
                 //ログインIDとスケジュールIDを渡して詳細画面を開く
-                ScheduleDetail sd = new ScheduleDetail();
-                //sd.userId = userId;           //ログインIDを渡す
-                //sd.scheduleId = scheduleId;   //スケジュールIDを渡しておく
-                //sd.ShowDialog(this);
+                ScheduleDetail sd = new ScheduleDetail()
+                {
+                    siDTO = siDTO           //DTOクラスを渡す
+                };
+                sd.ShowDialog(this);
                 sd.Dispose();
             }
         }
