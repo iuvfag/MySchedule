@@ -170,7 +170,7 @@ namespace MySchedule
                     MessageBox.Show(subjectCheck, "入力内容を確認してください");
                 }
                 //「詳細」入力内容に問題があった場合
-                else if (String.IsNullOrWhiteSpace(detailCheck))
+                else if (!(String.IsNullOrWhiteSpace(detailCheck)))
                 {
                     //メッセージ表示
                     MessageBox.Show(detailCheck, "入力内容を確認してください");

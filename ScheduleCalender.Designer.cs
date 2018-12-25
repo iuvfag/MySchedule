@@ -192,6 +192,7 @@
             this.Name = "ScheduleCalender";
             this.Text = "スケジュール";
             this.Activated += new System.EventHandler(this.ScheduleCalender_Activated);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScheduleCalender_FormClosed);
             this.Load += new System.EventHandler(this.ScheduleCalender_Load);
             this.Shown += new System.EventHandler(this.ScheduleCalender_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.toDo)).EndInit();

@@ -90,6 +90,7 @@ namespace MySchedule
                             {
                                 userId = uiDTO.userId
                             };
+                            sc.Owner = this;
                             sc.ShowDialog(this);
 
                             sc.Dispose();
@@ -141,6 +142,7 @@ namespace MySchedule
             {
                 //新規ユーザー登録フォームを開く
                 CreateUser cu = new CreateUser();
+                cu.Owner = this;
                 cu.ShowDialog(this);
                 cu.Dispose();
 

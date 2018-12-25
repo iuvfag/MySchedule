@@ -45,7 +45,6 @@
             // 
             // subjectTextBox
             // 
-            this.subjectTextBox.Enabled = false;
             this.subjectTextBox.Font = new System.Drawing.Font("HG創英角ｺﾞｼｯｸUB", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.subjectTextBox.Location = new System.Drawing.Point(60, 12);
             this.subjectTextBox.Multiline = true;
@@ -67,7 +66,6 @@
             // 
             // dateTextBox
             // 
-            this.dateTextBox.Enabled = false;
             this.dateTextBox.Font = new System.Drawing.Font("HG創英角ｺﾞｼｯｸUB", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.dateTextBox.Location = new System.Drawing.Point(149, 86);
             this.dateTextBox.Name = "dateTextBox";
@@ -88,7 +86,6 @@
             // 
             // startTimeTextbox
             // 
-            this.startTimeTextbox.Enabled = false;
             this.startTimeTextbox.Font = new System.Drawing.Font("HG創英角ｺﾞｼｯｸUB", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.startTimeTextbox.Location = new System.Drawing.Point(69, 172);
             this.startTimeTextbox.Name = "startTimeTextbox";
@@ -99,7 +96,6 @@
             // 
             // endingTimeTextBox
             // 
-            this.endingTimeTextBox.Enabled = false;
             this.endingTimeTextBox.Font = new System.Drawing.Font("HG創英角ｺﾞｼｯｸUB", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.endingTimeTextBox.Location = new System.Drawing.Point(308, 172);
             this.endingTimeTextBox.Name = "endingTimeTextBox";
@@ -121,15 +117,14 @@
             // 
             // detailTextBox
             // 
-            this.detailTextBox.Enabled = false;
             this.detailTextBox.Font = new System.Drawing.Font("HG創英角ｺﾞｼｯｸUB", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.detailTextBox.Location = new System.Drawing.Point(16, 260);
             this.detailTextBox.Multiline = true;
             this.detailTextBox.Name = "detailTextBox";
             this.detailTextBox.ReadOnly = true;
+            this.detailTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.detailTextBox.Size = new System.Drawing.Size(472, 279);
             this.detailTextBox.TabIndex = 7;
-            this.detailTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label4
             // 

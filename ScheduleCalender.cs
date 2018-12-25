@@ -85,6 +85,7 @@ namespace MySchedule
             //何らかの不具合が発生した場合、強制終了するためのtry-catch文
             try
             {
+                this.Owner.Hide();
                 //ログインIDを表示
                 label1.Text = $"{userId}さんのスケジュール帳";
                 var today = DateTime.Today.ToShortDateString();
@@ -146,7 +147,8 @@ namespace MySchedule
         /// <param name="e"></param>
         private void ScheduleCalender_FormClosed(object sender, FormClosedEventArgs e)
         {
-
+            
+            this.Owner.Show();
         }
 
         #endregion
