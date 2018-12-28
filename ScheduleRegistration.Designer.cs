@@ -129,7 +129,8 @@
             this.subjectTextBox.Location = new System.Drawing.Point(71, 199);
             this.subjectTextBox.Multiline = true;
             this.subjectTextBox.Name = "subjectTextBox";
-            this.subjectTextBox.Size = new System.Drawing.Size(362, 19);
+            this.subjectTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.subjectTextBox.Size = new System.Drawing.Size(362, 38);
             this.subjectTextBox.TabIndex = 8;
             // 
             // label6
@@ -147,6 +148,7 @@
             this.detailTextBox.Location = new System.Drawing.Point(32, 278);
             this.detailTextBox.Multiline = true;
             this.detailTextBox.Name = "detailTextBox";
+            this.detailTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.detailTextBox.Size = new System.Drawing.Size(441, 266);
             this.detailTextBox.TabIndex = 10;
             // 
@@ -165,7 +167,7 @@
             this.button2.Location = new System.Drawing.Point(340, 559);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(100, 30);
-            this.button2.TabIndex = 11;
+            this.button2.TabIndex = 12;
             this.button2.Text = "登録";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.Button2_Click);

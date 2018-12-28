@@ -301,8 +301,8 @@ namespace MySchedule
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "SELECT * FROM update_history WHERE user_id = @userId AND nonce IS null " +
-                "OR previous_key IS null OR key IS null ORDER BY history_id ASC";
+            cmd.CommandText = "SELECT * FROM update_history WHERE user_id = @userId AND (nonce IS null " +
+                "OR previous_key IS null OR key IS null) ORDER BY history_id ASC";
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));     //ログインID
 
             //接続開始

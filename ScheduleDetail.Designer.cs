@@ -50,6 +50,7 @@
             this.subjectTextBox.Multiline = true;
             this.subjectTextBox.Name = "subjectTextBox";
             this.subjectTextBox.ReadOnly = true;
+            this.subjectTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.subjectTextBox.Size = new System.Drawing.Size(376, 43);
             this.subjectTextBox.TabIndex = 0;
             this.subjectTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;

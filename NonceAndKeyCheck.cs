@@ -78,7 +78,7 @@ namespace MySchedule
             else
             {
                 //メッセージを表示してフォームを閉じる
-                MessageBox.Show("ブロックチェーンは既に生成されています", "情報は最新です");
+                MessageBox.Show("ブロックチェーンを生成すべき予定が存在しません", "情報は最新です");
                 this.Dispose();
 
             }
