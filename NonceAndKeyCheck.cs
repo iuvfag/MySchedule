@@ -67,10 +67,19 @@ namespace MySchedule
                 backgroundWorker1.WorkerSupportsCancellation = true;
                 //バックグラウンド処理の開始
                 backgroundWorker1.RunWorkerAsync();
-                //ラベルに文字列を表示
-                label1.Text = "処理中...(処理には時間がかかります)";
-                //キャンセルボタンを有効化しておく
-                button2.Enabled = true;
+
+                if (uhDTOList.Count > 1)
+                {
+                    //ラベルに文字列を表示
+                    label1.Text = "処理中...(処理には時間がかかります)";
+                    //キャンセルボタンを有効化しておく
+                    button2.Enabled = true;
+                }
+                else
+                {
+                    //ラベルに文字列を表示
+                    label1.Text = "処理中...(処理には時間がかかります)...対象件数が1件の場合中止はできません";
+                }
 
 
             }
@@ -113,10 +122,6 @@ namespace MySchedule
                 {
                     //キャンセルされている場合は処理を中止
                     e.Cancel = true;
-                    if (maxLoops == 1)
-                    {
-
-                    }
                     return;
                 }
                 //まず、取得してきた履歴IDの中から最も若いIDかどうかで処理を分ける
@@ -124,7 +129,7 @@ namespace MySchedule
                 if (i == 0)
                 {
                     //ひとつ前の履歴IDのハッシュキーをリストの「前のハッシュキー」に格納
-                    uhDTOList[i].previousHashKey = uhDAO.GetPreviousHashKey(userId, uhDTOList[i].historyId - 1);
+                    uhDTOList[i].previousHashKey = uhDAO.GetPreviousHashKey(userId);
                 }
                 //そうでない場合
                 else

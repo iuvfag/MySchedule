@@ -146,17 +146,17 @@ namespace MySchedule
         /// ③前回のハッシュキー(最も新しい履歴IDのハッシュキー)を取得するためのメソッド
         /// </summary>
         /// <returns>前回のハッシュキーを格納したString型の変数</returns>
-        internal String GetPreviousHashKey(String userId, int historyId)
+        internal String GetPreviousHashKey(String userId)
         {
             //結果を初期化
             String result = "";
             cmd.Connection = con;
 
             //SQL文の作成
-            cmd.CommandText = "SELECT key FROM update_history WHERE user_id = @userId AND history_id = @historyId";
+            cmd.CommandText = "SELECT key FROM update_history WHERE history_id = ( SELECT MAX(history_id) FROM " +
+                "update_history WHERE  user_id = @userId AND nonce IS NOT NULL AND key IS NOT NULL)";
 
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));     //ログインID
-            cmd.Parameters.Add(new NpgsqlParameter("@historyId", historyId));
 
             //接続開始
             con.Open();
@@ -187,7 +187,6 @@ namespace MySchedule
             }
             //パラメーターの値はRemoveしておく
             cmd.Parameters.Remove("@userId");
-            cmd.Parameters.Remove("@historyId");
             //結果を戻す
             return result;
         }
