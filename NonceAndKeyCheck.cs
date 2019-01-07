@@ -128,7 +128,8 @@ namespace MySchedule
                 //最も若いIDの場合
                 if (i == 0)
                 {
-                    //ひとつ前の履歴IDのハッシュキーをリストの「前のハッシュキー」に格納
+                    //同一のログインIDの編集履歴からナンスとキーが格納されているレコードの最大のhistory_idのものの
+                    //キーを取得する
                     uhDTOList[i].previousHashKey = uhDAO.GetPreviousHashKey(userId);
                 }
                 //そうでない場合

@@ -158,6 +158,10 @@ namespace MySchedule
 
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));     //ログインID
 
+            /* ログインIDをもとにナンスが空欄でないもの、キーが空欄でないものの中から最大のhistory_idのレコードの
+             * キーを取得するSQL
+             * */
+
             //接続開始
             con.Open();
 
