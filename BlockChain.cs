@@ -67,7 +67,7 @@ namespace MySchedule
                 //バイト変換した値でハッシュ変換する
                 hash = sha256.ComputeHash(bytes);
             }
-            //結果を戻すs
+            //結果を戻す
             siDTO.hashKey = String.Join("", hash.Select(x => x.ToString("X")));
             return siDTO;
         }

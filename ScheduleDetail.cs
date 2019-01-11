@@ -101,7 +101,6 @@ namespace MySchedule
                                 updateEndingTime = siDTO.endingTime,
                                 subject = siDTO.subject,
                                 detail = siDTO.detail,
-                                updateTime = DateTime.Now
                             };
                             //UpdateHistoryDAOクラスをインスタンス化
                             UpdateHistoryDAO uhDAO = new UpdateHistoryDAO();
@@ -111,7 +110,7 @@ namespace MySchedule
                             //履歴登録用のメソッドに情報を登録
                             uhDAO.RegistHistory(uhDTO.userId, uhDTO.scheduleId, uhDTO.updateType,
                                 uhDTO.updateStartTime, uhDTO.updateEndingTime, uhDTO.subject,
-                                uhDTO.detail, uhDTO.updateTime);
+                                uhDTO.detail);
 
                         });
 

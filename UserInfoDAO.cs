@@ -96,13 +96,18 @@ namespace MySchedule
             int result = 0;
             cmd.Connection = con;
 
+            DateTime date = DateTime.Now;
+            date = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, date.Kind);
+
+
             //SQL文の作成
             cmd.CommandText = "INSERT INTO user_info (user_id, password, registration_date, update_date, status) " +
-                "VALUES (@userId, @password, now(), now(), 0)";
+                "VALUES (@userId, @password, @date, @date, 0)";
 
             //SQl文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userId", userId));
             cmd.Parameters.Add(new NpgsqlParameter("@password", password));
+            cmd.Parameters.Add(new NpgsqlParameter("@date", date));
 
             //接続
             con.Open();
@@ -124,6 +129,7 @@ namespace MySchedule
             //パラメーターに格納した値をremoveする！
             cmd.Parameters.Remove("@userId");
             cmd.Parameters.Remove("@password");
+            cmd.Parameters.Remove("@date");
 
             return result;      //resultを返す
         }
@@ -240,14 +246,18 @@ namespace MySchedule
             int result = 0;
             cmd.Connection = con;
 
+            DateTime date = DateTime.Now;
+            date = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, date.Kind);
+
             //SQL文の作成
-            cmd.CommandText = "UPDATE user_info SET password = @newPassword, update_date = now() " +
+            cmd.CommandText = "UPDATE user_info SET password = @newPassword, update_date = @date " +
                 "WHERE user_id = @userId AND password = @password";
 
             //SQL文の@部分に値を格納
             cmd.Parameters.Add(new NpgsqlParameter("@userid", userId));
             cmd.Parameters.Add(new NpgsqlParameter("@password", password));
             cmd.Parameters.Add(new NpgsqlParameter("@newPassword", newPassword));
+            cmd.Parameters.Add(new NpgsqlParameter("@date", date));
 
             con.Open();
 
@@ -272,6 +282,7 @@ namespace MySchedule
             cmd.Parameters.Remove("@userId");
             cmd.Parameters.Remove("@password");
             cmd.Parameters.Remove("@newPassword");
+            cmd.Parameters.Remove("@date");
 
             //結果を戻す
             return result;

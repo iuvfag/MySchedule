@@ -40,11 +40,14 @@ namespace MySchedule
         /// <param name="detail">詳細</param>
         /// <returns>更新件数を格納したint型の変数</returns>
         internal int RegistHistory(String userId, int scheduleId, String updateType, DateTime updateStartTime,
-            DateTime updateEndingTime, String subject, String detail, DateTime updateTime)
+            DateTime updateEndingTime, String subject, String detail)
         {
             //結果を初期化
             int result = 0;
             cmd.Connection = con;
+
+            DateTime updateTime = DateTime.Now;
+            updateTime = new DateTime(updateTime.Year, updateTime.Month, updateTime.Day, updateTime.Hour, updateTime.Minute, updateTime.Second, updateTime.Kind);
 
             //SQL文の作成
             cmd.CommandText = "INSERT INTO update_history (user_id, schedule_id, update_type, update_start_time, " +

@@ -35,7 +35,7 @@ namespace MySchedule
         }
 
         /// <summary>
-        /// 「」ボタンが押された場合の動作
+        /// 「検証」ボタンが押された場合の動作
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
