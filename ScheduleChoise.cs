@@ -63,5 +63,15 @@ namespace MySchedule
                 sd.Dispose();
             }
         }
+
+        private void ScheduleChoise_Activated(object sender, EventArgs e)
+        {
+            //ログインIDと開始時刻、終了時刻から予定情報を取得するメソッドの呼び出し
+            ScheduleInfoDAO siDAO = new ScheduleInfoDAO();
+            //結果として帰ってくるデータテーブルとデータグリッドを接続
+            dataGridView1.DataSource = siDAO.getDuplicatedScheduleInfo(userId, startTime, endingTime);
+            //セルの最初の行(スケジュールIDが格納されている)を表示にする
+            dataGridView1.Columns[0].Visible = false;
+        }
     }
 }
